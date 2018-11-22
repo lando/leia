@@ -1,0 +1,14 @@
+name: leia
+services:
+  cli:
+    type: node:10
+    install_dependencies_as_me:
+      - yarn
+tooling:
+  node:
+    service: cli
+  yarn:
+    service: cli
+
+# @TODO: get leia in as tooling
+# @TODO: good project to figure out how to remove the assumption that some sort of website will be running

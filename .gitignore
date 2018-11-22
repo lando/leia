@@ -1,0 +1,29 @@
+# Common sys files
+.*.swp
+._*
+.git
+.hg
+.sign
+.lock-wscript
+.svn
+.wafpickle-*
+.DS_Store
+.idea/
+*.tar
+*.jxp
+*.sublime-*
+
+# Logs
+*.log
+logs
+
+# coverage reporting
+.nyc_output
+coverage/
+
+# NPM files
+node_modules
+
+# CCI test splitting
+split-file.txt
+test.text

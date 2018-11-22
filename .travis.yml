@@ -1,0 +1,24 @@
+# TODO: good project to get windows tests rolling?
+language: node_js
+matrix:
+  include:
+  - os: linux
+    node_js: '10'
+  - os: osx
+    node_js: '10'
+services:
+  - docker
+sudo: required
+cache:
+  yarn: true
+  directories:
+    - node_modules
+before_script:
+  - node --version
+  - yarn --version
+  - node bin/leia.js --version
+script:
+  - yarn lint
+  - yarn test:unit
+  - yarn test:func
+

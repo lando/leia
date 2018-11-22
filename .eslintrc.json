@@ -1,0 +1,28 @@
+{
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "extends": "google",
+  "rules": {
+    "arrow-parens": ["error",
+      "as-needed"
+    ],
+    "max-len": ["error", {
+      "code": 140,
+      "ignoreComments": true
+    }],
+    "require-jsdoc": ["error", {
+      "require": {
+        "FunctionDeclaration": true,
+        "MethodDefinition": false,
+        "ClassDeclaration": false,
+        "ArrowFunctionExpression": false,
+        "FunctionExpression": false
+      }
+    }]
+  }
+}

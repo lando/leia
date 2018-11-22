@@ -1,0 +1,64 @@
+{
+  "name": "leia",
+  "description": "Parses Markdown files into command line mocha tests",
+  "license": "GPL-3.0",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lando/leia"
+  },
+  "bugs": {
+    "email": "mike@thinktandem.io",
+    "url": "https://github.com/lando/leia/issues"
+  },
+  "main": "lib/leia.js",
+  "bin": {
+    "leia": "./bin/leia.js"
+  },
+  "directories": {
+    "lib": "./lib"
+  },
+  "nyc": {
+    "include": [
+      "lib/*.js"
+    ],
+    "exclude": [
+      "test/**",
+      "bin/**"
+    ],
+    "cache": true,
+    "all": true
+  },
+  "scripts": {
+    "lint": "eslint bin commands lib scripts test",
+    "release:major": "node ./scripts/bump.js --type=major",
+    "release:minor": "node ./scripts/bump.js --type=minor",
+    "release:patch": "node ./scripts/bump.js --type=patch",
+    "release:pre": "node ./scripts/bump.js --type=prerelease",
+    "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
+    "test:func": "node ./bin/leia.js README.md test -p \"examples/**/*.md\" && mocha --timeout 900000 test/**/*.func.js",
+    "test": "yarn lint && yarn test:unit"
+  },
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "dot": "^1.1.2",
+    "fs-extra": "^7.0.1",
+    "glob": "^7.1.3",
+    "lodash": "^4.17.11",
+    "marked": "^0.5.2",
+    "winston": "^2.2.0",
+    "yargonaut": "^1.1.4",
+    "yargs": "^12.0.5",
+    "yargs-parser": "^11.1.1"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "command-line-test": "^1.0.10",
+    "eslint": "^4.15.0",
+    "eslint-config-google": "^0.9.1",
+    "mocha": "^5.2.0",
+    "mock-fs": "^4.7.0",
+    "nyc": "^13.1.0",
+    "sinon": "^7.1.1"
+  }
+}

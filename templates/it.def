@@ -1,0 +1,11 @@
+  it('{{=test.describe[0]}}', done => {
+    process.chdir(path.resolve(__dirname, '{{=it.run}}'));
+    const cli = new CliTest();
+    cli.exec('{{=test.command}}').then(res => {
+      if (res.error === null) {
+        done();
+      } else {
+        done(res.error);
+      }
+    });
+  });
