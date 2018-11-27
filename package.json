@@ -2,7 +2,7 @@
   "name": "leia",
   "description": "Parses Markdown files into command line mocha tests",
   "license": "GPL-3.0",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/lando/leia"
@@ -31,13 +31,9 @@
   },
   "scripts": {
     "lint": "eslint bin commands lib scripts test",
-    "release:major": "node ./scripts/bump.js --type=major",
-    "release:minor": "node ./scripts/bump.js --type=minor",
-    "release:patch": "node ./scripts/bump.js --type=patch",
-    "release:pre": "node ./scripts/bump.js --type=prerelease",
+    "release": "yarn bump --prompt --tag --all",
     "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
-    "test:func": "node ./bin/leia.js README.md test -p \"examples/**/*.md\" && mocha --timeout 900000 test/**/*.func.js",
-    "test": "yarn lint && yarn test:unit"
+    "test:func": "node ./bin/leia.js README.md test -p \"examples/**/*.md\" && mocha --timeout 900000 test/**/*.func.js"
   },
   "dependencies": {
     "chalk": "^2.4.1",
@@ -59,6 +55,7 @@
     "mocha": "^5.2.0",
     "mock-fs": "^4.7.0",
     "nyc": "^13.1.0",
-    "sinon": "^7.1.1"
+    "sinon": "^7.1.1",
+    "version-bump-prompt": "^4.2.1"
   }
 }
