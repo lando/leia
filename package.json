@@ -30,6 +30,7 @@
     "all": true
   },
   "scripts": {
+    "leia": "node bin/leia.js",
     "lint": "eslint bin commands lib scripts test",
     "release": "yarn bump --prompt --tag --all --push",
     "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
