@@ -21,6 +21,30 @@ describe('leia', function() {
   // These tests are the main event
   // @todo: It would be nice to eventually get these into mocha after hooks
   // so they run after every test
+  it('run linting', done => {
+    process.chdir(path.resolve(__dirname, '..'));
+    const cli = new CliTest();
+    cli.exec('yarn lint').then(res => {
+      if (res.error === null) {
+        done();
+      } else {
+        done(res.error);
+      }
+    });
+  });
+
+  it('run unit tests', done => {
+    process.chdir(path.resolve(__dirname, '..'));
+    const cli = new CliTest();
+    cli.exec('yarn test:unit').then(res => {
+      if (res.error === null) {
+        done();
+      } else {
+        done(res.error);
+      }
+    });
+  });
+
   it('clean up previous test', done => {
     process.chdir(path.resolve(__dirname, '..'));
     const cli = new CliTest();

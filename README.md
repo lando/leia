@@ -11,7 +11,7 @@ Leia is a parsing utility designed to take specially formatted `markdown` files 
 
 A __very__ basic example of what leia will do
 
-```
+```md
 Some Example
 ============
 
@@ -178,9 +178,6 @@ yarn
 
 # CLI
 yarn leia
-
-# Release a new version
-yarn release
 ```
 
 Testing
@@ -189,6 +186,12 @@ Testing
 Leia uses herself to do some basic functional tests. That means that this whole section is parsed into `mocha` tests that are run in Travis.
 
 ```bash
+# Run linting
+yarn lint
+
+# Run unit tests
+yarn test:unit
+
 # Clean up previous test
 rm -f test/leia.readme.js
 
@@ -203,6 +206,13 @@ cat test/leia.readme.js | grep "id: leia"
 
 # Validate the retry was set correctly
 cat test/leia.readme.js | grep retries | grep 6
+```
+
+Releasing
+---------
+
+```bash
+yarn release
 ```
 
 Other Resources
