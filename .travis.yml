@@ -25,7 +25,6 @@ deploy:
   email: mike@thintandem.io
   api_key:
     secure: FtgGfXr/GTXNvVMsLzER8thlnAGrl4NrjkkIif+cGBGBtKK+rpE2ZIByPOXLGtkpXkXk4ypCDhVk9dhyIQuHpP9V3ntFtTUZh/JuO2CdQoTHjxUuZ321GSvvxgq8sSzKABf1AI055SFo00f+k2XB7o6ZxtKPJ2RddDoULMj3LJJ/3Ytvwo+btGMaSuuSH6meeX7qXBc8NkEPYHekpFn/r5q3N/OakAsX45Vp8G4QbZQ7Xh/aKw/ZLlvzB61d6Vkv0zelbLd1Y5AmK6jfE+YZ/yn8rVNWx3p9pa4SHrvex8BmzwFxFnwLOQ09/ZQdgwlix27HizqMm56Xs/HmgCQs+vyBhMUslqORcdfETbXDL7kRgMyLHTZ/RCsX3kMEKKwTS42jJW60L5XRoxgEm5CYaOu2m1yryWiwAD+r+omyrEZhWz3F3bjdXd6EznlMeGhVJ5rXDJ5le0Lxcd3uoMyvkD1YMzH7Idu5pWbGf8JI1p/Ca8EyzaatWjSf82GtnMGp0fJTVGMl4mzhfer7amYa5ymtywMAaErx/WBAh7tiLMMOkr5Hv86Gyb/cZuyVXLChoriXfkrqjvsTGc0kUrSueScTTf9IcmA1peQDzd+cOr0QZ8SQ5OqrsTmhG3enl2xHVWtb+FeHsr+b8mGU4kkzimldfcC8lJ/Sw2L6IP0lnjk=
-  tag: next
   on:
     tags: true
     repo: lando/leia
