@@ -7,7 +7,7 @@ Leia is a parsing utility designed to take specially formatted `markdown` files 
 * Write functional tests quickly in an accessible and lowest common denominator language (eg `bash`)
 * Pass on exit status code `0`, fail on anything else
 * Work on `posix` eg **Windows is not currently supported**
-* Keep [Lando](https://github.com/lando/lando) honest so he doesn't betray his friends again
+* Keep [Lando](https://github.com/lando/lando) honest so he can be a real hero who doesn't betray his friends again
 
 A __very__ basic example of what leia will do
 
