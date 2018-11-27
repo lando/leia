@@ -2,7 +2,7 @@
   "name": "leia",
   "description": "Parses Markdown files into command line mocha tests",
   "license": "GPL-3.0",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/lando/leia"
@@ -31,7 +31,7 @@
   },
   "scripts": {
     "lint": "eslint bin commands lib scripts test",
-    "release": "yarn bump --prompt --tag --all",
+    "release": "yarn bump --prompt --tag --all --push",
     "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
     "test:func": "node ./bin/leia.js README.md test -p \"examples/**/*.md\" && mocha --timeout 900000 test/**/*.func.js"
   },
