@@ -1,4 +1,9 @@
-v0.3.2 - [November 28, 2018](https://github.com/lando/leia/releases/tag/v0.3.0)
+v0.3.3 - [November 29, 2018](https://github.com/lando/leia/releases/tag/v0.3.3)
+----------------------------
+
+* Fixed bug with generate test `eslint-disable max-len` not being set
+
+v0.3.2 - [November 28, 2018](https://github.com/lando/leia/releases/tag/v0.3.2)
 ----------------------------
 
 * Fixed bug causing false-positive detection of not-properly-formatted `markdown` files
