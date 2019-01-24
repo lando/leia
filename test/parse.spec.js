@@ -14,7 +14,7 @@ const parse = require('./../lib/parse');
 describe('parse', () => {
   it('should return leia testing metadata with the default keys', () => {
     const tests = parse([path.resolve(__dirname, '..', 'examples', 'basic-example.md')]);
-    tests[0].should.have.all.keys('file', 'id', 'output', 'retry', 'run', 'text', 'type', 'tests');
+    tests[0].should.have.all.keys('file', 'id', 'output', 'retry', 'run', 'text', 'type', 'tests', 'version');
   });
   it('should organize tests into setup|test|cleanup buckets if applicable', () => {
     const tests = parse([path.resolve(__dirname, '..', 'examples', 'setup-cleanup-example.md')]);

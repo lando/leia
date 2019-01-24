@@ -7,13 +7,20 @@
  * id: leia
  * runs-from: ..
  */
+
+// Set some helpful envvars so we know these are leia tezts
+process.env.LEIA_PARSER_RUNNING = 'true';
+process.env.LEIA_PARSER_VERSION = '0.3.3';
+process.env.LEIA_PARSER_ID = 'leia';
+process.env.LEIA_PARSER_RETRY = 3;
+
 // We need these deps to run our tezts
 const chai = require('chai');
 const CliTest = require('command-line-test');
 const path = require('path');
 chai.should();
 
-// eslint-disable max-len
+/* eslint-disable max-len */
 
 describe('leia', function() {
   this.retries(3);
@@ -97,6 +104,18 @@ describe('leia', function() {
     process.chdir(path.resolve(__dirname, '..'));
     const cli = new CliTest();
     cli.exec('cat test/leia.readme.js | grep retries | grep 6').then(res => {
+      if (res.error === null) {
+        done();
+      } else {
+        done(res.error);
+      }
+    });
+  });
+
+  it('validate we set some envars', done => {
+    process.chdir(path.resolve(__dirname, '..'));
+    const cli = new CliTest();
+    cli.exec('cat test/leia.readme.js | grep "process.env.LEIA_PARSER_RUNNING = \'true\';" && cat test/leia.readme.js | grep "process.env.LEIA_PARSER_VERSION" && cat test/leia.readme.js | grep "process.env.LEIA_PARSER_ID" && cat test/leia.readme.js | grep "process.env.LEIA_PARSER_RETRY"').then(res => {
       if (res.error === null) {
         done();
       } else {

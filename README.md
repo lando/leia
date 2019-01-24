@@ -206,6 +206,12 @@ cat test/leia.readme.js | grep "id: leia"
 
 # Validate the retry was set correctly
 cat test/leia.readme.js | grep retries | grep 6
+
+# Validate we set some envars
+cat test/leia.readme.js | grep "process.env.LEIA_PARSER_RUNNING = \'true\';"
+cat test/leia.readme.js | grep "process.env.LEIA_PARSER_VERSION"
+cat test/leia.readme.js | grep "process.env.LEIA_PARSER_ID"
+cat test/leia.readme.js | grep "process.env.LEIA_PARSER_RETRY"
 ```
 
 Releasing

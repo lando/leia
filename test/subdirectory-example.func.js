@@ -7,13 +7,20 @@
  * id: subdirectory-example
  * runs-from: ../examples/subdirectory-example
  */
+
+// Set some helpful envvars so we know these are leia tezts
+process.env.LEIA_PARSER_RUNNING = 'true';
+process.env.LEIA_PARSER_VERSION = '0.3.3';
+process.env.LEIA_PARSER_ID = 'subdirectory-example';
+process.env.LEIA_PARSER_RETRY = 3;
+
 // We need these deps to run our tezts
 const chai = require('chai');
 const CliTest = require('command-line-test');
 const path = require('path');
 chai.should();
 
-// eslint-disable max-len
+/* eslint-disable max-len */
 
 describe('subdirectory-example', function() {
   this.retries(3);

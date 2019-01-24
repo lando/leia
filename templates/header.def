@@ -7,3 +7,9 @@
  * id: {{=it.id}}
  * runs-from: {{=it.run}}
  */
+
+// Set some helpful envvars so we know these are leia tezts
+process.env.LEIA_PARSER_RUNNING = 'true';
+process.env.LEIA_PARSER_VERSION = '{{=it.version}}';
+process.env.LEIA_PARSER_ID = '{{=it.id}}';
+process.env.LEIA_PARSER_RETRY = {{=it.retry}};
