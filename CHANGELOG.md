@@ -1,3 +1,8 @@
+v0.3.4 - [January 24, 2019](https://github.com/lando/leia/releases/tag/v0.3.4)
+---------------------------
+
+* Added some `LEIA_PARSER_` envvars to each file being run.
+
 v0.3.3 - [November 29, 2018](https://github.com/lando/leia/releases/tag/v0.3.3)
 ----------------------------
 
