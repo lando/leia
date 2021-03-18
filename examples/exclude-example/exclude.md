@@ -1,5 +1,5 @@
-Subdirectory Example
-====================
+Exclude Example
+===============
 
 Because Leia runs each test from the directory of the source markdown file you can package in other required testing assets.
 
@@ -15,3 +15,4 @@ cat text1.txt | grep test
 # Analze the contents of our second file
 cat text2.txt | grep test2
 ```
+

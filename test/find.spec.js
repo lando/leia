@@ -41,6 +41,11 @@ describe('find', () => {
     files.should.be.an('Array');
     files.should.have.lengthOf(0);
   });
+  it('should ignore specified patterns', () => {
+    const files = find(['/some/source/dir/**.md', '/some/other/source/dir'], ['**/test2.md']);
+    files.should.be.an('Array');
+    files.should.have.lengthOf(1);
+  });
   it('should return absolute paths');
   it('should not return directories');
   it('should return a flattened array');

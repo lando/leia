@@ -35,6 +35,11 @@ module.exports = {
       describe: 'Scan these additional patterns',
       array: true,
     },
+    'ignore': {
+      alias: 'i',
+      describe: 'Ignore these patterns',
+      array: true,
+    },
     'retry': {
       alias: 'r',
       describe: 'Retry each test this amount of times',
@@ -73,11 +78,11 @@ module.exports = {
 
     // Some advances loggin
     leia.log.verbose('Options %j', argv);
-    leia.log.verbose('Ensuring diretory: %s exists', argv.dest);
+    leia.log.verbose('Ensuring directory: %s exists', argv.dest);
     fs.mkdirpSync(argv.dest);
 
     // Combine all patterns and search for the things
-    const files = leia.find(_.compact(_.flatten([argv.src, argv.pattern])));
+    const files = leia.find(_.compact(_.flatten([argv.src, argv.pattern])), argv.ignore);
     leia.log.info('Detected possible test source files: %s', files.join(', '));
 
     // Parse files into relevant test metadata
@@ -87,6 +92,7 @@ module.exports = {
 
     // Generate test files from parsed data and return list of generated files
     const results = leia.generate(tests);
+    console.log(results);
     leia.log.info('Generated mocha tests to %s', results.join(', '));
 
     // Generate a split file for CCI

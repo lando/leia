@@ -4,7 +4,7 @@ Leia
 Leia is a parsing utility designed to take specially formatted `markdown` files as input and export `cli` driven `mocha` tests. It is designed primarily to:
 
 * Consolidate code examples and tests into a single, easy to understand and write `markdown` file
-* Write functional tests quickly in an accessible and lowest common denominator language (eg `bash`)
+* Write functional tests quickly in an accessible and lowest common denominator language (eg `sh/bash/dash` etc)
 * Pass on exit status code `0`, fail on anything else
 * Work on `posix` eg **Windows is not currently supported**
 * Keep [Lando](https://github.com/lando/lando) honest so he can be a real hero who doesn't betray his friends again
@@ -65,7 +65,7 @@ describe('example', function() {
 Installing
 ----------
 
-We recommend you use the [LTS 10.x](https://nodejs.org/en/) version of `nodejs` and the latest [yarn](https://yarnpkg.com). An easy way to get all the deps you need for `leia` is to look at the [Hyperdrive](https://github.com/lando/hyperdrive). **We do not recommend installing `leia` globally.**
+We recommend you use the [LTS 14.x](https://nodejs.org/en/) version of `nodejs` and the latest [yarn](https://yarnpkg.com). An easy way to get all the deps you need for `leia` is to look at the [Hyperdrive](https://github.com/lando/hyperdrive). **We do not recommend installing `leia` globally.**
 
 ```bash
 yarn add leia-parser
@@ -74,7 +74,7 @@ yarn add leia-parser
 Usage
 -----
 
-You can invoke `leia-parser` as a command line tool or directly require it in a module.
+You can invoke `leia-parser` as a command line tool or directly `require` it in a module.
 
 ### CLI
 
