@@ -35,7 +35,8 @@ describe('subdirectory-example', function() {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });
@@ -47,7 +48,8 @@ describe('subdirectory-example', function() {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });
