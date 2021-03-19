@@ -1,3 +1,13 @@
+v0.4.0 - [March 18, 2021](https://github.com/lando/leia/releases/tag/v0.4.0)
+-------------------------
+
+* Added `--ignore` flag to pass in patterns to exclude from parsing
+* Added `--spawn` flag to use `child_process.spawn` instead of `child_process.exec`
+* Added `--stdin` flag so we attach `stdin` for the test, this can prevent downstream hanging
+* Added support for "multiline" single tests using `\` for readability
+* Improved error message on failed tests to show exit code, `stdin` and `stdout`
+* Upgraded to `node` `14`
+
 v0.3.4 - [January 24, 2019](https://github.com/lando/leia/releases/tag/v0.3.4)
 ---------------------------
 
