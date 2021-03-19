@@ -31,7 +31,7 @@ describe('basic-example', function() {
   it('should return true', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.exec('true').then(res => {
+    cli.spawn('/bin/sh', ['-c', 'true'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
@@ -43,7 +43,7 @@ describe('basic-example', function() {
   it('should echo some stuff', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.exec('echo "some stuff"').then(res => {
+    cli.spawn('/bin/sh', ['-c', 'echo "some stuff"'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
@@ -55,7 +55,7 @@ describe('basic-example', function() {
   it('should return status code 1', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.exec('cat filedoesnotexist || echo $? | grep 1').then(res => {
+    cli.spawn('/bin/sh', ['-c', 'cat filedoesnotexist || echo $? | grep 1'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
@@ -67,7 +67,19 @@ describe('basic-example', function() {
   it('should concatenate three commands together', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.exec('export TEST=thing && env | grep TEST && unset TEST').then(res => {
+    cli.spawn('/bin/sh', ['-c', 'export TEST=thing && env | grep TEST && unset TEST'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
+      if (res.error === null) {
+        done();
+      } else {
+        done(res.error);
+      }
+    });
+  });
+
+  it('should not concatenate if escape is used', done => {
+    process.chdir(path.resolve(__dirname, '../examples'));
+    const cli = new CliTest();
+    cli.spawn('/bin/sh', ['-c', 'export TEST=thing  TEST2=stuff  TEST3=morestuff && env | grep TEST && env | grep TEST2 && env | grep TEST3 && unset TEST && unset TEST2 && unset TEST3'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
@@ -79,7 +91,7 @@ describe('basic-example', function() {
   it('should also run this', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.exec('true').then(res => {
+    cli.spawn('/bin/sh', ['-c', 'true'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
@@ -91,7 +103,7 @@ describe('basic-example', function() {
   it('should also also run this', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.exec('true').then(res => {
+    cli.spawn('/bin/sh', ['-c', 'true'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {

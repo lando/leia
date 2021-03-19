@@ -88,6 +88,7 @@ Translates properly formatted markdown files matched by <src> and exports cli mo
 Example 1: leia "examples/*.md" test
 Example 2: leia README.md test -p "examples/**/*.md" --retry 6 --test-header Tizzestin
 Example 3: leia "examples/*.md" test --split-file --output-extension funky.js
+Example 4: leia "*.md" --ignore README.md test --spawn --stdin
 
 Options:
   --version               Show version number                                                                                         [boolean]
@@ -95,11 +96,14 @@ Options:
   --help                  Show help                                                                                                   [boolean]
   --output-extension, -o  The extension of each exported test                                                     [string] [default: "func.js"]
   --pattern, -p           Scan these additional patterns                                                                                [array]
+  --ignore, -i            Ignore these patterns                                                                                         [array]
   --retry, -r             Retry each test this amount of times                                                            [number] [default: 3]
   --cleanup-header, -c    Sections that start with these headers are cleanup commands                [array] [default: ["Clean","Tear","Burn"]]
   --setup-header, -s      Sections that start with these headers are setup commands  [array] [default: ["Start","Setup","This is the dawning"]]
   --split-file            Generate a splitfile                                                                                        [boolean]
   --test-header, -t       Sections that start with these headers are tests                        [array] [default: ["Test","Validat","Verif"]]
+  --spawn                 Use child process spawn instead of exec for generated tests                                                 [boolean]
+  --stdin                 Attachs stdin when the test is run, only works for --spawn                                                  [boolean]
 ```
 
 ### Module

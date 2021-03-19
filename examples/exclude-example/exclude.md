@@ -1,7 +1,7 @@
 Exclude Example
 ===============
 
-Because Leia runs each test from the directory of the source markdown file you can package in other required testing assets.
+Here is an example that should be excluded.
 
 Testing
 -------

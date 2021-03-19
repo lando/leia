@@ -23,6 +23,17 @@ cat filedoesnotexist || echo $? | grep 1
 export TEST=thing
 env | grep TEST
 unset TEST
+
+# Should not concatenate if escape is used
+export TEST=thing \
+  TEST2=stuff \
+  TEST3=morestuff
+env | grep TEST
+env | grep TEST2
+env | grep TEST3
+unset TEST
+unset TEST2
+unset TEST3
 ```
 
 You can also add aditional code blocks under a section. This allows you to better organize and structure your markdown file.

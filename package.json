@@ -33,8 +33,12 @@
     "leia": "node bin/leia.js",
     "lint": "eslint bin commands lib scripts test",
     "release": "yarn bump --prompt --tag --all --push",
+    "generate:tests:exec": "node ./bin/leia.js README.md test",
+    "generate:tests:spawn": "node ./bin/leia.js \"examples/**/*.md\" test -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\" --spawn",
+    "generate:tests:stdin": "node ./bin/leia.js examples/stdin-example.md test --spawn --stdin",
+    "generate:tests": "yarn generate:tests:exec && yarn generate:tests:spawn && yarn generate:tests:stdin",
     "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
-    "test:func": "node ./bin/leia.js README.md test -p \"examples/**/*.md\" && mocha --timeout 900000 test/**/*.func.js"
+    "test:func": "yarn generate:tests && mocha --timeout 900000 test/**/*.func.js"
   },
   "dependencies": {
     "chalk": "^2.4.1",
