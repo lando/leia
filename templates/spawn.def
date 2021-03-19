@@ -1,0 +1,12 @@
+  it('{{=test.describe[0]}}', done => {
+    process.chdir(path.resolve(__dirname, '{{=it.run}}'));
+    const cli = new CliTest();
+    cli.spawn('/bin/sh', ['-c', '{{=test.command}}'], {stdio: ['{{=it.stdin}}', 'pipe', 'pipe']}).then(res => {
+      if (res.error === null) {
+        done();
+      } else {
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
+      }
+    });
+  });

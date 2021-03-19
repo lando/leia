@@ -10,7 +10,7 @@
 
 // Set some helpful envvars so we know these are leia tezts
 process.env.LEIA_PARSER_RUNNING = 'true';
-process.env.LEIA_PARSER_VERSION = '0.3.3';
+process.env.LEIA_PARSER_VERSION = '0.3.4';
 process.env.LEIA_PARSER_ID = 'setup-and-cleanup-example';
 process.env.LEIA_PARSER_RETRY = 3;
 
@@ -31,11 +31,12 @@ describe('setup-and-cleanup-example', function() {
   it('create a file we can grep for a word', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.exec('echo "the word is bubba" > test.txt').then(res => {
+    cli.spawn('/bin/sh', ['-c', 'echo "the word is bubba" > test.txt'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });
@@ -46,11 +47,12 @@ describe('setup-and-cleanup-example', function() {
   it('should return the correct word', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.exec('cat test.txt | grep "bubba"').then(res => {
+    cli.spawn('/bin/sh', ['-c', 'cat test.txt | grep "bubba"'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });
@@ -61,11 +63,12 @@ describe('setup-and-cleanup-example', function() {
   it('destroy our test file', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.exec('rm -f test.txt').then(res => {
+    cli.spawn('/bin/sh', ['-c', 'rm -f test.txt'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });

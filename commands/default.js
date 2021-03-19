@@ -17,7 +17,8 @@ const help = 'Translates properly formatted markdown files matched by <src> and 
 const ex1 = chalk.green('Example 1: ') + 'leia "examples/*.md" test';
 const ex2 = chalk.green('Example 2: ') + 'leia README.md test -p "examples/**/*.md" --retry 6 --test-header Tizzestin';
 const ex3 = chalk.green('Example 3: ') + 'leia "examples/*.md" test --split-file --output-extension funky.js';
-const describe = [help, ex1, ex2, ex3];
+const ex4 = chalk.green('Example 4: ') + 'leia "*.md" --ignore README.md test --spawn --stdin';
+const describe = [help, ex1, ex2, ex3, ex4];
 
 // Command
 module.exports = {
@@ -33,6 +34,11 @@ module.exports = {
     'pattern': {
       alias: 'p',
       describe: 'Scan these additional patterns',
+      array: true,
+    },
+    'ignore': {
+      alias: 'i',
+      describe: 'Ignore these patterns',
       array: true,
     },
     'retry': {
@@ -53,15 +59,24 @@ module.exports = {
       default: setupHeaders,
       array: true,
     },
-    'split-file': {
-      describe: 'Generate a splitfile',
-      boolean: true,
-    },
     'test-header': {
       alias: 't',
       describe: 'Sections that start with these headers are tests',
       default: testHeaders,
       array: true,
+    },
+    'split-file': {
+      describe: 'Generate a splitfile',
+      boolean: true,
+    },
+    'spawn': {
+      describe: 'Use child process spawn instead of exec for generated tests',
+      boolean: true,
+    },
+    'stdin': {
+      describe: 'Attachs stdin when the test is run, only works for --spawn',
+      implies: 'spawn',
+      boolean: true,
     },
   },
   handler: argv => {
@@ -73,11 +88,11 @@ module.exports = {
 
     // Some advances loggin
     leia.log.verbose('Options %j', argv);
-    leia.log.verbose('Ensuring diretory: %s exists', argv.dest);
+    leia.log.verbose('Ensuring directory: %s exists', argv.dest);
     fs.mkdirpSync(argv.dest);
 
     // Combine all patterns and search for the things
-    const files = leia.find(_.compact(_.flatten([argv.src, argv.pattern])));
+    const files = leia.find(_.compact(_.flatten([argv.src, argv.pattern])), argv.ignore);
     leia.log.info('Detected possible test source files: %s', files.join(', '));
 
     // Parse files into relevant test metadata
@@ -86,7 +101,7 @@ module.exports = {
     leia.log.verbose('Full tests output %j', tests);
 
     // Generate test files from parsed data and return list of generated files
-    const results = leia.generate(tests);
+    const results = leia.generate(tests, argv.spawn);
     leia.log.info('Generated mocha tests to %s', results.join(', '));
 
     // Generate a split file for CCI

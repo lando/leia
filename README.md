@@ -4,7 +4,7 @@ Leia
 Leia is a parsing utility designed to take specially formatted `markdown` files as input and export `cli` driven `mocha` tests. It is designed primarily to:
 
 * Consolidate code examples and tests into a single, easy to understand and write `markdown` file
-* Write functional tests quickly in an accessible and lowest common denominator language (eg `bash`)
+* Write functional tests quickly in an accessible and lowest common denominator language (eg `sh/bash/dash` etc)
 * Pass on exit status code `0`, fail on anything else
 * Work on `posix` eg **Windows is not currently supported**
 * Keep [Lando](https://github.com/lando/lando) honest so he can be a real hero who doesn't betray his friends again
@@ -65,7 +65,7 @@ describe('example', function() {
 Installing
 ----------
 
-We recommend you use the [LTS 10.x](https://nodejs.org/en/) version of `nodejs` and the latest [yarn](https://yarnpkg.com). An easy way to get all the deps you need for `leia` is to look at the [Hyperdrive](https://github.com/lando/hyperdrive). **We do not recommend installing `leia` globally.**
+We recommend you use the [LTS 14.x](https://nodejs.org/en/) version of `nodejs` and the latest [yarn](https://yarnpkg.com). An easy way to get all the deps you need for `leia` is to look at the [Hyperdrive](https://github.com/lando/hyperdrive). **We do not recommend installing `leia` globally.**
 
 ```bash
 yarn add leia-parser
@@ -74,7 +74,7 @@ yarn add leia-parser
 Usage
 -----
 
-You can invoke `leia-parser` as a command line tool or directly require it in a module.
+You can invoke `leia-parser` as a command line tool or directly `require` it in a module.
 
 ### CLI
 
@@ -88,6 +88,7 @@ Translates properly formatted markdown files matched by <src> and exports cli mo
 Example 1: leia "examples/*.md" test
 Example 2: leia README.md test -p "examples/**/*.md" --retry 6 --test-header Tizzestin
 Example 3: leia "examples/*.md" test --split-file --output-extension funky.js
+Example 4: leia "*.md" --ignore README.md test --spawn --stdin
 
 Options:
   --version               Show version number                                                                                         [boolean]
@@ -95,11 +96,14 @@ Options:
   --help                  Show help                                                                                                   [boolean]
   --output-extension, -o  The extension of each exported test                                                     [string] [default: "func.js"]
   --pattern, -p           Scan these additional patterns                                                                                [array]
+  --ignore, -i            Ignore these patterns                                                                                         [array]
   --retry, -r             Retry each test this amount of times                                                            [number] [default: 3]
   --cleanup-header, -c    Sections that start with these headers are cleanup commands                [array] [default: ["Clean","Tear","Burn"]]
   --setup-header, -s      Sections that start with these headers are setup commands  [array] [default: ["Start","Setup","This is the dawning"]]
   --split-file            Generate a splitfile                                                                                        [boolean]
   --test-header, -t       Sections that start with these headers are tests                        [array] [default: ["Test","Validat","Verif"]]
+  --spawn                 Use child process spawn instead of exec for generated tests                                                 [boolean]
+  --stdin                 Attachs stdin when the test is run, only works for --spawn                                                  [boolean]
 ```
 
 ### Module

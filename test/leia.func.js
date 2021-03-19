@@ -10,7 +10,7 @@
 
 // Set some helpful envvars so we know these are leia tezts
 process.env.LEIA_PARSER_RUNNING = 'true';
-process.env.LEIA_PARSER_VERSION = '0.3.3';
+process.env.LEIA_PARSER_VERSION = '0.3.4';
 process.env.LEIA_PARSER_ID = 'leia';
 process.env.LEIA_PARSER_RETRY = 3;
 
@@ -35,7 +35,8 @@ describe('leia', function() {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });
@@ -47,7 +48,8 @@ describe('leia', function() {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });
@@ -59,7 +61,8 @@ describe('leia', function() {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });
@@ -71,7 +74,8 @@ describe('leia', function() {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });
@@ -83,7 +87,8 @@ describe('leia', function() {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });
@@ -95,7 +100,8 @@ describe('leia', function() {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });
@@ -107,7 +113,8 @@ describe('leia', function() {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });
@@ -119,7 +126,8 @@ describe('leia', function() {
       if (res.error === null) {
         done();
       } else {
-        done(res.error);
+        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
+        done(new Error(error));
       }
     });
   });
