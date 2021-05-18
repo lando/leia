@@ -4,14 +4,14 @@
  * See https://github.com/lando/leia for more
  * information on how all this magic works
  *
- * id: basic-example
+ * id: special-characters-example
  * runs-from: ../examples
  */
 
 // Set some helpful envvars so we know these are leia tezts
 process.env.LEIA_PARSER_RUNNING = 'true';
 process.env.LEIA_PARSER_VERSION = '0.4.0';
-process.env.LEIA_PARSER_ID = 'basic-example';
+process.env.LEIA_PARSER_ID = 'special-characters-example';
 process.env.LEIA_PARSER_RETRY = 3;
 
 // We need these deps to run our tezts
@@ -22,16 +22,16 @@ chai.should();
 
 /* eslint-disable max-len */
 
-describe('basic-example', function() {
+describe('special-characters-example', function() {
   this.retries(3);
 
   // These tests are the main event
   // @todo: It would be nice to eventually get these into mocha after hooks
   // so they run after every test
-  it('should return true', done => {
+  it('should process special pec a 1 characters', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.spawn('/bin/sh', ['-c', 'true'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
+    cli.spawn('/bin/sh', ['-c', 'echo \'"[]\\/@%+=:,.-\''], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
@@ -41,10 +41,10 @@ describe('basic-example', function() {
     });
   });
 
-  it('should echo some stuff', done => {
+  it('should process quoted characters', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.spawn('/bin/sh', ['-c', 'echo "some stuff"'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
+    cli.spawn('/bin/sh', ['-c', 'echo "\'\\""'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
@@ -54,10 +54,10 @@ describe('basic-example', function() {
     });
   });
 
-  it('should return status code 1', done => {
+  it('should process special quoted characters', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.spawn('/bin/sh', ['-c', 'cat filedoesnotexist || echo $? | grep 1'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
+    cli.spawn('/bin/sh', ['-c', 'echo "\\t\\n\'"'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
@@ -67,10 +67,10 @@ describe('basic-example', function() {
     });
   });
 
-  it('should concatenate three commands together', done => {
+  it('should escape backslash character', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.spawn('/bin/sh', ['-c', 'export TEST=thing && env | grep TEST && unset TEST'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
+    cli.spawn('/bin/sh', ['-c', 'echo lando psql -U postgres database -c "\\dt"'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
@@ -80,10 +80,10 @@ describe('basic-example', function() {
     });
   });
 
-  it('should not concatenate if escape is used', done => {
+  it('should process literal backslash characters', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.spawn('/bin/sh', ['-c', 'export TEST=thing  TEST2=stuff  TEST3=morestuff && env | grep TEST && env | grep TEST2 && env | grep TEST3 && unset TEST && unset TEST2 && unset TEST3'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
+    cli.spawn('/bin/sh', ['-c', 'echo \'\\\\literal\\\\\''], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
@@ -93,23 +93,10 @@ describe('basic-example', function() {
     });
   });
 
-  it('should also run this', done => {
+  it('should process quoted backslash', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.spawn('/bin/sh', ['-c', 'true'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
-      if (res.error === null) {
-        done();
-      } else {
-        const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
-        done(new Error(error));
-      }
-    });
-  });
-
-  it('should also also run this', done => {
-    process.chdir(path.resolve(__dirname, '../examples'));
-    const cli = new CliTest();
-    cli.spawn('/bin/sh', ['-c', 'true'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
+    cli.spawn('/bin/sh', ['-c', 'echo "\\dt"'], {stdio: ['pipe', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
