@@ -10,7 +10,7 @@
 
 // Set some helpful envvars so we know these are leia tezts
 process.env.LEIA_PARSER_RUNNING = 'true';
-process.env.LEIA_PARSER_VERSION = '0.3.4';
+process.env.LEIA_PARSER_VERSION = '0.4.0';
 process.env.LEIA_PARSER_ID = 'subdirectory-example';
 process.env.LEIA_PARSER_RETRY = 3;
 
