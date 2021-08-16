@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "chalk": "^2.4.1",
+    "detect-newline": "^3.1.0",
     "dot": "^1.1.2",
     "fs-extra": "^7.0.1",
     "glob": "^7.1.3",
