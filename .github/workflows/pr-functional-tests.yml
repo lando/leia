@@ -40,4 +40,4 @@ jobs:
 
       # Run functional tests
       - name: Run functional tests
-        run: yarn test:func 0<&-
+        run: yarn test:func
