@@ -1,4 +1,4 @@
-Stdin Example
+<!-- Stdin Example
 =============
 
 This is an example to test stdin blocking things when its not attached
@@ -11,4 +11,4 @@ Run some tests using stuff setup above.
 ```bash
 # Should not block when stdin is piped
 node ./blocker.js
-```
+``` -->
