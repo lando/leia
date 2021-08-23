@@ -40,5 +40,5 @@ jobs:
 
       # Run functional tests
       - name: Run functional tests
-        shell: 'script -q -e -c "bash --noprofile --norc -eo pipefail {0}"'
+        shell: bash {0}
         run: yarn test:func
