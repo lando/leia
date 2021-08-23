@@ -37,8 +37,9 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ matrix.node-version }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install Yarn dependencies
         run: yarn install --prefer-offline --frozen-lockfile
+      - name: faketty
+        uses: Yuri6037/Action-FakeTTY@v1.1
 
       # Run functional tests
       - name: Run functional tests
         run: yarn test:func
-        shell: bash
