@@ -10,5 +10,5 @@ Run some tests using stuff setup above.
 
 ```bash
 # Should not block when stdin is piped
-node ./blocker.js
+node ./blocker.js 0<&-
 ```
