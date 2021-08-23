@@ -31,7 +31,7 @@ describe('stdin-example', function() {
   it('should not block when stdin is piped', done => {
     process.chdir(path.resolve(__dirname, '../examples'));
     const cli = new CliTest();
-    cli.spawn('/bin/sh', ['-c', 'node ./blocker.js 0<&-'], {stdio: ['inherit', 'pipe', 'pipe']}).then(res => {
+    cli.spawn('/bin/sh', ['-c', 'node ./blocker.js'], {stdio: ['inherit', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
