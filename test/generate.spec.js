@@ -8,7 +8,7 @@
  const chai = require('chai');
  const os = require('os');
  chai.should();
- 
+
  const generate = require('./../lib/generate');
  const tests = [{
    file: `${os.tmpdir()}/mock.md`,
@@ -25,7 +25,7 @@
      }],
    },
  }];
- 
+
  describe('generate', () => {
    it('should return a list of outputted files', () => {
      const files = generate(tests);
@@ -35,4 +35,3 @@
    it('should create test files');
    it('should create valid mocha tests');
  });
- 
