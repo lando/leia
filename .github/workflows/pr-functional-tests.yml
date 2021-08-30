@@ -41,3 +41,4 @@ jobs:
       # Run functional tests
       - name: Run functional tests
         run: yarn test:func
+        shell: bash
