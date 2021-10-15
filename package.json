@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "chalk": "^2.4.1",
+    "command-line-test": "^1.0.10",
     "detect-newline": "^3.1.0",
     "dot": "^1.1.2",
     "fs-extra": "^7.0.1",
@@ -55,7 +56,6 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "command-line-test": "^1.0.10",
     "eslint": "^4.15.0",
     "eslint-config-google": "^0.9.1",
     "mocha": "^5.2.0",
