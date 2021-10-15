@@ -1,18 +1,14 @@
 {
-  "env": {
-    "node": true,
-    "mocha": true
-  },
+  "extends": ["google"],
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
-    "ecmaVersion": 6
+    "requireConfigFile": false
   },
-  "extends": "google",
   "rules": {
-    "arrow-parens": ["error",
-      "as-needed"
-    ],
+    "indent": ["error", 2],
+    "no-console": ["warn"],
     "max-len": ["error", {
-      "code": 140,
+      "code": 120,
       "ignoreComments": true
     }],
     "require-jsdoc": ["error", {
@@ -23,6 +19,14 @@
         "ArrowFunctionExpression": false,
         "FunctionExpression": false
       }
+    }],
+    "space-before-function-paren": ["error", {
+      "anonymous": "never",
+      "named": "never",
+      "asyncArrow": "never"
     }]
+  },
+  "env": {
+    "mocha": true
   }
 }
