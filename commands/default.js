@@ -79,7 +79,7 @@ module.exports = {
       boolean: true,
     },
   },
-  handler: argv => {
+  handler: (argv) => {
     // Leia summoning
     // @NOTE: in the unlikely event we add more than the default command will we likely want
     // to kick the leia instantiation to the entrypoint and pass it into specific commands?

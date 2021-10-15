@@ -1,23 +1,29 @@
 {
-  "name": "leia-parser",
+  "name": "@lando/leia",
   "description": "Parses Markdown files into command line mocha tests",
+  "version": "0.5.0",
+  "author": "Mike Pirog @pirog",
   "license": "GPL-3.0",
-  "version": "0.4.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/lando/leia"
-  },
-  "bugs": {
-    "email": "mike@thinktandem.io",
-    "url": "https://github.com/lando/leia/issues"
+  "repository": "github:lando/leia",
+  "bugs": "https://github.com/lando/leia/issues/new/choose/",
+  "homepage": "https://github.com/lando/leia",
+  "keywords": [
+    "lando",
+    "leia",
+    "oclif"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
   },
   "main": "lib/leia.js",
   "bin": {
-    "leia": "./bin/leia.js"
+    "leia": "./bin/leia"
   },
-  "directories": {
-    "lib": "./lib"
-  },
+  "files": [
+    "/bin",
+    "/cli",
+    "/lib"
+  ],
   "nyc": {
     "include": [
       "lib/*.js"
@@ -29,18 +35,29 @@
     "cache": true,
     "all": true
   },
+  "oclif": {
+    "bin": "leia",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
   "scripts": {
-    "leia": "node bin/leia.js",
-    "lint": "eslint bin commands lib scripts test",
-    "release": "yarn bump --prompt --tag --all --push",
     "generate:tests:exec": "node ./bin/leia.js README.md test",
     "generate:tests:spawn": "node ./bin/leia.js \"examples/**/*.md\" test -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\" --spawn",
     "generate:tests:stdin": "node ./bin/leia.js examples/stdin-example.md test --spawn --stdin",
     "generate:tests": "yarn generate:tests:exec && yarn generate:tests:spawn && yarn generate:tests:stdin",
+    "leia": "node ./bin/leia",
+    "lint": "eslint bin/leia .",
+    "release": "yarn bump --prompt --tag --all --push",
     "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
-    "test:func": "yarn generate:tests && mocha --timeout 900000 test/**/*.func.js"
+    "test:leia": "yarn generate:tests && mocha --timeout 900000 test/**/*.leia.js"
   },
   "dependencies": {
+    "@lando/argv": "^1.0.6",
+    "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
+    "@oclif/errors": "^1.3.5",
+    "@oclif/plugin-help": "^3.2.3",
     "chalk": "^2.4.1",
     "command-line-test": "^1.0.10",
     "detect-newline": "^3.1.0",
@@ -48,16 +65,16 @@
     "fs-extra": "^7.0.1",
     "glob": "^7.1.3",
     "lodash": "^4.17.11",
-    "marked": "^0.7.0",
-    "winston": "^2.2.0",
-    "yargonaut": "^1.1.4",
-    "yargs": "^12.0.5",
-    "yargs-parser": "^13.1.2"
+    "marked": "^0.7.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.8",
+    "@babel/eslint-parser": "7.15.7",
+    "@oclif/dev-cli": "^1.26.0",
+    "@oclif/test": "^1.2.8",
     "chai": "^4.2.0",
-    "eslint": "^4.15.0",
-    "eslint-config-google": "^0.9.1",
+    "eslint": "^7.3",
+    "eslint-config-google": "^0.14.0",
     "mocha": "^5.2.0",
     "mock-fs": "^4.7.0",
     "nyc": "^13.1.0",

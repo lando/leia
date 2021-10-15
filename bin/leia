@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+const argv = require('@lando/argv');
+const debugNotSet = process.env.DEBUG === undefined || process.env.DEBUG === null || process.env.DEBUG === '';
+
+// Check for --debug and internally set DEBUG=* if its set
+if (debugNotSet && argv.hasOption('--debug')) {
+  require('debug').enable(argv.getOption('--debug', {defaultValue: '*'}));
+}
+
+require('../cli/default.js').run().catch(require('@oclif/errors/handle'));

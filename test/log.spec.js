@@ -21,7 +21,7 @@ describe('logger', () => {
       log.transports.should.be.an('object').with.property('console');
       log.transports.console.should.be.instanceof(EventEmitter);
       log.transports.console.should.have.property('level', 'info');
-      _.forEach(['error', 'warn', 'info', 'verbose', 'debug', 'silly'], level => {
+      _.forEach(['error', 'warn', 'info', 'verbose', 'debug', 'silly'], (level) => {
         log[level].should.be.a('function');
       });
     });
