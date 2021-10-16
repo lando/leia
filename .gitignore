@@ -24,6 +24,9 @@ coverage/
 # NPM files
 node_modules
 
+# Tests
+*.leia.js
+
 # CCI test splitting
 split-file.txt
 test.text
