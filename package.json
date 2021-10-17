@@ -45,10 +45,10 @@
     "generate:tests": "yarn leia README.md test -p  \"examples/**/*.md\" -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\"",
     "generate:tests:stdin": "yarn leia examples/stdin-example.md test --stdin",
     "leia": "node ./bin/leia",
-    "lint": "eslint bin/leia . --ignore-pattern '*.leia.js'",
+    "lint": "eslint bin/leia . --ignore-pattern '*.leia.js' --ignore-pattern 'leia.readme.js'",
     "release": "yarn bump --prompt --tag --all --push",
     "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
-    "test:leia": "yarn generate:tests && yarn generate:test:stdin && mocha --timeout 900000 test/**/*.leia.js"
+    "test:leia": "yarn generate:tests && yarn generate:tests:stdin && mocha --timeout 900000 test/**/*.leia.js"
   },
   "dependencies": {
     "@lando/argv": "^1.0.6",
@@ -64,7 +64,8 @@
     "fs-extra": "^7.0.1",
     "glob": "^7.1.3",
     "lodash": "^4.17.11",
-    "marked": "^0.7.0"
+    "marked": "^0.7.0",
+    "string-argv": "^0.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.15.8",

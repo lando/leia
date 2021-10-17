@@ -206,7 +206,7 @@ yarn leia --version
 yarn leia README.md test -r 6 -o readme.js
 
 # Validate the new test was created
-cat test/leia.readme.js | grep "id: leia"
+cat test/leia.readme.js | grep 'id: leia'
 
 # Validate the retry was set correctly
 cat test/leia.readme.js | grep retries | grep 6
