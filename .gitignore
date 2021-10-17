@@ -26,8 +26,8 @@ node_modules
 
 # Tests
 *.leia.js
+leia.readme.js
 
 # CCI test splitting
 split-file.txt
 test.text
-leia.readme.js
