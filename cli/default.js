@@ -117,7 +117,7 @@ class LeiaCommand extends Command {
     debug('detected possible test source files: %s', files.join(', '));
 
     // Combine our args and options
-    const sources = leia.parse(files, argv);
+    const sources = leia.parse(files, options);
     debug('detected valid test sources %s', _.map(sources, 'file').join(', '));
 
     // Generate test files from parsed data and return list of generated files

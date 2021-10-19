@@ -9,7 +9,7 @@ Testing
 
 Run some tests using stuff setup above.
 
-```bash
+```
 # Should process special ('$pec!a1') characters.
 echo '"[]\/@%+=:,.-'
 

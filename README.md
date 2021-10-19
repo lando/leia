@@ -1,151 +1,116 @@
-Leia
-====
+# Leia
 
-Leia is a parsing utility designed to take specially formatted `markdown` files as input and export `cli` driven `mocha` tests. It is designed primarily to:
+Leia is a testing utility that tests code blocks in documentation. This makes tests easy to write and also ensures documentation is up to date and working. Behind the scenes documentation is parsed and run as a series of `mocha` tests.
+
+Leia will
 
 * Consolidate code examples and tests into a single, easy to understand and write `markdown` file
 * Write functional tests quickly in an accessible and lowest common denominator language (eg `sh/bash/dash` etc)
 * Pass on exit status code `0`, fail on anything else
-* Work on `posix` eg **Windows is not currently supported**
+* Work cross platform, with some caveats
 * Keep [Lando](https://github.com/lando/lando) honest so he can be a real hero who doesn't betray his friends again
 
-A __very__ basic example of what leia will do
+## Installation
+
+```bash
+# With npm
+npm install @lando/leia
+
+# With yarn
+yarn add @lando/leia
+```
+
+## Basics
+
+A _very_ basic example of a valid Leia test is below. It _must_ have a single H1 header, at least one H2 header and then a code block
+where the comment is the human readable test description and the command below is the test.
 
 ```md
-Some Example
-============
+# Some Example
 
-Testing
-------
+## Testing
 
 # A description of my test
 the command i am running
 ```
 
-becomes
+## Usage
 
-```js
-/*
- * This file was automatically generated, editing it manually would be foolish
- *
- * See https://github.com/lando/leia for more
- * information on how all this magic works
- *
- * id: example
- * runs-from: ..
- */
-// We need these deps to run our tezts
-const chai = require('chai');
-const CliTest = require('command-line-test');
-const path = require('path');
-chai.should();
-
-// eslint-disable max-len
-
-describe('example', function() {
-  this.retries(3);
-
-  // These tests are the main event
-  // @todo: It would be nice to eventually get these into mocha after hooks
-  // so they run after every test
-  it('a description of my test', done => {
-    process.chdir(path.resolve(__dirname, '..'));
-    const cli = new CliTest();
-    cli.exec('the command i am running').then(res => {
-      if (res.error === null) {
-        done();
-      } else {
-        done(res.error);
-      }
-    });
-  });
-});
-```
-
-Installing
-----------
-
-We recommend you use the [LTS 14.x](https://nodejs.org/en/) version of `nodejs` and the latest [yarn](https://yarnpkg.com). An easy way to get all the deps you need for `leia` is to look at the [Hyperdrive](https://github.com/lando/hyperdrive). **We do not recommend installing `leia` globally.**
-
-```bash
-yarn add leia-parser
-```
-
-Usage
------
-
-You can invoke `leia-parser` as a command line tool or directly `require` it in a module.
+You can invoke `leia` as a command line tool or directly `require` it in a module.
 
 ### CLI
 
 ```bash
 yarn leia
 
-leia.js <src> <dest> [options]
+Cleverly converts markdown files into mocha cli tests
 
-Translates properly formatted markdown files matched by <src> and exports cli mocha tests to <dest>
+USAGE
+  $ leia <files> <patterns> [options]
 
-Example 1: leia "examples/*.md" test
-Example 2: leia README.md test -p "examples/**/*.md" --retry 6 --test-header Tizzestin
-Example 3: leia "examples/*.md" test --split-file --output-extension funky.js
-Example 4: leia "*.md" --ignore README.md test --spawn --stdin
+ARGUMENTS
+  TESTS  files or patterns to scan for test
 
-Options:
-  --version               Show version number                                                                                         [boolean]
-  --verbose, -v           Change verbosity level                                                                                        [count]
-  --help                  Show help                                                                                                   [boolean]
-  --output-extension, -o  The extension of each exported test                                                     [string] [default: "func.js"]
-  --pattern, -p           Scan these additional patterns                                                                                [array]
-  --ignore, -i            Ignore these patterns                                                                                         [array]
-  --retry, -r             Retry each test this amount of times                                                            [number] [default: 3]
-  --cleanup-header, -c    Sections that start with these headers are cleanup commands                [array] [default: ["Clean","Tear","Burn"]]
-  --setup-header, -s      Sections that start with these headers are setup commands  [array] [default: ["Start","Setup","This is the dawning"]]
-  --split-file            Generate a splitfile                                                                                        [boolean]
-  --test-header, -t       Sections that start with these headers are tests                        [array] [default: ["Test","Validat","Verif"]]
-  --spawn                 Use child process spawn instead of exec for generated tests                                                 [boolean]
-  --stdin                 Attachs stdin when the test is run, only works for --spawn                                                  [boolean]
+OPTIONS
+  -c, --cleanup-header=cleanup-header  [default: Clean,Tear,Burn] sections that start with these headers are cleanup commands
+  -h, --help                           show CLI help
+  -i, --ignore=ignore                  files or patterns to ignore
+  -r, --retry=retry                    [default: 1] the amount of retries a failing test should get
+  -s, --setup-header=setup-header      [default: Start,Setup,This is the dawning] sections that start with these headers are setup commands
+  -t, --test-header=test-header        [default: Test,Validat,Verif] sections that start with these headers are tests
+  -v, --version                        show CLI version
+  --debug                              show debug output
+  --shell=shell                        the shell to use for the tests, default is autodetected
+  --stdin                              attach stdin when the test is run
+
+EXAMPLES
+  leia README.md
+  leia README.md "examples/**/*.md" --retry 6 --test-header Tizzestin
+  leia "examples/*.md" --ignore BUTNOTYOU.md test --stdin
+  leia README.md --shell cmd
 ```
 
 ### Module
 
 ```js
 # Instantiate a new leia
-const Leia = require('leia-parser');
-const leia = new Leia({logLevelConsole: argv.verbose});
+const Leia = require('@lando/leia');
+const leia = new Leia();
 
-# Find some markdown files
+// Find some tests
 const files = leia.find(['examples/**.md']);
-# Parse those files into leia test metadata
-const tests = leia.parse(files);
-# Generate the mocha tests
-const results = leia.generate(tests);
+// Parse those files into leia test metadata
+const sources = leia.parse(files);
+// Generate the mocha tests
+const tests = leia.generate(sources);
+// Run the tests
+const runner = leia.run(tests);
+runner.run((failures) => process.exitCode = failures ? 1 : 0);
 ```
 
 For more details on specific options check out the code docs
 
-* [leia.find](https://github.com/lando/leia/blob/master/lib/find.js)
-* [leia.generate](https://github.com/lando/leia/blob/master/lib/generate.js)
-* [leia.parse](https://github.com/lando/leia/blob/master/lib/parse.js#L106)
+* [leia.find](https://github.com/lando/leia/blob/main/lib/leia.js)
+* [leia.generate](https://github.com/lando/leia/blob/main/lib/leia.js)
+* [leia.parse](https://github.com/lando/leia/blob/main/lib/leia.js)
+* [leia.run](https://github.com/lando/leia/blob/main/lib/leia.js)
 
-Markdown Syntax
----------------
+## Markdown Syntax
 
 In order for your `markdown` file to be recognized as containing functional tests it needs to have at least the following
 
 #### 1. A h1 Header
 
 ```md
-Something to identify these tests
-=================================
+# Something to identify these tests
 ```
 
 #### 2. A h2 Header
 
-Our parser will look for a section that beings with the word "Testing". This section will contain your tests.
+By default our parser will look for a section that beings with the word "Testing". This section will contain your tests.
 
 ```md
-Testing
--------
+## Testing
 ```
 
 You can customize the word(s) that `leia` will look for to identify the testing section(s) using the `--test-header` option. You can also run `yarn leia --help` to get a list of default words.
@@ -161,53 +126,81 @@ Here is a basic code block that runs one test
 cat test.txt
 ```
 
-If you want to learn more about the syntax and how `leia` puts together the above, check out [this example](https://github.com/lando/leia/blob/master/examples/basic-example.md)
+If you want to learn more about the syntax and how `leia` puts together the above, check out [this example](https://github.com/lando/leia/blob/main/examples/basic-example.md)
 
-Advanced Usage
---------------
+## Advanced Usage
 
 Leia also allows you to specify additional h2 sections in your `markdown` for setup and cleanup commands that run before and after your core tests. You can tell `leia` what words these headers should start with in order to be flagged as setup and cleanup commands using the `--setup-header` and `--cleanup-header` options.
 
-[Here](https://github.com/lando/leia/blob/master/examples/setup-cleanup-example.md) is an example of a markdown file with Setup, Testing and Cleanup sections.
+[Here](https://github.com/lando/leia/blob/main/examples/setup-cleanup-example.md) is an example of a markdown file with Setup, Testing and Cleanup sections. And [here](https://github.com/lando/leia/blob/main/examples) is a whole directory of examples that we test on every commit.
 
-Development
------------
+## Issues, Questions and Support
+
+If you have a question or would like some community support we recommend you [join us on Slack](https://launchpass.com/devwithlando). Note that this is the Slack community for [Lando](https://lando.dev) but we are more than happy to help with this module as well!
+
+If you'd like to report a bug or submit a feature request then please [use the issue queue](https://github.com/lando/leia/issues/new/choose) in this repo.
+
+## Changelog
+
+We try to log all changes big and small in both [THE CHANGELOG](https://github.com/lando/leia/blob/main/CHANGELOG.md) and the [release notes](https://github.com/lando/leia/releases).
+
+## Development
+
+* Requires [Node 14+](https://nodejs.org/dist/latest-v14.x/)
+* Prefers [Yarn](https://classic.yarnpkg.com/lang/en/docs/install)
 
 ```bash
-# Get the project
-git clone https://github.com/lando/leia.git
-
-# Install deps
-yarn
-
-# CLI
-yarn leia
+git clone https://github.com/lando/leia.git && cd leia
+yarn install
 ```
 
-Testing
--------
-
-Leia uses herself to do some basic functional tests. That means that this whole section is parsed into `mocha` tests that are run in Travis.
+If you dont' want to install Node 14 or Yarn for whatever reason you can install [Lando](https://docs.lando.dev/basics/installation.html) and use that:
 
 ```bash
-# Run linting
+git clone https://github.com/lando/leia.git && cd leia
+# Install deps and get node
+lando start
+
+# Run commands
+lando node
+lando yarn
+lando yarn leia
+```
+
+## Testing
+
+```bash
+# Lint the code
 yarn lint
 
 # Run unit tests
 yarn test:unit
-
-# Get the version of Leia
-yarn leia --version
 ```
 
-Releasing
----------
+## Releasing
 
 ```bash
 yarn release
 ```
 
-Other Resources
----------------
+## Contributors
+
+<a href="https://github.com/lando/leia/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=lando/leia" />
+</a>
+
+Made with [contributors-img](https://contrib.rocks).
+
+## Legacy Version
+
+You can still install the older version of  Leia eg `leia-parser`.
+
+```bash
+yarn add leia-parser
+```
+
+And its documentation lives on [here](https://github.com/lando/leia/tree/v0.4.0).
+
+## Other Resources
 
 * [Mountain climbing advice](https://www.youtube.com/watch?v=tkBVDh7my9Q)
