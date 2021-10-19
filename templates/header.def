@@ -5,7 +5,7 @@
  * information on how all this magic works
  *
  * id: {{=it.id}}
- * runs-from: {{=it.run}}
+ * runs-from: {{=it.cwd}}
  */
 
 // Set some helpful envvars so we know these are leia tezts
