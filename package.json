@@ -1,6 +1,6 @@
 {
   "name": "@lando/leia",
-  "description": "Parses Markdown files into command line mocha tests",
+  "description": "Runs tests cleverly hidden in documentation",
   "version": "0.5.0",
   "author": "Mike Pirog @pirog",
   "license": "GPL-3.0",
@@ -10,7 +10,9 @@
   "keywords": [
     "lando",
     "leia",
-    "oclif"
+    "mocha",
+    "oclif",
+    "testing"
   ],
   "engines": {
     "node": ">=14.0.0"

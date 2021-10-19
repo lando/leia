@@ -25,7 +25,7 @@ describe('parse', () => {
     tests[0].tests.cleanup.should.be.an('Array').and.not.be.empty;
     const tests2 = parse([path.resolve(__dirname, '..', 'examples', 'basic-example.md')]);
     tests2[0].tests.should.not.have.all.keys('setup', 'cleanup');
-    tests2[0].tests.should.have.all.keys('test', 'nope');
+    tests2[0].tests.should.have.all.keys('test', 'invalid');
   });
   it('should return tests as objects with description and command');
   it('should concatenate multiline test commands with a &');

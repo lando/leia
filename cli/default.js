@@ -59,9 +59,6 @@ class LeiaCommand extends Command {
       // @TODO: autodect shell and also parse into function
       description: 'the shell to use for the tests, default is autodetected',
     }),
-    'split-file': flags.boolean({
-      description: 'also generate a split file for things like CircleCI',
-    }),
     'stdin': flags.boolean({
       description: 'attach stdin when the test is run',
     }),
@@ -71,6 +68,7 @@ class LeiaCommand extends Command {
     // @NOTE: --spawn is the default/only option now so the inclusion below is just so existing leia usage out in the
     // wild doesnt start erroring on an upgrade
     'spawn': flags.boolean({hidden: true}),
+    'split-file': flags.boolean({hidden: true}),
   }
 
   // Override warn for chalkability of string input
@@ -91,7 +89,6 @@ class LeiaCommand extends Command {
     // @NOTE: we do this here so we dont need to load big things like lodash just to show the CLI
     const _ = require('lodash');
     const debug = require('debug')('leia:cli');
-    const fs = require('fs-extra');
     debug('starting default command execution');
 
     // Grab all teh things
@@ -127,21 +124,10 @@ class LeiaCommand extends Command {
     const tests = leia.generate(sources);
     debug('generated leia tests to %s', tests.join(', '));
 
-    // Generate a split file for CCI
-    if (argv.splitFile === true) {
-      fs.writeFileSync(path.resolve('split-file.txt'), tests.join(os.EOL));
-      debug('writing split-file.txt to %s', path.resolve('split-file.txt'));
-    }
-
-    // Run the actual tests
-    const Mocha = require('mocha');
-    // Instantiate a Mocha instance.
-    const mocha = new Mocha({timeout: 900000});
-    // Add all our tests
-    _.forEach(tests, (test) => mocha.addFile(test));
-
-    // Run the tests.
-    mocha.run((failures) => {
+    // Get the test runner and execute
+    const runner = leia.run(tests);
+    runner.run((failures) => {
+      debug('tests completed with %s failures', failures);
       process.exitCode = failures ? 1 : 0;
     });
   }
