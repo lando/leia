@@ -1,4 +1,9 @@
-v0.5.0 - [October 19, 2021](https://github.com/lando/leia/releases/tag/v0.5.0)
+v0.6.0 - [October 19, 2021](https://github.com/lando/leia/releases/tag/v0.6.0)
+---------------------------
+
+* Added `--shell` autodetection and support for `bash`, `zsh`, `sh` and `cmd`
+
+v0.5.1 - [October 19, 2021](https://github.com/lando/leia/releases/tag/v0.5.1)
 ---------------------------
 
 * Complete redesign: See updated [README.md](./README.md)

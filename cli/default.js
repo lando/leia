@@ -1,6 +1,7 @@
 const {Command, flags} = require('@oclif/command');
 
 const chalk = require('chalk');
+const shell = require('../lib/shell.js');
 
 class LeiaCommand extends Command {
   static id = 'leia';
@@ -56,8 +57,9 @@ class LeiaCommand extends Command {
       default: 1,
     }),
     'shell': flags.string({
-      // @TODO: autodect shell and also parse into function
+      default: shell().binary,
       description: 'the shell to use for the tests, default is autodetected',
+      options: ['bash', 'sh', 'zsh', 'cmd'],
     }),
     'stdin': flags.boolean({
       description: 'attach stdin when the test is run',
