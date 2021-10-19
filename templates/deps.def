@@ -1,7 +1,7 @@
 
 // We need these deps to run our tezts
-const chai = require('chai');
-const CliTest = require('command-line-test');
+const chai = require('{{=it.deps}}/chai');
+const CliTest = require('{{=it.deps}}/command-line-test');
 const path = require('path');
 chai.should();
 

@@ -1,7 +1,7 @@
   it('{{=test.describe[0]}}', done => {
-    process.chdir(path.resolve(__dirname, '{{=it.run}}'));
+    process.chdir('{{=it.cwd}}');
     const cli = new CliTest();
-    cli.spawn('{{=test.entrypoint}}', [{{=test.argsString}}], {stdio: ['{{=it.stdin}}', 'pipe', 'pipe'], shell: true}).then(res => {
+    cli.spawn('/bin/bash', ['--noprofile', '--norc', '-eo', 'pipefail', '{{=test.script}}'], {stdio: ['{{=it.stdin}}', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {

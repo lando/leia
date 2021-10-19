@@ -13,15 +13,16 @@ const generate = require('./../lib/generate');
 const tests = [{
   file: `${os.tmpdir()}/mock.md`,
   id: 'mock',
-  output: `${os.tmpdir()}/mock.func.js`,
+  destination: `${os.tmpdir()}/mock.leia.js`,
   retry: 3,
-  run: '.',
+  cwd: '.',
   text: 'Mock',
   type: 'title',
   tests: {
     test: [{
       command: 'true',
       describe: 'mock test',
+      script: `${os.tmpdir()}/mock.leia.sh`,
     }],
   },
 }];
