@@ -16,6 +16,16 @@ jobs:
           - windows-2019
         node-version:
           - '14'
+        shell:
+          - bash
+        include:
+          - os: macos-10.15
+            shell: sh
+          - os: ubuntu-20.04
+            shell: sh
+          - os: windows-2019
+            shell: cmd
+
     steps:
       # Install deps and cache
       - name: Checkout code
@@ -28,8 +38,9 @@ jobs:
       - name: Install Yarn dependencies
         run: yarn install --prefer-offline --frozen-lockfile
 
-      # Run Leia tests
+      # Run Basic tests
       - name: Run Leia tests
-        shell: bash
-        run: yarn leia "examples/**/*.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md"
+        shell: ${{ matrix.shell }}
+        run: yarn leia "examples/**/*.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" --debug
+
 
