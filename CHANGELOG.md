@@ -1,3 +1,8 @@
+v0.6.1 - [October 19, 2021](https://github.com/lando/leia/releases/tag/v0.6.1)
+---------------------------
+
+* Fixed showstopping bug caused by not including `templates` in `npm` package
+
 v0.6.0 - [October 19, 2021](https://github.com/lando/leia/releases/tag/v0.6.0)
 ---------------------------
 
