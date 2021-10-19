@@ -33,14 +33,13 @@ jobs:
       - name: Run Leia tests
         shell: bash
         run: |
-          env
           # Try a basic example
           yarn leia examples/basic-example.md --debug
           # Try globs and ignores
-          yarn leia "examples/**/*.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md"
+          yarn leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md"
           # Try custom headers
           yarn leia examples/custom-headers.md -s Hello -t Sup -c Goodbye
           # Try all other options, including legacy ones
-          yarn leia examples/basic-example.md --retry 2 --split-file --stdin --spawn --debug
+          yarn leia examples/basic-example.md --retry 2 --split-file --stdin --spawn
 
 
