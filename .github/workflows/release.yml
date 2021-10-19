@@ -33,7 +33,9 @@ jobs:
       - name: Lint code
         run: yarn lint
       - name: Run unit tests
-        run: yarn test
+        run: yarn test:unit
+      - name: Run leia tests
+        run: yarn leia "examples/**/*.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md"
 
       # Deploy
       - name: Deploy stable releases
