@@ -34,7 +34,7 @@ jobs:
         shell: bash
         run: |
           # Try a basic example
-          yarn leia examples/basic-example.md
+          yarn leia examples/basic-example.md --debug
           # Try globs and ignores
           yarn leia "examples/**/*.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md"
           # Try custom headers

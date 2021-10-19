@@ -42,7 +42,6 @@ jobs:
         run: |
           yarn leia examples/basic-example.md --debug
           yarn leia examples/basic-example.md --shell bash --debug
-          yarn leia examples/basic-example.md --shell zsh --debug
           yarn leia examples/basic-example.md --shell sh --debug
       - name: Test Windows BASH
         if: ${{ runner.os == 'Windows' }}
