@@ -1,3 +1,8 @@
+v0.6.2 - [October 19, 2021](https://github.com/lando/leia/releases/tag/v0.6.2)
+---------------------------
+
+* Fixed bug causing `leia` to fail when invoked as a dependency
+
 v0.6.1 - [October 19, 2021](https://github.com/lando/leia/releases/tag/v0.6.1)
 ---------------------------
 
