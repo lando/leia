@@ -29,6 +29,7 @@ jobs:
         run: yarn install --prefer-offline --frozen-lockfile
 
       # Run Leia tests
-      - name: Generate and run Leia tests
+      - name: Run Leia tests
+        shell: bash
         run: yarn test:leia
 

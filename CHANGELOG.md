@@ -1,3 +1,8 @@
+v0.5.0 - [October 19, 2021](https://github.com/lando/leia/releases/tag/v0.5.0)
+---------------------------
+
+* Complete redesign: See updated [README.md](./README.md)
+
 v0.4.0 - [March 18, 2021](https://github.com/lando/leia/releases/tag/v0.4.0)
 -------------------------
 
