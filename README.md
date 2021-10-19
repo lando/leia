@@ -7,7 +7,7 @@ Leia will
 * Consolidate code examples and tests into a single, easy to understand and write `markdown` file
 * Write functional tests quickly in an accessible and lowest common denominator language (eg `sh/bash/dash` etc)
 * Pass on exit status code `0`, fail on anything else
-* Work cross platform, with some caveats
+* Work cross platform-ish, with some caveats, see [Shell Considerations](#shell-considerations) below
 * Keep [Lando](https://github.com/lando/lando) honest so he can be a real hero who doesn't betray his friends again
 
 ## Installation
@@ -133,6 +133,17 @@ If you want to learn more about the syntax and how `leia` puts together the abov
 Leia also allows you to specify additional h2 sections in your `markdown` for setup and cleanup commands that run before and after your core tests. You can tell `leia` what words these headers should start with in order to be flagged as setup and cleanup commands using the `--setup-header` and `--cleanup-header` options.
 
 [Here](https://github.com/lando/leia/blob/main/examples/setup-cleanup-example.md) is an example of a markdown file with Setup, Testing and Cleanup sections. And [here](https://github.com/lando/leia/blob/main/examples) is a whole directory of examples that we test on every commit.
+
+## Shell considerations
+
+`leia` will autodetect your shell and use a `bashy` one if available.
+
+* On POSIX systems it will prefer `bash` or `zsh` if available with a fallback to `sh`.
+* On Windows systems it will prefer `bash` if available with a fallback to `cmd`.
+
+You can also explicitly tell `leia` what shell to use with the `--shell` option. However, currently only `bash`, `sh`, `zsh` and `cmd` are supported options.
+
+**In most use cases it's best to just let `leia` decide the shell to use automatically.**
 
 ## Issues, Questions and Support
 
