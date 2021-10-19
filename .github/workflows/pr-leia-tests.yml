@@ -33,6 +33,7 @@ jobs:
       - name: Run Leia tests
         shell: bash
         run: |
+          env
           # Try a basic example
           yarn leia examples/basic-example.md --debug
           # Try globs and ignores
