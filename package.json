@@ -49,7 +49,7 @@
     "lint": "eslint bin/leia . --ignore-pattern '*.leia.js' --ignore-pattern 'leia.readme.js'",
     "release": "yarn bump --prompt --tag --all --push",
     "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
-    "test:leia": "yarn leia README.md \"examples/**/*.md\" -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\"",
+    "test:leia": "yarn leia README.md \"examples/**/*.md\" -i \"examples/basic-cmd-example.md\" -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\"",
     "test:leia:stdin": "yarn leia examples/stdin-example.md --stdin"
   },
   "dependencies": {
