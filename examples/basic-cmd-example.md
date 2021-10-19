@@ -14,9 +14,6 @@ set
 # NOTE: Important note for the markdown file that doesnt need to be in the test description
 echo "some stuff"
 
-# Should return status code 1
-cat filedoesnotexist || echo $? | grep 1
-
 # Should concatenate three commands together
 set TEST=thing
 set | findstr TEST | findstr thing

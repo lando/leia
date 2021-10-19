@@ -49,4 +49,4 @@ jobs:
         run: yarn leia examples/basic-example.md --debug
       - name: Test Windows CMD
         if: ${{ runner.os == 'Windows' }}
-        run: yarn leia examples/basic-example.md --debug
+        run: yarn leia examples/basic-cmd-example.md --debug
