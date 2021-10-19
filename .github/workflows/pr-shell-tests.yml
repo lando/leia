@@ -1,0 +1,53 @@
+name: Run Shell Tests
+
+on:
+  pull_request:
+
+jobs:
+  shell-tests:
+    runs-on: ${{ matrix.os }}
+    env:
+      TERM: xterm
+    strategy:
+      matrix:
+        os:
+          - macos-10.15
+          - ubuntu-20.04
+          - windows-2019
+        node-version:
+          - '14'
+
+    steps:
+      # Install deps and cache
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install node ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - name: Install Yarn dependencies
+        run: yarn install --prefer-offline --frozen-lockfile
+
+      # Run a few iterations of leia tests
+      - name: Test macOS shells from
+        if: ${{ runner.os == 'macOS' }}
+        run:
+          - yarn leia examples/basic-example.md --debug
+          - yarn leia examples/basic-example.md --shell bash --debug
+          - yarn leia examples/basic-example.md --shell zsh --debug
+          - yarn leia examples/basic-example.md --shell sh --debug
+      - name: Test Linux shells
+        if: ${{ runner.os == 'Linux' }}
+        run:
+          - yarn leia examples/basic-example.md --debug
+          - yarn leia examples/basic-example.md --shell bash --debug
+          - yarn leia examples/basic-example.md --shell zsh --debug
+          - yarn leia examples/basic-example.md --shell sh --debug
+      - name: Test Windows BASH
+        if: ${{ runner.os == 'Windows' }}
+        shell: bash
+        run: yarn leia examples/basic-example.md --debug
+      - name: Test Windows CMD
+        if: ${{ runner.os == 'Windows' }}
+        run: yarn leia examples/basic-example.md --debug

@@ -16,15 +16,6 @@ jobs:
           - windows-2019
         node-version:
           - '14'
-        shell:
-          - bash
-        include:
-          - os: macos-10.15
-            shell: sh
-          - os: ubuntu-20.04
-            shell: sh
-          - os: windows-2019
-            shell: cmd
 
     steps:
       # Install deps and cache
@@ -38,9 +29,17 @@ jobs:
       - name: Install Yarn dependencies
         run: yarn install --prefer-offline --frozen-lockfile
 
-      # Run Basic tests
+      # Run a few iterations of leia tests
       - name: Run Leia tests
-        shell: ${{ matrix.shell }}
-        run: yarn leia "examples/**/*.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" --debug
+        shell: bash
+        run:
+          # Try a basic example
+          - yarn leia examples/basic-example.md
+          # Try globs and ignores
+          - yarn leia "examples/**/*.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md"
+          # Try custom headers
+          - yarn leia examples/custom-headers.md -s Hello -t Sup -c Goodbye
+          # Try all other options, including legacy ones
+          - yarn leia examples/basic-example.md --retry 2 --split-file --stdin --spawn --debug
 
 
