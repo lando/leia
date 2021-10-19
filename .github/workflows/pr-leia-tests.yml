@@ -31,5 +31,5 @@ jobs:
       # Run Leia tests
       - name: Run Leia tests
         shell: bash
-        run: yarn test:leia
+        run: yarn leia "examples/**/*.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md"
 
