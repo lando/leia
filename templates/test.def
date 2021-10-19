@@ -1,7 +1,7 @@
   it('{{=test.describe[0]}}', done => {
     process.chdir('{{=it.cwd}}');
     const cli = new CliTest();
-    const data = {shell: '{{=test.shell}}', args: `{{=test.args}}`, stdin: '{{=it.stdin}}'};
+    const data = {shell: '{{=test.shell}}', args: `{{=test.args}}`, commands: `{{=test.command}}`, stdin: '{{=it.stdin}}'};
     debug(`running test {{=it.id}} from {{=it.cwd}} using %o`, data);
     cli.spawn('{{=test.shell}}', {{=test.args}}, {stdio: ['{{=it.stdin}}', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
