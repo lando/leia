@@ -1,3 +1,8 @@
+v0.6.4 - [October 25, 2021](https://github.com/lando/leia/releases/tag/v0.6.4)
+---------------------------
+
+* Included `yarn.lock` in published project
+
 v0.6.3 - [October 19, 2021](https://github.com/lando/leia/releases/tag/v0.6.3)
 ---------------------------
 

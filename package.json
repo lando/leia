@@ -25,7 +25,8 @@
     "/bin",
     "/cli",
     "/lib",
-    "/templates"
+    "/templates",
+    "/yarn.lock"
   ],
   "nyc": {
     "include": [
