@@ -1,7 +1,7 @@
 {
   "name": "@lando/leia",
   "description": "Runs tests cleverly hidden in documentation",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "author": "Mike Pirog @pirog",
   "license": "GPL-3.0",
   "repository": "github:lando/leia",
