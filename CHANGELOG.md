@@ -1,4 +1,4 @@
-v0.6.4 - [May 8, 2023](https://github.com/lando/leia/releases/tag/v0.6.5)
+v0.6.5 - [May 8, 2023](https://github.com/lando/leia/releases/tag/v0.6.5)
 ---------------------------
 
 * Fixed bug causing `,` separated custom headers to not be arrayified correctly
