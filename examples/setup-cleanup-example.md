@@ -8,7 +8,7 @@ Setup
 
 These commands should run __before__ your main testing ones and can be used to do some setup that you need beforehand. You do not need for this section to come first in the markdown file, Leia should parse it first regardless.
 
-```
+```bash
 # Create a file we can grep for a word
 echo "the word is bubba" > test.txt
 ```

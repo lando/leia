@@ -9,20 +9,21 @@ jobs:
     env:
       TERM: xterm
     strategy:
+      fail-fast: false
       matrix:
         os:
-          - macos-10.15
-          - ubuntu-20.04
-          - windows-2019
+          - macos-12
+          - ubuntu-22.04
+          - windows-2022
         node-version:
-          - '14'
+          - '16'
 
     steps:
       # Install deps and cache
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install node ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
@@ -41,5 +42,7 @@ jobs:
           yarn leia examples/custom-headers.md -s Hello -t Sup -c Goodbye
           # Try all other options, including legacy ones
           yarn leia examples/basic-example.md --retry 2 --split-file --stdin --spawn
+          # Try a comma separated list of headers
+          yarn leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye
 
 
