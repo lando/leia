@@ -41,5 +41,7 @@ jobs:
           yarn leia examples/custom-headers.md -s Hello -t Sup -c Goodbye
           # Try all other options, including legacy ones
           yarn leia examples/basic-example.md --retry 2 --split-file --stdin --spawn
+          # Try a comma separated list of headers
+          yarn leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye
 
 

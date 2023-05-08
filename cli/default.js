@@ -97,6 +97,7 @@ class LeiaCommand extends Command {
     const {args, argv, flags} = this.parse(LeiaCommand);
     // Set args.files to argv
     args.tests = argv;
+
     // If source is nill then show help and throw error
     // @NOTE: this doesnt feel like exactly right usage but it was better than the default
     if (_.isEmpty(args.tests)) this._help();
@@ -106,6 +107,9 @@ class LeiaCommand extends Command {
       .map((pair) => ([_.camelCase(pair[0]), pair[1]]))
       .fromPairs()
       .value();
+
+    // make sure we split any headers that need to be split
+    ['setupHeader', 'testHeader', 'cleanupHeader'].forEach((header) => options[header] = options[header][0].split(','));
 
     // Summon leia to do the things
     const Leia = require('./../lib/leia');
