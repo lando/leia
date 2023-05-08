@@ -109,7 +109,9 @@ class LeiaCommand extends Command {
       .value();
 
     // make sure we split any headers that need to be split
-    ['setupHeader', 'testHeader', 'cleanupHeader'].forEach((header) => options[header] = options[header][0].split(','));
+    ['setupHeader', 'testHeader', 'cleanupHeader'].forEach((header) => {
+      if (options[header].length === 1) options[header] = options[header][0].split(',');
+    });
 
     // Summon leia to do the things
     const Leia = require('./../lib/leia');
