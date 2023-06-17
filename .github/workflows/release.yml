@@ -4,7 +4,6 @@ on:
   release:
     types:
       - published
-      - edited
 
 jobs:
   deploy:
@@ -38,7 +37,9 @@ jobs:
         run: yarn test:unit
       - name: Run leia tests
         run: yarn leia examples/basic-example.md
-      # Deploy
+
+      - name: Prepare release
+        uses: lando/prepare-release-action@v2
       - name: Publish to npm
         run: |
           if [ "${{ github.event.release.prerelease }}" ==  "false" ]; then

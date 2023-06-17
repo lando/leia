@@ -190,9 +190,9 @@ yarn test:unit
 
 ## Releasing
 
-```bash
-yarn release
-```
+To deploy and publish a new version of the package to the `npm` registry you need only [create a release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) with a [semver](https://semver.org) tag.
+
+Note that prereleases will get pushed to the `edge` tag on the `npm` registry.
 
 ## Contributors
 

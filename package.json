@@ -80,7 +80,6 @@
     "eslint": "^7.3",
     "eslint-config-google": "^0.14.0",
     "mock-fs": "^4.7.0",
-    "nyc": "^13.1.0",
-    "version-bump-prompt": "^4.2.1"
+    "nyc": "^13.1.0"
   }
 }
