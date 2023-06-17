@@ -1,3 +1,7 @@
+## v0.6.7 - [June 17, 2023](https://github.com/lando/leia/releases/tag/v0.6.7)
+
+* Switched release flow over to [@lando/prepare-release-action](https://github.com/lando/prepare-release-action)
+
 ## v0.6.6 - [June 17, 2023](https://github.com/lando/leia/releases/tag/v0.6.6)
 
 * Switched release flow over to [@lando/prepare-release-action](https://github.com/lando/prepare-release-action)
