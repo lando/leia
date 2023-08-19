@@ -128,11 +128,18 @@ cat test.txt
 
 If you want to learn more about the syntax and how `leia` puts together the above, check out [this example](https://github.com/lando/leia/blob/main/examples/basic-example.md)
 
-## Advanced Usage
+## Environment Variables
 
-Leia also allows you to specify additional h2 sections in your `markdown` for setup and cleanup commands that run before and after your core tests. You can tell `leia` what words these headers should start with in order to be flagged as setup and cleanup commands using the `--setup-header` and `--cleanup-header` options.
+`leia` will also set the following environment variables for each test that is running so you can use them for stuff.
 
-[Here](https://github.com/lando/leia/blob/main/examples/setup-cleanup-example.md) is an example of a markdown file with Setup, Testing and Cleanup sections. And [here](https://github.com/lando/leia/blob/main/examples) is a whole directory of examples that we test on every commit.
+```bash
+LEIA="true"
+LEIA_ENVIRONMENT="true"
+LEIA_TEST_RUNNING="true"
+LEIA_TEST_ID="${ test.id }"
+LEIA_TEST_RETRY="${ test.retry }"
+LEIA_VERSION="${ leia.version }"
+```
 
 ## Shell considerations
 
@@ -144,6 +151,12 @@ Leia also allows you to specify additional h2 sections in your `markdown` for se
 You can also explicitly tell `leia` what shell to use with the `--shell` option. However, currently only `bash`, `sh`, `zsh` and `cmd` are supported options.
 
 **In most use cases it's best to just let `leia` decide the shell to use automatically.**
+
+## Advanced Usage
+
+Leia also allows you to specify additional h2 sections in your `markdown` for setup and cleanup commands that run before and after your core tests. You can tell `leia` what words these headers should start with in order to be flagged as setup and cleanup commands using the `--setup-header` and `--cleanup-header` options.
+
+[Here](https://github.com/lando/leia/blob/main/examples/setup-cleanup-example.md) is an example of a markdown file with Setup, Testing and Cleanup sections. And [here](https://github.com/lando/leia/blob/main/examples) is a whole directory of examples that we test on every commit.
 
 ## Issues, Questions and Support
 
