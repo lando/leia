@@ -132,18 +132,21 @@ If you want to learn more about the syntax and how `leia` puts together the abov
 
 `leia` will also set the following environment variables for each test that is running so you can use them for stuff.
 
+Here are the values you would expect for the `Should set envvars with the test number` test in `examples/environment.md` running on Leia version `v1.0.0` with `--retry=1`.
+
 ```bash
-LEIA="true"
-LEIA_ENVIRONMENT="true"
+LEIA=true
+LEIA_ENVIRONMENT=true
 
-LEIA_TEST_ID="${ test.id }"
-LEIA_TEST_NUMBER="${ test.number }"
-LEIA_TEST_RETRY="${ test.retry }"
-LEIA_TEST_RUNNING="true"
-LEIA_TEST_STAGE="${ setup | test | cleanup }"
+LEIA_TEST_RUNNING=true
+LEIA_TEST_ID=environment
+LEIA_TEST_NUMBER=4
+LEIA_TEST_RETRY=1
+LEIA_TEST_STAGE=test
 
-LEIA_VERSION="${ leia.version }"
+LEIA_VERSION=1.0.0
 ```
+Note: `LEIA_TEST_STAGE` can be either `setup`, `test` or `cleanup` and `LEIA_TEST_NUMBER` resets to `1` for each `LEIA_TEST_STAGE`.
 
 ## Shell considerations
 
