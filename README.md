@@ -135,9 +135,13 @@ If you want to learn more about the syntax and how `leia` puts together the abov
 ```bash
 LEIA="true"
 LEIA_ENVIRONMENT="true"
-LEIA_TEST_RUNNING="true"
+
 LEIA_TEST_ID="${ test.id }"
+LEIA_TEST_NUMBER="${ test.number }"
 LEIA_TEST_RETRY="${ test.retry }"
+LEIA_TEST_RUNNING="true"
+LEIA_TEST_STAGE="${ setup | test | cleanup }"
+
 LEIA_VERSION="${ leia.version }"
 ```
 
