@@ -12,7 +12,6 @@
 process.env.LEIA = 'true';
 process.env.LEIA_ENVIRONMENT = 'true';
 process.env.LEIA_TEST_RUNNING = 'true';
-process.env.LEIA_TEST_ID = '{{=it.id}}';
 process.env.LEIA_VERSION = '{{=it.version}}';
 
 // Set legacy envars

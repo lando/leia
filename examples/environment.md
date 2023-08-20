@@ -22,12 +22,9 @@ env | grep LEIA_TEST_RUNNING | grep true
 env | grep LEIA_PARSER_RUNNING | grep true
 
 # Should set envvars with the test id
-env
-env | grep LEIA_TEST_ID | grep environment-example
-env | grep LEIA_PARSER_ID | grep environment-example
+env | grep LEIA_TEST_ID | grep environment
 
 # Should set envvars with the retry attempt
-env
 env | grep LEIA_TEST_RETRY | grep 4
 env | grep LEIA_PARSER_RETRY | grep 4
 

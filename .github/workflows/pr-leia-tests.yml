@@ -37,7 +37,7 @@ jobs:
           # Try a basic example
           yarn leia examples/basic-example.md --debug
           # Try globs and ignores
-          yarn leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md"
+          yarn leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md"
           # Try custom headers
           yarn leia examples/custom-headers.md -s Hello -t Sup -c Goodbye
           # Try all other options, including legacy ones
@@ -45,5 +45,5 @@ jobs:
           # Try a comma separated list of headers
           yarn leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye
           # Assess envvars
-          yarn leia examples/environment.md --retry 4
+          yarn leia examples/environment.md examples/basic-example.md --retry 4
 
