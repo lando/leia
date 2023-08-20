@@ -147,6 +147,7 @@ LEIA_TEST_NUMBER=4
 LEIA_TEST_RETRY=1
 LEIA_TEST_STAGE=test
 ```
+
 Note: `LEIA_TEST_STAGE` can be either `setup`, `test` or `cleanup` and `LEIA_TEST_NUMBER` resets to `1` for each `LEIA_TEST_STAGE`.
 
 ## Shell considerations
