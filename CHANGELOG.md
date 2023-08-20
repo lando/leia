@@ -1,6 +1,6 @@
 ## v1.0.0-beta.1 - [August 19, 2023](https://github.com/lando/leia/releases/tag/v1.0.0-beta.1)
 
-* Added more reasonably named environment variables. See [README.md](https://github.com/lando/leia) for details.
+* Added more reasonably named environment variables. See [README.md](https://github.com/lando/leia#environment-variables) for details.
 
 ## v0.6.7 - [June 17, 2023](https://github.com/lando/leia/releases/tag/v0.6.7)
 

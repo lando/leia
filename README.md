@@ -135,16 +135,17 @@ If you want to learn more about the syntax and how `leia` puts together the abov
 Here are the values you would expect for the `Should set envvars with the test number` test in `examples/environment.md` running on Leia version `v1.0.0` with `--retry=1`.
 
 ```bash
+# generic vars
 LEIA=true
 LEIA_ENVIRONMENT=true
+LEIA_VERSION=1.0.0
 
+# test vars
 LEIA_TEST_RUNNING=true
 LEIA_TEST_ID=environment
 LEIA_TEST_NUMBER=4
 LEIA_TEST_RETRY=1
 LEIA_TEST_STAGE=test
-
-LEIA_VERSION=1.0.0
 ```
 Note: `LEIA_TEST_STAGE` can be either `setup`, `test` or `cleanup` and `LEIA_TEST_NUMBER` resets to `1` for each `LEIA_TEST_STAGE`.
 
