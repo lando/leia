@@ -16,7 +16,7 @@ jobs:
           - ubuntu-22.04
           - windows-2022
         node-version:
-          - '18'
+          - '16'
     steps:
       # Install deps and cache
       - name: Checkout code
@@ -32,4 +32,3 @@ jobs:
       # Run unit tests
       - name: Run units tests
         run: npm run test:unit
-        shell: bash
