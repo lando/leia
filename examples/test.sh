@@ -1,17 +1,17 @@
 # Run linting
-yarn lint
+npm run lint
 
 # Run unit tests
-yarn test:unit
+npm run test:unit
 
 # Clean up previous test
 rm -f test/leia.readme.js
 
 # Get the version of Leia
-yarn leia --version
+npx leia --version
 
 # Generate tests from this README with some options
-yarn leia README.md test -r 6 -o readme.js
+npx leia README.md test -r 6 -o readme.js
 
 # Validate the new test was created
 cat test/leia.readme.js | grep 'id: leia'

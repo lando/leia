@@ -26,24 +26,24 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: yarn
-      - name: Install Yarn dependencies
-        run: yarn install --prefer-offline --frozen-lockfile
+          cache: npm
+      - name: Install dependencies
+        run: npm clean-install --prefer-offline --frozen-lockfile
 
       # Run a few iterations of leia tests
       - name: Run Leia tests
         shell: bash
         run: |
           # Try a basic example
-          yarn leia examples/basic-example.md --debug
+          npx leia examples/basic-example.md --debug
           # Try globs and ignores
-          yarn leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md"
+          npx leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md"
           # Try custom headers
-          yarn leia examples/custom-headers.md -s Hello -t Sup -c Goodbye
+          npx leia examples/custom-headers.md -s Hello -t Sup -c Goodbye
           # Try all other options, including legacy ones
-          yarn leia examples/basic-example.md --retry 2 --split-file --stdin --spawn
+          npx leia examples/basic-example.md --retry 2 --split-file --stdin --spawn
           # Try a comma separated list of headers
-          yarn leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye
+          npx leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye
           # Assess envvars
-          yarn leia examples/environment.md examples/basic-example.md --retry 4
+          npx leia examples/environment.md examples/basic-example.md --retry 4
 

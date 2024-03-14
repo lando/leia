@@ -23,6 +23,7 @@ coverage/
 
 # NPM files
 node_modules
+yarn.lock
 
 # Tests
 *.leia.js
