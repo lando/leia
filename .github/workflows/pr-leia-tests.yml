@@ -38,7 +38,7 @@ jobs:
           # Try a basic example
           npx leia examples/basic-example.md --debug
           # Try globs and ignores
-          npx leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md"
+          npx leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md" -i "examples/basic-pwsh-example.md"
           # Try custom headers
           npx leia examples/custom-headers.md -s Hello -t Sup -c Goodbye
           # Try all other options, including legacy ones
@@ -47,4 +47,3 @@ jobs:
           npx leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye
           # Assess envvars
           npx leia examples/environment.md examples/basic-example.md --retry 4
-

@@ -15,7 +15,7 @@ Get-ChildItem Env:
 Write-Output "some stuff"
 
 # Should concatenate three commands together
-set TEST=thing
-set | findstr TEST | findstr thing
-set TEST=
+Write-Output "some stuff"
+Write-Output "yup" | Select-String -Pattern "yup"
+Get-ChildItem Env:
 ```
