@@ -59,7 +59,7 @@ class LeiaCommand extends Command {
     'shell': flags.string({
       default: shell().binary,
       description: 'the shell to use for the tests, default is autodetected',
-      options: ['bash', 'sh', 'zsh', 'cmd'],
+      options: ['bash', 'cmd', 'powershell', 'pwsh', 'sh', 'zsh', 'cmd'],
     }),
     'stdin': flags.boolean({
       description: 'attach stdin when the test is run',
