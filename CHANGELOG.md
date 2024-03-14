@@ -1,7 +1,8 @@
-## v1.0.0-beta.2 - [March 14, 2024](https://github.com/lando/leia/releases/tag/v1.0.0-beta.3)
+## v1.0.0-beta.2 - [March 14, 2024](https://github.com/lando/leia/releases/tag/v1.0.0-beta.2)
 
-* Fixed issue when `chai@5` shows up higher in the dependency tree [#37](https://github.com/lando/leia/issues/37)
+* Added support for `powershell` and `pwsh`
 * Deyarned
+* Fixed issue when `chai@5` shows up higher in the dependency tree [#37](https://github.com/lando/leia/issues/37)
 
 ## v1.0.0-beta.1 - [August 19, 2023](https://github.com/lando/leia/releases/tag/v1.0.0-beta.1)
 
