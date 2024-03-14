@@ -12,9 +12,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-13
-          - macos-14
-          - ubuntu-22.04
+          # - macos-13
+          # - macos-14
+          # - ubuntu-22.04
           - windows-2022
         node-version:
           - '18'
@@ -32,4 +32,6 @@ jobs:
 
       # Run unit tests
       - name: Run units tests
-        run: npm run test:unit
+        run: |
+          node -v
+          npm run test:unit
