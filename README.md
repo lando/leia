@@ -15,9 +15,6 @@ Leia will
 ```bash
 # With npm
 npm install @lando/leia
-
-# With yarn
-yarn add @lando/leia
 ```
 
 ## Basics
@@ -41,7 +38,7 @@ You can invoke `leia` as a command line tool or directly `require` it in a modul
 ### CLI
 
 ```bash
-yarn leia
+npx leia
 
 Cleverly converts markdown files into mocha cli tests
 
@@ -113,7 +110,7 @@ By default our parser will look for a section that beings with the word "Testing
 ## Testing
 ```
 
-You can customize the word(s) that `leia` will look for to identify the testing section(s) using the `--test-header` option. You can also run `yarn leia --help` to get a list of default words.
+You can customize the word(s) that `leia` will look for to identify the testing section(s) using the `--test-header` option. You can also run `npm leia --help` to get a list of default words.
 
 #### 3. A code block with at least one command and comment
 
@@ -179,15 +176,14 @@ We try to log all changes big and small in both [THE CHANGELOG](https://github.c
 
 ## Development
 
-* Requires [Node 14+](https://nodejs.org/dist/latest-v14.x/)
-* Prefers [Yarn](https://classic.yarnpkg.com/lang/en/docs/install)
+* Requires [Node 18+](https://nodejs.org/dist/latest-v18.x/)
 
 ```bash
 git clone https://github.com/lando/leia.git && cd leia
-yarn install
+npm install
 ```
 
-If you dont' want to install Node 14 or Yarn for whatever reason you can install [Lando](https://docs.lando.dev/basics/installation.html) and use that:
+If you dont' want to install Node 18 for whatever reason you can install [Lando](https://docs.lando.dev/basics/installation.html) and use that:
 
 ```bash
 git clone https://github.com/lando/leia.git && cd leia
@@ -196,18 +192,18 @@ lando start
 
 # Run commands
 lando node
-lando yarn
-lando yarn leia
+lando npm install
+lando npx leia
 ```
 
 ## Testing
 
 ```bash
 # Lint the code
-yarn lint
+npm run lint
 
 # Run unit tests
-yarn test:unit
+npm run test:unit
 ```
 
 ## Releasing
@@ -229,7 +225,7 @@ Made with [contributors-img](https://contrib.rocks).
 You can still install the older version of  Leia eg `leia-parser`.
 
 ```bash
-yarn add leia-parser
+npm install leia-parser
 ```
 
 And its documentation lives on [here](https://github.com/lando/leia/tree/v0.4.0).
