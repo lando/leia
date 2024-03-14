@@ -6,7 +6,7 @@
 'use strict';
 
 // Setup chai.
-const chai = require('chai');
+const chai = require('@lando/chai');
 chai.should();
 
 const Leia = require('./../lib/leia');

@@ -5,7 +5,7 @@
 
 'use strict';
 
-const chai = require('chai');
+const chai = require('@lando/chai');
 const path = require('path');
 
 chai.should();
