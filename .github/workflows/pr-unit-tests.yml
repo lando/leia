@@ -32,6 +32,4 @@ jobs:
 
       # Run unit tests
       - name: Run units tests
-        run: |
-          node -v
-          npm run test:unit
+        run: npm run test:unit
