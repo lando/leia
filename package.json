@@ -49,8 +49,8 @@
     "leia": "node ./bin/leia",
     "lint": "eslint bin/leia . --ignore-pattern '*.leia.js' --ignore-pattern 'leia.readme.js'",
     "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
-    "test:leia": "yarn leia README.md \"examples/**/*.md\" -i \"examples/basic-cmd-example.md\" -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\"",
-    "test:leia:stdin": "yarn leia examples/stdin-example.md --stdin"
+    "test:leia": "npx leia README.md \"examples/**/*.md\" -i \"examples/basic-cmd-example.md\" -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\"",
+    "test:leia:stdin": "npx leia examples/stdin-example.md --stdin"
   },
   "dependencies": {
     "@lando/argv": "^1.0.6",
