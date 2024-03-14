@@ -154,7 +154,7 @@ Note: `LEIA_TEST_STAGE` can be either `setup`, `test` or `cleanup` and `LEIA_TES
 * On POSIX systems it will prefer `bash` or `zsh` if available with a fallback to `sh`.
 * On Windows systems it will prefer `bash` if available with a fallback to `cmd`.
 
-You can also explicitly tell `leia` what shell to use with the `--shell` option. However, currently only `bash`, `sh`, `zsh` and `cmd` are supported options.
+You can also explicitly tell `leia` what shell to use with the `--shell` option. However, currently only `bash`, `sh`, `zsh`, `cmd`, `powershell` and `pwsh` are supported options.
 
 **In most use cases it's best to just let `leia` decide the shell to use automatically.**
 
