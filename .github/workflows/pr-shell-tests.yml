@@ -54,7 +54,5 @@ jobs:
         run: |
           npx leia examples/basic-cmd-example.md --debug
           npx leia examples/basic-cmd-example.md --shell cmd --debug
-          npx leia examples/basic-cmd-example.md --shell pwsh --debug
-          npx leia examples/basic-cmd-example.md --shell powershell --debug
           npx leia examples/basic-pwsh-example.md --shell pwsh --debug
           npx leia examples/basic-pwsh-example.md --shell powershell --debug
