@@ -18,7 +18,4 @@ Write-Output "some stuff"
 Write-Output "some stuff"
 Write-Output "yup" | Select-String -Pattern "yup"
 Get-ChildItem Env:
-
-# Should fail
-Vibe-Alert
 ```
