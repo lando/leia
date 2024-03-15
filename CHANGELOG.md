@@ -1,3 +1,7 @@
+## v1.0.0-beta.3 - [March 15, 2024](https://github.com/lando/leia/releases/tag/v1.0.0-beta.3)
+
+* Fixed bug with `powershell` not throwing errors correctly
+
 ## v1.0.0-beta.2 - [March 14, 2024](https://github.com/lando/leia/releases/tag/v1.0.0-beta.2)
 
 * Added support for `powershell` and `pwsh`
