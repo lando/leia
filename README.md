@@ -212,6 +212,11 @@ To deploy and publish a new version of the package to the `npm` registry you nee
 
 Note that prereleases will get pushed to the `edge` tag on the `npm` registry.
 
+## Maintainers
+
+* [@pirog](https://github.com/pirog)
+* [@reynoldsalec](https://github.com/reynoldsalec)
+
 ## Contributors
 
 <a href="https://github.com/lando/leia/graphs/contributors">
