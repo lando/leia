@@ -46,4 +46,4 @@ jobs:
           # Try a comma separated list of headers
           npx leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye
           # Assess envvars
-          npx leia examples/environment.md examples/basic-example.md --retry 4 --timeout 1
+          npx leia examples/environment.md examples/basic-example.md --retry 4 --timeout 5 --debug
