@@ -139,20 +139,20 @@ class LeiaCommand extends Command {
 
     // Combine all patterns and search for the things
     const files = leia.find(options.tests, options.ignore);
-    debug('detected possible test source files: %s', files.join(', '));
+    debug('detected possible test source files: %o', files.join(', '));
 
     // Combine our args and options
     const sources = leia.parse(files, options);
-    debug('detected valid test sources %s', _.map(sources, 'file').join(', '));
+    debug('detected valid test sources %o', _.map(sources, 'file').join(', '));
 
     // Generate test files from parsed data and return list of generated files
     const tests = leia.generate(sources);
-    debug('generated leia tests to %s', tests.join(', '));
+    debug('generated leia tests to %o', tests.join(', '));
 
     // Get the test runner and execute
-    const runner = leia.run(tests);
+    const runner = leia.run(tests, options);
     runner.run((failures) => {
-      debug('tests completed with %s failures', failures);
+      debug('tests completed with %o failures', failures);
       process.exitCode = failures ? 1 : 0;
     });
   }

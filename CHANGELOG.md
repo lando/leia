@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+* Added a `--timeout` option
 * Changed default `timeout` to 30 minutes
 * Improved usage in `--help`
 * Removed misleading `shell` debugging
