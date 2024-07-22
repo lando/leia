@@ -129,7 +129,7 @@ If you want to learn more about the syntax and how `leia` puts together the abov
 
 ## Skipping
 
-You can also skip tests. This is useful if you want to stub out a test to do later but don't have the time to do right now.
+You can also skip tests. This is useful if you want to stub out a test for later.
 
 ```bash
 # Should write this test later and dont want to forget it
