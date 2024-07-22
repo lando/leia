@@ -43,27 +43,29 @@ npx leia
 Cleverly converts markdown files into mocha cli tests
 
 USAGE
-  $ leia <files> <patterns> [options]
+  $ leia <files> <patterns> [--cleanup-header=<cleanup-headers>] [--debug] [--help] [--ignore=<patterns>] [--retry=<count>] [--setup-header=<setup-headers>] [--test-header=<test-headers>]
+  [--shell=<bash|cmd|powershell|pwsh|sh|zsh>] [--stdin] [--timeout=<seconds>] [--version]
 
 ARGUMENTS
   TESTS  files or patterns to scan for test
 
 OPTIONS
-  -c, --cleanup-header=cleanup-header  [default: Clean,Tear,Burn] sections that start with these headers are cleanup commands
-  -h, --help                           show CLI help
-  -i, --ignore=ignore                  files or patterns to ignore
-  -r, --retry=retry                    [default: 1] the amount of retries a failing test should get
-  -s, --setup-header=setup-header      [default: Start,Setup,This is the dawning] sections that start with these headers are setup commands
-  -t, --test-header=test-header        [default: Test,Validat,Verif] sections that start with these headers are tests
-  -v, --version                        show CLI version
-  --debug                              show debug output
-  --shell=shell                        the shell to use for the tests, default is autodetected
-  --stdin                              attach stdin when the test is run
+  -c, --cleanup-header=cleanup-header      [default: Clean,Tear,Burn] considers these h2 sections as cleanup commands
+  -i, --ignore=ignore                      files or patterns to ignore
+  -r, --retry=retry                        [default: 1] retries tests the given amount
+  -s, --setup-header=setup-header          [default: Start,Setup,This is the dawning] considers these h2 sections as setup commands
+  -t, --test-header=test-header            [default: Test,Validat,Verif] considers these h2 sections as tests
+  -v, --version                            shows version info
+  --debug                                  shows debug output
+  --help                                   shows help
+  --shell=bash|cmd|powershell|pwsh|sh|zsh  [default: /opt/homebrew/bin/zsh] runs tests with given shell, autodetected by default
+  --stdin                                  attachs stdin when the test is run
+  --timeout=timeout                        [default: 1800] seconds before tests time out
 
 EXAMPLES
   leia README.md
   leia README.md "examples/**/*.md" --retry 6 --test-header Tizzestin
-  leia "examples/*.md" --ignore BUTNOTYOU.md test --stdin
+  leia "examples/*.md" --ignore BUTNOTYOU.md test --stdin --timeout 5
   leia README.md --shell cmd
 ```
 
@@ -124,6 +126,15 @@ cat test.txt
 ```
 
 If you want to learn more about the syntax and how `leia` puts together the above, check out [this example](https://github.com/lando/leia/blob/main/examples/basic-example.md)
+
+## Skipping
+
+You can also skip tests. This is useful if you want to stub out a test to do later but don't have the time to do right now.
+
+```bash
+# Should write this test later and dont want to forget it
+skip
+```
 
 ## Environment Variables
 

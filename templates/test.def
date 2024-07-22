@@ -4,7 +4,7 @@
     process.env.LEIA_TEST_NUMBER = '{{=test.number}}';
     process.env.LEIA_TEST_RETRY = this.ctx.test._currentRetry;
     process.env.LEIA_TEST_STAGE = '{{=test.section}}';
-
+    {{? test.skip }}this.ctx.test.skip();{{?? true }}
     const cli = new CliTest();
     const data = {shell: '{{=test.shell}}', args: `{{=test.args}}`, commands: `{{=test.command}}`, stdin: '{{=it.stdin}}'};
     debug(`running test {{=it.id}} from {{=it.cwd}} using %o`, data);
@@ -15,5 +15,5 @@
         const error = [`CODE: ${res.error.code}`, `STDOUT: ${res.stdout}`, `STDERR: ${res.stderr}`].join('\n');
         done(new Error(error));
       }
-    });
+    });{{?}}
   });
