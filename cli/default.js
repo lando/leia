@@ -16,7 +16,7 @@ class LeiaCommand extends Command {
 [--test-header=<test-headers>] \
 [--shell=<bash|cmd|powershell|pwsh|sh|zsh>] \
 [--stdin] \
-[--timeout=<minutes>] \
+[--timeout=<seconds>] \
 [--version]`;
   static strict = false;
   static examples = [
@@ -76,10 +76,9 @@ class LeiaCommand extends Command {
       description: 'attachs stdin when the test is run',
     }),
     'timeout': flags.string({
-      default: '30',
-      description: 'minutes before test times out',
+      default: '1800',
+      description: 'seconds before tests time out',
     }),
-
 
     // Legacy flags that still work if you pass them in but are no longer shown in help or documented
     //
