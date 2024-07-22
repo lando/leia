@@ -1,7 +1,9 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
 * Changed default `timeout` to 30 minutes
+* Improved usage in `--help`
 * Removed misleading `shell` debugging
+* Removed extraneous `cmd` in `shell` choices list
 
 ## v1.0.0-beta.3 - [March 15, 2024](https://github.com/lando/leia/releases/tag/v1.0.0-beta.3)
 
