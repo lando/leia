@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+* Added ability to skip a test by using the `skip` keyword as the test command [#45](https://github.com/lando/leia/issues/45)
 * Added a `--timeout` option
 * Changed default `timeout` to 30 minutes
 * Improved usage in `--help`
