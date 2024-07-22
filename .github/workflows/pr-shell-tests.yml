@@ -22,9 +22,9 @@ jobs:
     steps:
       # Install deps and cache
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install node ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
@@ -48,7 +48,12 @@ jobs:
       - name: Test Windows BASH
         if: ${{ runner.os == 'Windows' }}
         shell: bash
-        run: npx leia examples/basic-example.md --debug
+        run: |
+          npx leia examples/basic-cmd-example.md --debug
+          npx leia examples/basic-cmd-example.md --shell cmd --debug
+          npx leia examples/basic-pwsh-example.md --shell pwsh --debug
+          npx leia examples/basic-pwsh-example.md --shell powershell --debug
+          npx leia examples/basic-pwsh-example.md --shell powershell --stdin --debug
       - name: Test Windows SHELLS
         if: ${{ runner.os == 'Windows' }}
         run: |
@@ -56,3 +61,4 @@ jobs:
           npx leia examples/basic-cmd-example.md --shell cmd --debug
           npx leia examples/basic-pwsh-example.md --shell pwsh --debug
           npx leia examples/basic-pwsh-example.md --shell powershell --debug
+          npx leia examples/basic-pwsh-example.md --shell powershell --stdin --debug
