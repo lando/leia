@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v1.0.0-beta.4 - [July 22, 2024](https://github.com/lando/leia/releases/tag/v1.0.0-beta.4)
+
 * Added ability to skip a test by using the `skip` keyword as the test command [#45](https://github.com/lando/leia/issues/45)
 * Added a `--timeout` option
 * Changed default `timeout` to 30 minutes
