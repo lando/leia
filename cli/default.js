@@ -6,7 +6,17 @@ const shell = require('../lib/shell.js');
 class LeiaCommand extends Command {
   static id = 'leia';
   static description = 'Cleverly converts markdown files into mocha cli tests';
-  static usage = '<files> <patterns> [options]';
+  static usage = `<files> <patterns> \
+[--cleanup-header=<cleanup-headers>] \
+[--debug] \
+[--help] \
+[--ignore=<patterns>] \
+[--retry=<count>] \
+[--setup-header=<setup-headers>] \
+[--test-header=<test-headers>] \
+[--shell=<bash|cmd|powershell|pwsh|sh|zsh>] \
+[--stdin] \
+[--version]`;
   static strict = false;
   static examples = [
     'leia README.md',
@@ -59,7 +69,7 @@ class LeiaCommand extends Command {
     'shell': flags.string({
       default: shell().binary,
       description: 'the shell to use for the tests, default is autodetected',
-      options: ['bash', 'cmd', 'powershell', 'pwsh', 'sh', 'zsh', 'cmd'],
+      options: ['bash', 'cmd', 'powershell', 'pwsh', 'sh', 'zsh'],
     }),
     'stdin': flags.boolean({
       description: 'attach stdin when the test is run',
@@ -107,6 +117,7 @@ class LeiaCommand extends Command {
       .map((pair) => ([_.camelCase(pair[0]), pair[1]]))
       .fromPairs()
       .value();
+
 
     // make sure we split any headers that need to be split
     ['setupHeader', 'testHeader', 'cleanupHeader'].forEach((header) => {
