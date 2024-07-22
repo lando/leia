@@ -16,12 +16,13 @@ class LeiaCommand extends Command {
 [--test-header=<test-headers>] \
 [--shell=<bash|cmd|powershell|pwsh|sh|zsh>] \
 [--stdin] \
+[--timeout=<minutes>] \
 [--version]`;
   static strict = false;
   static examples = [
     'leia README.md',
     'leia README.md "examples/**/*.md" --retry 6 --test-header Tizzestin',
-    'leia "examples/*.md" --ignore BUTNOTYOU.md test --stdin',
+    'leia "examples/*.md" --ignore BUTNOTYOU.md test --stdin --timeout 5',
     'leia README.md --shell cmd',
   ];
 
@@ -29,28 +30,28 @@ class LeiaCommand extends Command {
 
   static flags = {
     // Plugin commands and placeholder --debug for use with @lando/argv
-    'debug': flags.boolean({description: 'show debug output'}),
-    'help': flags.help({char: 'h'}),
-    'version': flags.version({char: 'v'}),
+    'debug': flags.boolean({description: 'shows debug output'}),
+    'help': flags.help({description: 'shows help'}),
+    'version': flags.version({description: 'shows version info', char: 'v'}),
 
     // Setup header
     'setup-header': flags.string({
       char: 's',
-      description: 'sections that start with these headers are setup commands',
+      description: 'considers these h2 sections as setup commands',
       multiple: true,
       default: ['Start', 'Setup', 'This is the dawning'],
     }),
     // Test header
     'test-header': flags.string({
       char: 't',
-      description: 'sections that start with these headers are tests',
+      description: 'considers these h2 sections as tests',
       multiple: true,
       default: ['Test', 'Validat', 'Verif'],
     }),
     // Cleanup header
     'cleanup-header': flags.string({
       char: 'c',
-      description: 'sections that start with these headers are cleanup commands',
+      description: 'considers these h2 sections as cleanup commands',
       multiple: true,
       default: ['Clean', 'Tear', 'Burn'],
     }),
@@ -63,17 +64,22 @@ class LeiaCommand extends Command {
     }),
     'retry': flags.string({
       char: 'r',
-      description: 'the amount of retries a failing test should get',
+      description: 'retries tests the given amount',
       default: 1,
     }),
     'shell': flags.string({
       default: shell().binary,
-      description: 'the shell to use for the tests, default is autodetected',
+      description: 'runs tests with given shell, autodetected by default',
       options: ['bash', 'cmd', 'powershell', 'pwsh', 'sh', 'zsh'],
     }),
     'stdin': flags.boolean({
-      description: 'attach stdin when the test is run',
+      description: 'attachs stdin when the test is run',
     }),
+    'timeout': flags.string({
+      default: '30',
+      description: 'minutes before test times out',
+    }),
+
 
     // Legacy flags that still work if you pass them in but are no longer shown in help or documented
     //
