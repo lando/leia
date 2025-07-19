@@ -3,7 +3,7 @@
   "description": "Runs tests cleverly hidden in documentation",
   "version": "1.0.0-beta.4",
   "author": "Mike Pirog @pirog",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "repository": "github:lando/leia",
   "bugs": "https://github.com/lando/leia/issues/new/choose/",
   "homepage": "https://github.com/lando/leia",
