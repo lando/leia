@@ -248,4 +248,7 @@ And its documentation lives on [here](https://github.com/lando/leia/tree/v0.4.0)
 
 ## Other Resources
 
-* [Mountain climbing advice](https://www.youtube.com/watch?v=tkBVDh7my9Q)
+* [LICENSE](/LICENSE)
+* [TERMS OF USE](https://docs.lando.dev/terms)
+* [PRIVACY POLICY](https://docs.lando.dev/privacy)
+
