@@ -251,4 +251,5 @@ And its documentation lives on [here](https://github.com/lando/leia/tree/v0.4.0)
 * [LICENSE](/LICENSE)
 * [TERMS OF USE](https://docs.lando.dev/terms)
 * [PRIVACY POLICY](https://docs.lando.dev/privacy)
+* [CODE OF CONDUCT](https://docs.lando.dev/coc)
 
