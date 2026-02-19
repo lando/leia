@@ -32,3 +32,11 @@ leia.readme.js
 # CCI test splitting
 split-file.txt
 test.text
+
+
+# Syncthing
+.stfolder/
+.stversions/
+.stignore
+*.sync-conflict-*
+
