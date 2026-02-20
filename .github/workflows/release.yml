@@ -18,7 +18,22 @@ jobs:
         with:
           node-version: '20'
           registry-url: https://registry.npmjs.org
+      - name: Check if version exists on npm
+        id: check_version
+        run: |
+          VERSION=$(echo "$TAG_NAME" | sed 's/^v//')
+          PACKAGE=$(node -p "require('./package.json').name")
+          if npm view "$PACKAGE@$VERSION" version 2>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "::notice title=Version exists::$VERSION is already published, will promote to latest"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "::notice title=Skipping promotion::$VERSION does not exist on npm yet, skipping promotion (likely a fresh non-prerelease publish)"
+          fi
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
       - name: Promote edge to latest
+        if: steps.check_version.outputs.exists == 'true'
         run: |
           VERSION=$(echo "$TAG_NAME" | sed 's/^v//')
           PACKAGE=$(node -p "require('./package.json').name")
