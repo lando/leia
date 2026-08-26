@@ -1,7 +1,7 @@
 name: leia
 services:
   node:
-    type: node:18
+    type: node:24
     build:
       - npm ci
 tooling:

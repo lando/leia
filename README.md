@@ -187,14 +187,14 @@ We try to log all changes big and small in both [THE CHANGELOG](https://github.c
 
 ## Development
 
-* Requires [Node 18+](https://nodejs.org/dist/latest-v18.x/)
+Leia development requires [Node 24 LTS](https://nodejs.org/dist/latest-v24.x/). The root `.node-version` is the runtime authority for version-aware local tooling and GitHub Actions.
 
 ```bash
 git clone https://github.com/lando/leia.git && cd leia
 npm install
 ```
 
-If you dont' want to install Node 18 for whatever reason you can install [Lando](https://docs.lando.dev/basics/installation.html) and use that:
+If you don't want to install Node 24 locally, you can install [Lando](https://docs.lando.dev/basics/installation.html) and use that:
 
 ```bash
 git clone https://github.com/lando/leia.git && cd leia
@@ -252,4 +252,3 @@ And its documentation lives on [here](https://github.com/lando/leia/tree/v0.4.0)
 * [TERMS OF USE](https://docs.lando.dev/terms)
 * [PRIVACY POLICY](https://docs.lando.dev/privacy)
 * [CODE OF CONDUCT](https://docs.lando.dev/coc)
-
