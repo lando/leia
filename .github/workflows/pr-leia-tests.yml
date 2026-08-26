@@ -16,17 +16,15 @@ jobs:
           - macos-14
           - ubuntu-22.04
           - windows-2022
-        node-version:
-          - '18'
 
     steps:
       # Install deps and cache
       - name: Checkout code
         uses: actions/checkout@v7
-      - name: Install node ${{ matrix.node-version }}
+      - name: Install Node from .node-version
         uses: actions/setup-node@v7
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version-file: '.node-version'
           cache: npm
       - name: Install dependencies
         run: npm clean-install --prefer-offline --frozen-lockfile

@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+* Raised the supported Node.js engine floor from 18 to 24 and standardized development and automation on Node 24 LTS [#60](https://github.com/lando/leia/issues/60)
+
 ## v1.0.0-beta.4 - [July 22, 2024](https://github.com/lando/leia/releases/tag/v1.0.0-beta.4)
 
 * Added ability to skip a test by using the `skip` keyword [#45](https://github.com/lando/leia/issues/45)
@@ -87,4 +89,3 @@
 ## v0.3.0 - [November 27, 2018](https://github.com/lando/leia/releases/tag/v0.3.0)
 
 * Just a little placeholder [#1](https://github.com/lando/leia/issues/1)
-
