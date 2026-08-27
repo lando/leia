@@ -1,0 +1,12 @@
+
+import {createRequire} from 'node:module';
+
+// Leia's dependencies remain CommonJS, so resolve them with Node's cross-platform CommonJS loader.
+const require = createRequire(import.meta.url);
+const chai = require('{{=it.chaiPath}}');
+const CliTest = require('{{=it.cltPath}}');
+const debug = require('{{=it.debugPath}}')('leia:test:{{=it.id}}');
+const path = require('path');
+chai.should();
+
+/* eslint-disable max-len */

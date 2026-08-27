@@ -27,7 +27,10 @@ yarn.lock
 
 # Tests
 *.leia.js
+*.leia.cjs
+*.leia.mjs
 leia.readme.js
+examples/**/.tmp/
 
 # CCI test splitting
 split-file.txt
@@ -39,4 +42,3 @@ test.text
 .stversions/
 .stignore
 *.sync-conflict-*
-

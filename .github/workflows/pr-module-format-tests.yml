@@ -1,0 +1,57 @@
+name: Run Module Format Tests
+
+on:
+  pull_request:
+
+jobs:
+  module-format-tests:
+    name: module-format-tests (${{ matrix.format }})
+    runs-on: ubuntu-24.04
+    env:
+      TERM: xterm
+    strategy:
+      fail-fast: false
+      matrix:
+        format:
+          - commonjs
+          - esm
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Install Node from .node-version
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.node-version'
+          cache: npm
+      - name: Install dependencies
+        run: npm clean-install --prefer-offline --frozen-lockfile
+
+      - name: Test module format CLI contract
+        shell: bash
+        run: |
+          node ./bin/leia --help | grep -- '--module-format=auto|commonjs|esm'
+          if node ./bin/leia examples/basic-example.md --module-format amd; then
+            echo 'Leia accepted an unsupported module format'
+            exit 1
+          fi
+
+      - name: Run Leia examples
+        shell: bash
+        env:
+          MODULE_FORMAT: ${{ matrix.format }}
+        run: |
+          node ./bin/leia examples/basic-example.md --module-format "$MODULE_FORMAT"
+          node ./bin/leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md" -i "examples/basic-pwsh-example.md" --module-format "$MODULE_FORMAT"
+          node ./bin/leia examples/custom-headers.md -s Hello -t Sup -c Goodbye --module-format "$MODULE_FORMAT"
+          node ./bin/leia examples/basic-example.md --retry 2 --split-file --stdin --spawn --module-format "$MODULE_FORMAT"
+          node ./bin/leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye --module-format "$MODULE_FORMAT"
+          node ./bin/leia examples/environment.md examples/basic-example.md --retry 4 --timeout 5 --module-format "$MODULE_FORMAT"
+          node ./bin/leia examples/basic-example.md --module-format "$MODULE_FORMAT" --shell bash
+          node ./bin/leia examples/basic-example.md --module-format "$MODULE_FORMAT" --shell sh
+
+      - name: Test explicit package-scope overrides
+        shell: bash
+        env:
+          MODULE_FORMAT: ${{ matrix.format }}
+        run: bash examples/format-examples/run.sh "$MODULE_FORMAT"

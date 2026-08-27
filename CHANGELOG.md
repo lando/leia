@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added `--module-format` for auto or explicit CommonJS and ESM harness generation. [#59](https://github.com/lando/leia/issues/59)
+- Added `runAsync()` for CommonJS/ESM loading while preserving synchronous `run()` for CommonJS. [#59](https://github.com/lando/leia/issues/59)
 - Fixed generated Mocha harness failures caused by valid shell syntax in executable Markdown. [#57](https://github.com/lando/leia/issues/57)
 - Raised the supported Node.js engine floor from 18 to 24 and standardized development and automation on Node 24 LTS [#60](https://github.com/lando/leia/issues/60)
 

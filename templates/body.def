@@ -1,4 +1,3 @@
-{{#def.header}}{{#def.deps}}
 describe('{{=it.id}}', function() {
   this.retries({{=it.retry}});
 {{~ it.tests.setup :test}}

@@ -23,6 +23,7 @@ describe('parse', () => {
       'destination',
       'file',
       'id',
+      'moduleFormat',
       'retry',
       'stdin',
       'text',
@@ -31,6 +32,16 @@ describe('parse', () => {
       'version',
     ];
     tests[0].should.have.all.keys(...keys);
+    tests[0].moduleFormat.should.equal('commonjs');
+    tests[0].destination.should.match(/\.leia\.cjs$/);
+  });
+  it('should generate ESM destination metadata when requested', () => {
+    const tests = parse(
+      [path.resolve(__dirname, '..', 'examples', 'basic-example.md')],
+      {moduleFormat: 'esm'},
+    );
+    tests[0].moduleFormat.should.equal('esm');
+    tests[0].destination.should.match(/\.leia\.mjs$/);
   });
   it('should organize tests into setup|test|cleanup buckets if applicable', () => {
     const tests = parse([path.resolve(__dirname, '..', 'examples', 'setup-cleanup-example.md')]);
