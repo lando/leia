@@ -89,12 +89,16 @@ describe('parse', () => {
     ].join(os.EOL));
   });
   it('should combine tests from multiple code blocks under one section', () => {
-    const tests = parse([path.resolve(__dirname, '..', 'examples', 'basic-example.md')]);
-    const test = tests[0].tests.test.find(({describe}) => describe.includes('should also run this'));
+    const tests = parse([path.resolve(__dirname, 'parse-code-blocks.md')]);
 
-    tests[0].tests.test.should.have.lengthOf(8);
-    test.command.should.equal('true');
-    test.number.should.equal(7);
+    tests[0].tests.test.map((test) => test.describe[0]).should.deep.equal([
+      'should parse the first code block',
+      'should parse the second code block',
+    ]);
+    tests[0].tests.test.map((test) => test.command).should.deep.equal([
+      'echo first',
+      'echo second',
+    ]);
   });
   it('should combine tests from repeated setup, test, and cleanup sections', () => {
     const tests = parse([path.resolve(__dirname, 'parse-sections.md')]);
