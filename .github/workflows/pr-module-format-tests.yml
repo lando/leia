@@ -1,0 +1,53 @@
+name: Run Module Format Tests
+
+on:
+  pull_request:
+
+jobs:
+  module-format-tests:
+    name: module-format-tests (${{ matrix.format }})
+    runs-on: ubuntu-22.04
+    env:
+      TERM: xterm
+    strategy:
+      fail-fast: false
+      matrix:
+        format:
+          - commonjs
+          - esm
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Install Node from .node-version
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.node-version'
+          cache: npm
+      - name: Install dependencies
+        run: npm clean-install --prefer-offline --frozen-lockfile
+
+      - name: Test module format CLI contract
+        shell: bash
+        run: |
+          npx leia --help | grep -- '--module-format=auto|commonjs|esm'
+          if npx leia examples/basic-example.md --module-format amd; then
+            echo 'Leia accepted an unsupported module format'
+            exit 1
+          fi
+
+      - name: Run Leia examples
+        shell: bash
+        env:
+          MODULE_FORMAT: ${{ matrix.format }}
+        run: |
+          npm run test:leia -- --module-format "$MODULE_FORMAT"
+          npm run test:leia:stdin -- --module-format "$MODULE_FORMAT"
+          npx leia examples/basic-example.md --module-format "$MODULE_FORMAT" --shell bash --debug
+          npx leia examples/basic-example.md --module-format "$MODULE_FORMAT" --shell sh --debug
+
+      - name: Test explicit package-scope overrides
+        shell: bash
+        env:
+          MODULE_FORMAT: ${{ matrix.format }}
+        run: bash examples/module-formats/run.sh "$MODULE_FORMAT"

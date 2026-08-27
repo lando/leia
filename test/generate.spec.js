@@ -88,7 +88,7 @@ describe('generate', () => {
     const tests = getTests('esm');
     generate(tests);
     const source = fs.readFileSync(tests[0].destination, 'utf8');
-    source.should.include("import {createRequire} from 'node:module';");
+    source.should.include('import {createRequire} from \'node:module\';');
     source.should.include('const require = createRequire(import.meta.url);');
     source.should.include(`const chai = require('${tests[0].chaiPath}');`);
     tests[0].tests.test.forEach((test) => {
@@ -105,7 +105,7 @@ describe('generate', () => {
 
     const commonjsSource = fs.readFileSync(commonjsTests[0].destination, 'utf8');
     const esmSource = fs.readFileSync(esmTests[0].destination, 'utf8');
-    const bodyStart = "describe('mock'";
+    const bodyStart = 'describe(\'mock\'';
     commonjsSource.slice(commonjsSource.indexOf(bodyStart)).should.equal(
       esmSource.slice(esmSource.indexOf(bodyStart)),
     );

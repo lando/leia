@@ -256,6 +256,13 @@ npm run lint
 npm run test:unit
 ```
 
+Pull requests keep the existing macOS, Ubuntu, and Windows Leia and shell matrices. Those jobs run
+the package-scope examples from their own directories so the default `auto` mode is exercised
+against CommonJS, ESM, untyped, and nearest-nested `package.json` boundaries. A separate Ubuntu
+workflow runs the complete Leia suite with explicit `commonjs` and `esm` overrides. The executable
+scenarios and their live fixtures are colocated under `examples/`; focused JavaScript helper tests
+remain under `test/`.
+
 ## Releasing
 
 To deploy and publish a new version of the package to the `npm` registry you need only [create a release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) with a [semver](https://semver.org) tag.

@@ -23,8 +23,8 @@ const runMocha = (mocha) => new Promise((resolve) => mocha.run(resolve));
 
 describe('lib/run', () => {
   before(() => {
-    fs.writeFileSync(commonjsHarness, "describe('commonjs', () => { it('passes', () => {}); });\n");
-    fs.writeFileSync(esmHarness, "describe('esm', () => { it('passes', () => {}); });\nexport {};\n");
+    fs.writeFileSync(commonjsHarness, 'describe(\'commonjs\', () => { it(\'passes\', () => {}); });\n');
+    fs.writeFileSync(esmHarness, 'describe(\'esm\', () => { it(\'passes\', () => {}); });\nexport {};\n');
   });
 
   after(() => fsExtra.removeSync(tempDir));

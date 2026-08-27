@@ -30,6 +30,7 @@ yarn.lock
 *.leia.cjs
 *.leia.mjs
 leia.readme.js
+examples/**/.tmp/
 
 # CCI test splitting
 split-file.txt
