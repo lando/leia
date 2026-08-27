@@ -43,8 +43,10 @@ npx leia
 Cleverly converts markdown files into mocha cli tests
 
 USAGE
-  $ leia <files> <patterns> [--cleanup-header=<cleanup-headers>] [--debug] [--help] [--ignore=<patterns>] [--retry=<count>] [--setup-header=<setup-headers>] [--test-header=<test-headers>]
-  [--shell=<bash|cmd|powershell|pwsh|sh|zsh>] [--stdin] [--timeout=<seconds>] [--version]
+  $ leia <files> <patterns> [--cleanup-header=<cleanup-headers>] [--debug] [--help] [--ignore=<patterns>]
+  [--module-format=<auto|commonjs|esm>] [--retry=<count>] [--setup-header=<setup-headers>]
+  [--test-header=<test-headers>] [--shell=<bash|cmd|powershell|pwsh|sh|zsh>] [--stdin] [--timeout=<seconds>]
+  [--version]
 
 ARGUMENTS
   TESTS  files or patterns to scan for test
@@ -52,6 +54,7 @@ ARGUMENTS
 OPTIONS
   -c, --cleanup-header=cleanup-header      [default: Clean,Tear,Burn] considers these h2 sections as cleanup commands
   -i, --ignore=ignore                      files or patterns to ignore
+  --module-format=auto|commonjs|esm        [default: auto] generates CommonJS or ESM harnesses, autodetected by default
   -r, --retry=retry                        [default: 1] retries tests the given amount
   -s, --setup-header=setup-header          [default: Start,Setup,This is the dawning] considers these h2 sections as setup commands
   -t, --test-header=test-header            [default: Test,Validat,Verif] considers these h2 sections as tests
@@ -67,22 +70,40 @@ EXAMPLES
   leia README.md "examples/**/*.md" --retry 6 --test-header Tizzestin
   leia "examples/*.md" --ignore BUTNOTYOU.md test --stdin --timeout 5
   leia README.md --shell cmd
+  leia README.md --module-format esm
 ```
 
 ### Module
 
 ```js
-# Instantiate a new leia
+// Instantiate Leia, which remains a CommonJS package.
 const Leia = require('@lando/leia');
 const leia = new Leia();
 
-// Find some tests
+async function main() {
+  const files = leia.find(['examples/**.md']);
+  const sources = leia.parse(files, {moduleFormat: 'auto'});
+  const tests = leia.generate(sources);
+
+  // runAsync loads either CommonJS or ESM harnesses before returning Mocha.
+  const runner = await leia.runAsync(tests);
+  runner.run((failures) => process.exitCode = failures ? 1 : 0);
+}
+
+main().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});
+```
+
+The synchronous CommonJS API remains available when the format is explicitly known:
+
+```js
+const Leia = require('@lando/leia');
+const leia = new Leia();
 const files = leia.find(['examples/**.md']);
-// Parse those files into leia test metadata
-const sources = leia.parse(files);
-// Generate the mocha tests
+const sources = leia.parse(files, {moduleFormat: 'commonjs'});
 const tests = leia.generate(sources);
-// Run the tests
 const runner = leia.run(tests);
 runner.run((failures) => process.exitCode = failures ? 1 : 0);
 ```
@@ -92,7 +113,25 @@ For more details on specific options check out the code docs
 * [leia.find](https://github.com/lando/leia/blob/main/lib/leia.js)
 * [leia.generate](https://github.com/lando/leia/blob/main/lib/leia.js)
 * [leia.parse](https://github.com/lando/leia/blob/main/lib/leia.js)
+* [leia.resolveModuleFormat](https://github.com/lando/leia/blob/main/lib/leia.js)
 * [leia.run](https://github.com/lando/leia/blob/main/lib/leia.js)
+* [leia.runAsync](https://github.com/lando/leia/blob/main/lib/leia.js)
+
+### Module formats
+
+`--module-format` and the programmatic `moduleFormat` option accept `auto`, `commonjs`, or `esm`. The default `auto`
+selection starts from the command's initial working directory and walks upward to the nearest `package.json`. A package
+with `"type": "module"` selects ESM; `"type": "commonjs"`, an absent `type`, or no package file selects CommonJS. Leia
+reports an unreadable or malformed nearest package file instead of silently guessing. An explicit format always overrides
+package detection, and one resolved format applies to every Markdown source in an invocation.
+
+CommonJS harnesses use `.leia.cjs`; ESM harnesses use `.leia.mjs`. These extensions make the generated format independent
+of the temporary directory's enclosing package scope. ESM harnesses load Leia's CommonJS dependencies through Node's
+`createRequire`, so Leia's own package and source remain CommonJS. Projects that added a nested `package.json` containing
+`{"type":"commonjs"}` only to protect Leia's old `.leia.js` output may remove that workaround after upgrading.
+
+Use `leia.run()` for explicitly CommonJS harnesses. Use `await leia.runAsync()` for `auto` or ESM workflows; it supports
+both formats and loads native ESM through Mocha's asynchronous loader.
 
 ## Markdown Syntax
 

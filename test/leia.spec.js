@@ -17,6 +17,8 @@ describe('leia', () => {
     it('should return a Leia instance with correct default options', () => {
       const leia = new Leia();
       leia.should.be.an('object');
+      leia.resolveModuleFormat.should.be.a('function');
+      leia.runAsync.should.be.a('function');
     });
   });
 });

@@ -1,6 +1,7 @@
 const {Command, flags} = require('@oclif/command');
 
 const chalk = require('chalk');
+const moduleFormats = require('../lib/module-format').formats;
 const shell = require('../lib/shell.js');
 
 class LeiaCommand extends Command {
@@ -11,6 +12,7 @@ class LeiaCommand extends Command {
 [--debug] \
 [--help] \
 [--ignore=<patterns>] \
+[--module-format=<auto|commonjs|esm>] \
 [--retry=<count>] \
 [--setup-header=<setup-headers>] \
 [--test-header=<test-headers>] \
@@ -24,6 +26,7 @@ class LeiaCommand extends Command {
     'leia README.md "examples/**/*.md" --retry 6 --test-header Tizzestin',
     'leia "examples/*.md" --ignore BUTNOTYOU.md test --stdin --timeout 5',
     'leia README.md --shell cmd',
+    'leia README.md --module-format esm',
   ];
 
   static args = [{name: 'tests', description: 'files or patterns to scan for test'}];
@@ -61,6 +64,11 @@ class LeiaCommand extends Command {
       char: 'i',
       description: 'files or patterns to ignore',
       multiple: true,
+    }),
+    'module-format': flags.string({
+      default: 'auto',
+      description: 'generates CommonJS or ESM harnesses, autodetected by default',
+      options: moduleFormats,
     }),
     'retry': flags.string({
       char: 'r',
@@ -102,6 +110,8 @@ class LeiaCommand extends Command {
 
   // The stuff that runs
   async run() {
+    const invocationCwd = process.cwd();
+
     // Get modules and stuff
     // @NOTE: we do this here so we dont need to load big things like lodash just to show the CLI
     const _ = require('lodash');
@@ -131,6 +141,7 @@ class LeiaCommand extends Command {
     // Summon leia to do the things
     const Leia = require('./../lib/leia');
     const leia = new Leia();
+    options.moduleFormat = leia.resolveModuleFormat(options.moduleFormat, invocationCwd);
 
     // Some advanced kenny loggins
     debug('leia parsed args and flags into options: %o', options);
@@ -148,7 +159,7 @@ class LeiaCommand extends Command {
     debug('generated leia tests to %o', tests.join(', '));
 
     // Get the test runner and execute
-    const runner = leia.run(tests, options);
+    const runner = await leia.runAsync(tests, options);
     runner.run((failures) => {
       debug('tests completed with %o failures', failures);
       process.exitCode = failures ? 1 : 0;
