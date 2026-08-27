@@ -41,15 +41,14 @@ jobs:
         env:
           MODULE_FORMAT: ${{ matrix.format }}
         run: |
-          node ./bin/leia examples/basic-example.md --module-format "$MODULE_FORMAT" --debug
+          node ./bin/leia examples/basic-example.md --module-format "$MODULE_FORMAT"
           node ./bin/leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md" -i "examples/basic-pwsh-example.md" --module-format "$MODULE_FORMAT"
           node ./bin/leia examples/custom-headers.md -s Hello -t Sup -c Goodbye --module-format "$MODULE_FORMAT"
           node ./bin/leia examples/basic-example.md --retry 2 --split-file --stdin --spawn --module-format "$MODULE_FORMAT"
           node ./bin/leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye --module-format "$MODULE_FORMAT"
-          node ./bin/leia examples/environment.md examples/basic-example.md --retry 4 --timeout 5 --module-format "$MODULE_FORMAT" --debug
-          node ./bin/leia examples/stdin-example.md --stdin --module-format "$MODULE_FORMAT"
-          node ./bin/leia examples/basic-example.md --module-format "$MODULE_FORMAT" --shell bash --debug
-          node ./bin/leia examples/basic-example.md --module-format "$MODULE_FORMAT" --shell sh --debug
+          node ./bin/leia examples/environment.md examples/basic-example.md --retry 4 --timeout 5 --module-format "$MODULE_FORMAT"
+          node ./bin/leia examples/basic-example.md --module-format "$MODULE_FORMAT" --shell bash
+          node ./bin/leia examples/basic-example.md --module-format "$MODULE_FORMAT" --shell sh
 
       - name: Test explicit package-scope overrides
         shell: bash

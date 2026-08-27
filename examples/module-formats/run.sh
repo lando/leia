@@ -19,7 +19,7 @@ for scenario in commonjs esm untyped nested/commonjs; do
     export TMP="$PWD/.tmp"
     export TMPDIR="$PWD/.tmp"
 
-    args=(README.md --retry 2 --stdin --timeout 5 --debug)
+    args=(README.md --retry 2 --stdin --timeout 5)
     if [[ "$module_format" != auto ]]; then
       args+=(--module-format "$module_format")
     fi
