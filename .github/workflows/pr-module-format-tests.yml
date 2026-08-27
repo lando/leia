@@ -6,7 +6,7 @@ on:
 jobs:
   module-format-tests:
     name: module-format-tests (${{ matrix.format }})
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       TERM: xterm
     strategy:
@@ -54,4 +54,4 @@ jobs:
         shell: bash
         env:
           MODULE_FORMAT: ${{ matrix.format }}
-        run: bash examples/module-formats/run.sh "$MODULE_FORMAT"
+        run: bash examples/format-examples/run.sh "$MODULE_FORMAT"

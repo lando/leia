@@ -25,7 +25,7 @@ by CI, and package files or other static inputs beside them are live fixtures.
 
 ## Module-Format Examples
 
-- The package files beneath `module-formats/` intentionally define CommonJS, ESM, untyped, and
+- The package files beneath `format-examples/` intentionally define CommonJS, ESM, untyped, and
   nearest-nested package scopes for `auto` detection. They are test inputs, not generated harness
   workarounds.
 - Invoke each automatic-format scenario from its own directory. Leia resolves `auto` from the

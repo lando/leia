@@ -12,10 +12,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-15
-          - macos-14
-          - ubuntu-22.04
-          - windows-2022
+          - macos-26
+          - ubuntu-24.04
+          - windows-2025
 
     steps:
       # Install deps and cache
@@ -49,4 +48,4 @@ jobs:
       # Run auto detection from each package scope with a repository-local temporary directory
       - name: Test automatic module format detection
         shell: bash
-        run: bash examples/module-formats/run.sh auto
+        run: bash examples/format-examples/run.sh auto
