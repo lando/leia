@@ -1,6 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-* Raised the supported Node.js engine floor from 18 to 24 and standardized development and automation on Node 24 LTS [#60](https://github.com/lando/leia/issues/60)
+- Fixed generated Mocha harness failures caused by valid shell syntax in executable Markdown. [#57](https://github.com/lando/leia/issues/57)
+- Raised the supported Node.js engine floor from 18 to 24 and standardized development and automation on Node 24 LTS [#60](https://github.com/lando/leia/issues/60)
 
 ## v1.0.0-beta.4 - [July 22, 2024](https://github.com/lando/leia/releases/tag/v1.0.0-beta.4)
 

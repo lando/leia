@@ -27,4 +27,26 @@ echo '\\literal\\'
 
 # Should  process quoted backslash.
 echo "\dt"
+
+# Should process literal backticks.
+printf '%s\n' 'both `$INTERACTIVE` and `$NONINTERACTIVE` are set.'
+
+# Should process braced shell variables.
+printf '%s\n' "${HOME}"
+
+# Should process command substitutions.
+printf '%s\n' "$(printf '%s' substitution)"
+
+# Should process unbraced shell variables.
+printf '%s\n' "$HOME"
+
+# Should process shell octal escapes.
+printf '\033[31mred\033[0m\n'
+
+# Should process shell backreferences.
+printf '%s\n' abc | sed -E 's/(a)/\1/'
+
+# Should process multiline commands.
+printf '%s\n' first
+printf '%s\n' second
 ```
