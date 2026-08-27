@@ -45,6 +45,11 @@ describe('parse', () => {
     tests[0].moduleFormat.should.equal('esm');
     tests[0].destination.should.match(/\.leia\.mjs$/);
   });
+  it('should normalize valid retry metadata and reject invalid values', () => {
+    const file = path.resolve(__dirname, '..', 'examples', 'basic-example.md');
+    parse([file], {retry: '4'})[0].retry.should.equal(4);
+    (() => parse([file], {retry: 'four'})).should.throw('--retry must be an integer between 0 and');
+  });
   it('should organize tests into setup|test|cleanup buckets if applicable', () => {
     const tests = parse([path.resolve(__dirname, '..', 'examples', 'setup-cleanup-example.md')]);
     tests[0].tests.setup.should.be.an('Array').and.not.be.empty;
@@ -69,6 +74,8 @@ describe('parse', () => {
       'shell',
       'skip',
     );
+    test.args.should.be.an('array');
+    test.args.should.include(test.script);
     test.describe.should.deep.equal(['should return true']);
     test.command.should.equal('true');
   });

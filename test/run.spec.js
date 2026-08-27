@@ -46,4 +46,12 @@ describe('lib/run', () => {
     const failures = await runMocha(runner);
     failures.should.equal(0);
   });
+
+  it('should reject invalid timeout values before loading harnesses', () => {
+    ['nope', '-1', '1.5', '5seconds', '2147484'].forEach((timeout) => {
+      (() => run([commonjsHarness], {timeout})).should.throw(
+        '--timeout must be an integer between 0 and 2147483',
+      );
+    });
+  });
 });

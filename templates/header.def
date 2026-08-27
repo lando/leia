@@ -4,19 +4,17 @@
  * See https://github.com/lando/leia for more
  * information on how all this magic works
  *
- * id: {{=it.id}}
- * runs-from: {{=it.cwd}}
  */
 
 // Set some helpful envvars so we know these are leia tezts
 process.env.LEIA = 'true';
 process.env.LEIA_ENVIRONMENT = 'true';
 process.env.LEIA_TEST_RUNNING = 'true';
-process.env.LEIA_VERSION = '{{=it.version}}';
+process.env.LEIA_VERSION = {{=it.version}};
 
 // Set legacy envars
 // These are DERECATED and will eventually be removed!!!
 process.env.LEIA_PARSER_RUNNING = 'true';
-process.env.LEIA_PARSER_VERSION = '{{=it.version}}';
-process.env.LEIA_PARSER_ID = '{{=it.id}}';
+process.env.LEIA_PARSER_VERSION = {{=it.version}};
+process.env.LEIA_PARSER_ID = {{=it.id}};
 process.env.LEIA_PARSER_RETRY = {{=it.retry}};

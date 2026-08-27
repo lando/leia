@@ -55,7 +55,7 @@ OPTIONS
   -c, --cleanup-header=cleanup-header      [default: Clean,Tear,Burn] considers these h2 sections as cleanup commands
   -i, --ignore=ignore                      files or patterns to ignore
   --module-format=auto|commonjs|esm        [default: auto] generates CommonJS or ESM harnesses, autodetected by default
-  -r, --retry=retry                        [default: 1] retries tests the given amount
+  -r, --retry=retry                        [default: 1] non-negative number of times to retry each test
   -s, --setup-header=setup-header          [default: Start,Setup,This is the dawning] considers these h2 sections as setup commands
   -t, --test-header=test-header            [default: Test,Validat,Verif] considers these h2 sections as tests
   -v, --version                            shows version info
@@ -63,7 +63,7 @@ OPTIONS
   --help                                   shows help
   --shell=bash|cmd|powershell|pwsh|sh|zsh  [default: /opt/homebrew/bin/zsh] runs tests with given shell, autodetected by default
   --stdin                                  attachs stdin when the test is run
-  --timeout=timeout                        [default: 1800] seconds before tests time out
+  --timeout=timeout                        [default: 1800] non-negative whole seconds before tests time out (max 2147483)
 
 EXAMPLES
   leia README.md
@@ -72,6 +72,10 @@ EXAMPLES
   leia README.md --shell cmd
   leia README.md --module-format esm
 ```
+
+`--retry` and `--timeout` accept non-negative integers. Retry counts may not exceed JavaScript's safe-integer limit;
+timeouts may not exceed `2147483` seconds so their millisecond conversion remains within Node's timer range. Leia rejects
+invalid, fractional, or out-of-range values before generating or loading a harness.
 
 ### Module
 
