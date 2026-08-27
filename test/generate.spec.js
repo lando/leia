@@ -16,14 +16,14 @@ const generate = require('./../lib/generate');
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-generate-'));
 const normalizePath = (file) => file.split(path.sep).join('/');
 const commands = [
-  "printf '%s\\n' 'both `$INTERACTIVE` and `$NONINTERACTIVE` are set.'",
-  "printf '%s\\n' \"${HOME}\"",
-  "printf '\\033[31mred\\033[0m\\n'",
-  "printf '%s\\n' abc | sed -E 's/(a)/\\1/'",
-  "printf '%s\\n' \"$(printf '%s' substitution)\"",
-  "printf '%s\\n' \"$HOME\"",
-  "printf '%s\\n' '\"quoted\" \\\\literal\\\\'",
-  "printf '%s\\n' first\nprintf '%s\\n' second",
+  'printf \'%s\\n\' \'both `$INTERACTIVE` and `$NONINTERACTIVE` are set.\'',
+  'printf \'%s\\n\' "${HOME}"',
+  'printf \'\\033[31mred\\033[0m\\n\'',
+  'printf \'%s\\n\' abc | sed -E \'s/(a)/\\1/\'',
+  'printf \'%s\\n\' "$(printf \'%s\' substitution)"',
+  'printf \'%s\\n\' "$HOME"',
+  'printf \'%s\\n\' \'"quoted" \\\\literal\\\\\'',
+  'printf \'%s\\n\' first\nprintf \'%s\\n\' second',
 ];
 const tests = [{
   file: normalizePath(path.join(tempDir, 'mock.md')),
