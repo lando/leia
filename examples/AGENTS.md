@@ -39,7 +39,7 @@ by CI, and package files or other static inputs beside them are live fixtures.
 
 - Leia writes each executable block to a separate script; keep scenario behavior valid under that
   execution model.
-- Avoid literal backticks, braced shell expansions, and numeric backreferences inside executable
-  blocks when JavaScript template parsing could consume them before the shell does.
+- Keep coverage for valid template-sensitive shell syntax, including literal backticks, braced
+  variables, command substitutions, octal escapes, and numeric backreferences.
 - Keep package-scope and cross-platform scenario execution in CI by default. Do not run Leia
   examples locally unless operational validation is explicitly requested.

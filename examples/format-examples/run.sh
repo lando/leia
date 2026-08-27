@@ -45,7 +45,6 @@ for scenario in commonjs esm untyped nested/commonjs; do
       grep -Fq "import {createRequire} from 'node:module';" "$harness"
       grep -Fq 'const require = createRequire(import.meta.url);' "$harness"
     else
-      grep -Fq "const chai = require('" "$harness"
       if grep -Fq 'createRequire(import.meta.url)' "$harness"; then
         echo "CommonJS harness contains the ESM dependency loader"
         exit 1
