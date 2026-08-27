@@ -6,7 +6,7 @@
     process.env.LEIA_TEST_STAGE = '{{=test.section}}';
     {{? test.skip }}this.ctx.test.skip();{{?? true }}
     const cli = new CliTest();
-    const data = {shell: '{{=test.shell}}', args: `{{=test.args}}`, commands: `{{=test.command}}`, stdin: '{{=it.stdin}}'};
+    const data = {shell: '{{=test.shell}}', args: `{{=test.args}}`, commands: {{=JSON.stringify(test.command)}}, stdin: '{{=it.stdin}}'};
     debug(`running test {{=it.id}} from {{=it.cwd}} using %o`, data);
     cli.spawn('{{=test.shell}}', {{=test.args}}, {stdio: ['{{=it.stdin}}', 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
