@@ -5,8 +5,11 @@
 
 'use strict';
 
+const path = require('path');
+
 const chai = require('@lando/chai');
 const filesystem = require('mock-fs');
+
 chai.should();
 
 const find = require('./../lib/find');
@@ -46,9 +49,24 @@ describe('find', () => {
     files.should.be.an('Array');
     files.should.have.lengthOf(1);
   });
-  it('should return absolute paths');
-  it('should not return directories');
-  it('should return a flattened array');
+  it('should return absolute paths', () => {
+    const files = find(['/some/source/dir/**.md']);
+
+    files.every((file) => path.isAbsolute(file)).should.equal(true);
+  });
+  it('should not return directories', () => {
+    const files = find(['/some/**']);
+
+    files.should.have.lengthOf(5);
+    files.should.not.include(path.resolve('/some/source/dir'));
+    files.should.not.include(path.resolve('/some/other/source/dir'));
+  });
+  it('should return a flattened array', () => {
+    const files = find(['/some/source/dir/**.md', '/some/other/source/dir/**.md']);
+
+    files.should.have.lengthOf(5);
+    files.should.deep.equal(files.flat());
+  });
 
   afterEach(() => {
     filesystem.restore();

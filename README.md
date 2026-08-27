@@ -199,10 +199,14 @@ Note: `LEIA_TEST_STAGE` can be either `setup`, `test` or `cleanup` and `LEIA_TES
 
 ## Shell considerations
 
-`leia` will autodetect your shell and use a `bashy` one if available.
+When `--shell` is omitted, `leia` selects a shell with deterministic platform precedence:
 
-* On POSIX systems it will prefer `bash` or `zsh` if available with a fallback to `sh`.
-* On Windows systems it will prefer `bash` if available with a fallback to `cmd`.
+* On Windows, `SHELL` wins, followed by `MSYSTEM=MINGW64` using `bash.exe`, `COMSPEC`, and finally `cmd.exe`.
+* On macOS and other Unix systems, the account shell from `os.userInfo()` wins, followed by `SHELL`. The final fallback is
+  `/bin/zsh` on macOS and `/bin/sh` elsewhere.
+
+Unix account lookup failures are reported instead of silently changing the selected shell. An unrecognized selected shell
+still uses Leia's supported `sh` behavior.
 
 You can also explicitly tell `leia` what shell to use with the `--shell` option. However, currently only `bash`, `sh`, `zsh`, `cmd`, `powershell` and `pwsh` are supported options.
 
