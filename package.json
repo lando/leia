@@ -80,5 +80,8 @@
     "eslint-config-google": "^0.14.0",
     "mock-fs": "^4.7.0",
     "nyc": "^15.1.0"
+  },
+  "overrides": {
+    "brace-expansion": "1.1.18"
   }
 }
