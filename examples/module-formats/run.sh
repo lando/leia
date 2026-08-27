@@ -4,6 +4,7 @@ set -euo pipefail
 
 module_format="${1:-auto}"
 root="$(cd "$(dirname "$0")" && pwd)"
+leia="$root/../../bin/leia"
 
 for scenario in commonjs esm untyped nested/commonjs; do
   expected=cjs
@@ -23,7 +24,7 @@ for scenario in commonjs esm untyped nested/commonjs; do
       args+=(--module-format "$module_format")
     fi
 
-    npx leia "${args[@]}"
+    node "$leia" "${args[@]}"
     find .tmp -type f -name "*.leia.$expected" -print | grep .
     if find .tmp -type f -name package.json -print | grep -q .; then
       echo "Leia generated an unexpected package boundary"
