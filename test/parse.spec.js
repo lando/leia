@@ -5,12 +5,14 @@
 
 'use strict';
 
-const chai = require('@lando/chai');
+const os = require('os');
 const path = require('path');
 
-chai.should();
+const chai = require('@lando/chai');
 
 const parse = require('./../lib/parse');
+
+chai.should();
 
 describe('parse', () => {
   it('should return leia testing metadata with the default keys', () => {
@@ -52,8 +54,65 @@ describe('parse', () => {
     tests2[0].tests.should.not.have.all.keys('setup', 'cleanup');
     tests2[0].tests.should.have.all.keys('test', 'invalid');
   });
-  it('should return tests as objects with description and command');
-  it('should concatenate multiline test commands with a &');
-  it('should be able to combine tests from multiple code blocks under one section');
-  it('should be able to combine tests from multiple setup|test|cleanup sections');
+  it('should return tests as objects with description and command', () => {
+    const tests = parse([path.resolve(__dirname, '..', 'examples', 'basic-example.md')]);
+    const test = tests[0].tests.test[0];
+
+    test.should.have.all.keys(
+      'args',
+      'command',
+      'describe',
+      'id',
+      'number',
+      'script',
+      'section',
+      'shell',
+      'skip',
+    );
+    test.describe.should.deep.equal(['should return true']);
+    test.command.should.equal('true');
+  });
+  it('should fold multiline continuations and preserve separate commands', () => {
+    const tests = parse([path.resolve(__dirname, '..', 'examples', 'basic-example.md')]);
+    const test = tests[0].tests.test.find(({describe}) => (
+      describe.includes('should not concatenate if escape is used')
+    ));
+
+    test.command.should.equal([
+      'export TEST=thing  TEST2=stuff  TEST3=morestuff',
+      'env | grep TEST',
+      'env | grep TEST2',
+      'env | grep TEST3',
+      'unset TEST',
+      'unset TEST2',
+      'unset TEST3',
+    ].join(os.EOL));
+  });
+  it('should combine tests from multiple code blocks under one section', () => {
+    const tests = parse([path.resolve(__dirname, '..', 'examples', 'basic-example.md')]);
+    const test = tests[0].tests.test.find(({describe}) => describe.includes('should also run this'));
+
+    tests[0].tests.test.should.have.lengthOf(8);
+    test.command.should.equal('true');
+    test.number.should.equal(7);
+  });
+  it('should combine tests from repeated setup, test, and cleanup sections', () => {
+    const tests = parse([path.resolve(__dirname, 'parse-sections.md')]);
+
+    tests[0].tests.setup.map((test) => test.describe[0]).should.deep.equal([
+      'should run first setup',
+      'should run second setup',
+    ]);
+    tests[0].tests.test.map((test) => test.describe[0]).should.deep.equal([
+      'should run first test',
+      'should run second test',
+    ]);
+    tests[0].tests.cleanup.map((test) => test.describe[0]).should.deep.equal([
+      'should run first cleanup',
+      'should run second cleanup',
+    ]);
+    tests[0].tests.setup.map((test) => test.number).should.deep.equal([1, 2]);
+    tests[0].tests.test.map((test) => test.number).should.deep.equal([1, 2]);
+    tests[0].tests.cleanup.map((test) => test.number).should.deep.equal([1, 2]);
+  });
 });
