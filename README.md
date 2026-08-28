@@ -266,9 +266,14 @@ npm run test:unit
 
 ## Releasing
 
-To deploy and publish a new version of the package to the `npm` registry you need only [create a release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) with a [semver](https://semver.org) tag.
+To deploy and publish a new version of the package to the `npm` registry you need only [create a release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) with a [semver](https://semver.org) tag. Stable releases publish to the `latest` tag, while prereleases publish to `edge`. Promoting a prerelease to a full release moves that version to `latest`.
 
-Note that prereleases will get pushed to the `edge` tag on the `npm` registry.
+Before releasing, maintainers must configure the following external access:
+
+* Add a GitHub Actions trusted publisher to the `@lando/leia` package on npm with organization `lando`, repository `leia`, workflow filename `release.yml`, no environment, and the `npm publish` allowed action. The workflow publishes through OIDC and does not use an npm token.
+* Create a short-lived granular npm token with read and write access only to the `@lando/leia` package, no organization access, and 2FA bypass only when the package settings require it for unattended writes. Store it as the `NPM_DIST_TAG_TOKEN` GitHub Actions secret. npm granular tokens cannot be limited to one CLI command, so package-only read and write access is the narrowest permission available for the `npm dist-tag add` promotion step.
+
+Configure both before running this workflow. After an authorized release verifies trusted publishing and promotion, revoke the broader `NPM_DEPLOY_TOKEN` that the previous workflow used.
 
 ## Maintainers
 
