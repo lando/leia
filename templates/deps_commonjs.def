@@ -1,8 +1,8 @@
 
 // We need these deps to run our tezts
-const chai = require('{{=it.chaiPath}}');
-const CliTest = require('{{=it.cltPath}}');
-const debug = require('{{=it.debugPath}}')('leia:test:{{=it.id}}');
+const chai = require({{=it.chaiPath}});
+const CliTest = require({{=it.cltPath}});
+const debug = require({{=it.debugPath}})('leia:test:' + {{=it.id}});
 const path = require('path');
 chai.should();
 

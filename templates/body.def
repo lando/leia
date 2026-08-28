@@ -1,4 +1,4 @@
-describe('{{=it.id}}', function() {
+describe({{=it.id}}, function() {
   this.retries({{=it.retry}});
 {{~ it.tests.setup :test}}
   // These are tests we need to run to get the app into a state to test

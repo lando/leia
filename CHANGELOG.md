@@ -4,6 +4,7 @@
 - Added `runAsync()` for CommonJS/ESM loading while preserving synchronous `run()` for CommonJS. [#59](https://github.com/lando/leia/issues/59)
 - Fixed automatic shell selection to honor Unix account shells and use explicit platform fallback precedence. [#75](https://github.com/lando/leia/issues/75)
 - Fixed generated Mocha harness failures caused by valid shell syntax in executable Markdown. [#57](https://github.com/lando/leia/issues/57)
+- Fixed generated harness validation and serialization for numeric options, paths, shell values, and identifiers. [#73](https://github.com/lando/leia/issues/73)
 - Fixed test numbering across repeated setup, test, and cleanup sections. [#75](https://github.com/lando/leia/issues/75)
 - Raised the supported Node.js engine floor from 18 to 24 and standardized development and automation on Node 24 LTS [#60](https://github.com/lando/leia/issues/60)
 

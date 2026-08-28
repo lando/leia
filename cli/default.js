@@ -2,6 +2,7 @@ const {Command, flags} = require('@oclif/command');
 
 const chalk = require('chalk');
 const moduleFormats = require('../lib/module-format').formats;
+const numericOption = require('../lib/numeric-option');
 const shell = require('../lib/shell.js');
 
 class LeiaCommand extends Command {
@@ -72,8 +73,9 @@ class LeiaCommand extends Command {
     }),
     'retry': flags.string({
       char: 'r',
-      description: 'retries tests the given amount',
+      description: 'non-negative number of times to retry each test',
       default: 1,
+      parse: numericOption.retry,
     }),
     'shell': flags.string({
       default: shell().binary,
@@ -84,8 +86,9 @@ class LeiaCommand extends Command {
       description: 'attachs stdin when the test is run',
     }),
     'timeout': flags.string({
-      default: '1800',
-      description: 'seconds before tests time out',
+      default: 1800,
+      description: `non-negative whole seconds before tests time out (max ${numericOption.MAX_TIMEOUT_SECONDS})`,
+      parse: numericOption.timeout,
     }),
 
     // Legacy flags that still work if you pass them in but are no longer shown in help or documented

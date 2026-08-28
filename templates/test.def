@@ -1,14 +1,14 @@
-  it('{{=test.describe[0]}}', done => {
-    process.chdir('{{=it.cwd}}');
-    process.env.LEIA_TEST_ID = '{{=test.id}}';
-    process.env.LEIA_TEST_NUMBER = '{{=test.number}}';
+  it({{=test.describe}}, done => {
+    process.chdir({{=it.cwd}});
+    process.env.LEIA_TEST_ID = {{=test.id}};
+    process.env.LEIA_TEST_NUMBER = {{=test.number}};
     process.env.LEIA_TEST_RETRY = this.ctx.test._currentRetry;
-    process.env.LEIA_TEST_STAGE = '{{=test.section}}';
+    process.env.LEIA_TEST_STAGE = {{=test.section}};
     {{? test.skip }}this.ctx.test.skip();{{?? true }}
     const cli = new CliTest();
-    const data = {shell: '{{=test.shell}}', args: `{{=test.args}}`, commands: {{=JSON.stringify(test.command)}}, stdin: '{{=it.stdin}}'};
-    debug(`running test {{=it.id}} from {{=it.cwd}} using %o`, data);
-    cli.spawn('{{=test.shell}}', {{=test.args}}, {stdio: ['{{=it.stdin}}', 'pipe', 'pipe']}).then(res => {
+    const data = {shell: {{=test.shell}}, args: {{=test.args}}, commands: {{=test.command}}, stdin: {{=it.stdin}}};
+    debug('running test %s from %s using %o', {{=it.id}}, {{=it.cwd}}, data);
+    cli.spawn({{=test.shell}}, {{=test.args}}, {stdio: [{{=it.stdin}}, 'pipe', 'pipe']}).then(res => {
       if (res.error === null) {
         done();
       } else {
