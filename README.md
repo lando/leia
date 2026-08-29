@@ -12,6 +12,8 @@ Leia will
 
 ## Installation
 
+Leia 1.x requires Node.js 24 or newer.
+
 ```bash
 # With npm
 npm install @lando/leia
@@ -19,17 +21,19 @@ npm install @lando/leia
 
 ## Basics
 
-A _very_ basic example of a valid Leia test is below. It _must_ have a single H1 header, at least one H2 header and then a code block
-where the comment is the human readable test description and the command below is the test.
+A basic Leia test needs one H1 heading, at least one matching H2 test heading, and a fenced code block.
+Inside the code block, a comment describes the test and the following line runs its command.
 
-```md
+````md
 # Some Example
 
 ## Testing
 
-# A description of my test
-the command i am running
+```bash
+# Should print a greeting
+echo "Hello from Leia"
 ```
+````
 
 ## Usage
 
@@ -139,27 +143,28 @@ both formats and loads native ESM through Mocha's asynchronous loader.
 
 ## Markdown Syntax
 
-In order for your `markdown` file to be recognized as containing functional tests it needs to have at least the following
+For a Markdown file to be recognized as containing functional tests, it needs at least the following:
 
-#### 1. A h1 Header
+### 1. An H1 heading
 
 ```md
 # Something to identify these tests
 ```
 
-#### 2. A h2 Header
+### 2. An H2 test heading
 
-By default our parser will look for a section that beings with the word "Testing". This section will contain your tests.
+By default, Leia looks for sections beginning with "Testing". These sections contain your tests.
 
 ```md
 ## Testing
 ```
 
-You can customize the word(s) that `leia` will look for to identify the testing section(s) using the `--test-header` option. You can also run `npm leia --help` to get a list of default words.
+Customize the words Leia uses to identify test sections with `--test-header`. Run `npx leia --help` to see the defaults.
 
-#### 3. A code block with at least one command and comment
+### 3. A fenced code block with a comment and command
 
-Under the above h2 sections you need to have a triple tick [markdown code block](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#code) that contains at least one comment and one command. The comment will be the human readable description of what the test does.
+Under a matching H2 heading, add a fenced code block containing at least one comment and one command. The
+comment becomes the human-readable test description.
 
 Here is a basic code block that runs one test
 
@@ -168,14 +173,14 @@ Here is a basic code block that runs one test
 cat test.txt
 ```
 
-If you want to learn more about the syntax and how `leia` puts together the above, check out [this example](https://github.com/lando/leia/blob/main/examples/basic-example.md)
+For more syntax examples, see the [basic executable example](https://github.com/lando/leia/blob/main/examples/basic-example.md).
 
 ## Skipping
 
 You can also skip tests. This is useful if you want to stub out a test for later.
 
 ```bash
-# Should write this test later and dont want to forget it
+# Should write this test later and not forget it
 skip
 ```
 
@@ -230,39 +235,15 @@ If you'd like to report a bug or submit a feature request then please [use the i
 
 ## Changelog
 
-We try to log all changes big and small in both [THE CHANGELOG](https://github.com/lando/leia/blob/main/CHANGELOG.md) and the [release notes](https://github.com/lando/leia/releases).
+User- and developer-visible changes are recorded in the
+[changelog](https://github.com/lando/leia/blob/main/CHANGELOG.md) and published
+[release notes](https://github.com/lando/leia/releases).
 
 ## Development
 
-Leia development requires [Node 24 LTS](https://nodejs.org/dist/latest-v24.x/). The root `.node-version` is the runtime authority for version-aware local tooling and GitHub Actions.
-
-```bash
-git clone https://github.com/lando/leia.git && cd leia
-npm install
-```
-
-If you don't want to install Node 24 locally, you can install [Lando](https://docs.lando.dev/basics/installation.html) and use that:
-
-```bash
-git clone https://github.com/lando/leia.git && cd leia
-# Install deps and get node
-lando start
-
-# Run commands
-lando node
-lando npm install
-lando npx leia
-```
-
-## Testing
-
-```bash
-# Lint the code
-npm run lint
-
-# Run unit tests
-npm run test:unit
-```
+Leia development requires [Node 24 LTS](https://nodejs.org/dist/latest-v24.x/). The root `.node-version` is the runtime
+authority for version-aware local tooling and GitHub Actions. See [CONTRIBUTING.md](./CONTRIBUTING.md) for local setup,
+Lando-based setup, validation, and pull request guidance.
 
 ## Releasing
 
