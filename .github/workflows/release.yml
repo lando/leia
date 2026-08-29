@@ -13,7 +13,7 @@ jobs:
     name: Publish npm package
     runs-on: ubuntu-24.04
     permissions:
-      contents: read
+      contents: write
       id-token: write
     env:
       TERM: xterm
@@ -43,63 +43,6 @@ jobs:
       - name: Prepare release
         uses: tanaabased/prepare-release-action@v1
         with:
-          sync: false
-          version: ${{ github.event.release.tag_name }}
-          update-files: CHANGELOG.md
-          update-files-header: |
-            ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
-          update-files-meta: |
-            UNRELEASED_DATE=${{ env.RELEASE_DATE }}
-            UNRELEASED_LINK=${{ github.event.release.html_url }}
-            UNRELEASED_VERSION=${{ github.event.release.tag_name }}
-      - name: Resolve npm channel
-        id: npm_channel
-        shell: bash
-        env:
-          GITHUB_PRERELEASE: ${{ github.event.release.prerelease }}
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          if [[ "$VERSION" == *-* ]]; then
-            TAG=edge
-            EXPECTED_PRERELEASE=true
-          else
-            TAG=latest
-            EXPECTED_PRERELEASE=false
-          fi
-
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          if [[ "$GITHUB_PRERELEASE" != "$EXPECTED_PRERELEASE" ]]; then
-            echo "::warning title=Release metadata mismatch::Publishing $VERSION to '$TAG' based on its semver, ignoring GitHub prerelease=$GITHUB_PRERELEASE"
-          fi
-      - name: Upgrade npm for trusted publishing
-        run: npm install --global "npm@^11.5.1"
-      - name: Publish package with trusted publishing
-        env:
-          NPM_TAG: ${{ steps.npm_channel.outputs.tag }}
-        run: |
-          npm publish --access public --tag "$NPM_TAG" --dry-run
-          npm publish --access public --tag "$NPM_TAG"
-
-  finalize:
-    name: Finalize release
-    needs:
-      - release-npm
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - name: Export formatted release date
-        shell: bash
-        env:
-          PUBLISHED_AT: ${{ github.event.release.published_at }}
-        run: echo "RELEASE_DATE=$(date -d "$PUBLISHED_AT" "+%B %e, %Y" | tr -s ' ')" >> "$GITHUB_ENV"
-      - name: Prepare and synchronize release
-        uses: tanaabased/prepare-release-action@v1
-        with:
           sync: true
           version: ${{ github.event.release.tag_name }}
           sync-token: ${{ secrets.RTFM47_COAXIUM_INJECTOR }}
@@ -113,3 +56,10 @@ jobs:
             UNRELEASED_DATE=${{ env.RELEASE_DATE }}
             UNRELEASED_LINK=${{ github.event.release.html_url }}
             UNRELEASED_VERSION=${{ github.event.release.tag_name }}
+      - name: Upgrade npm for trusted publishing
+        run: npm install --global "npm@^11.5.1"
+      - name: Publish package with trusted publishing
+        run: |
+          NPM_TAG=$(node -p "require('./package.json').version.includes('-') ? 'edge' : 'latest'")
+          npm publish --access public --tag "$NPM_TAG" --dry-run
+          npm publish --access public --tag "$NPM_TAG"
