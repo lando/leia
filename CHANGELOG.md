@@ -1,6 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Fixed npm releases to publish every version to `edge` and promote only GitHub's latest release to `latest`.
+- Fixed npm releases to publish every version to `edge` and promote non-prerelease GitHub releases to `latest`.
 
 ## v1.0.0-beta.8 - [August 29, 2026](https://github.com/lando/leia/releases/tag/v1.0.0-beta.8)
 

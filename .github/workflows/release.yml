@@ -58,17 +58,14 @@ jobs:
       - name: Upgrade npm for trusted publishing
         run: npm install --global "npm@^11.5.1"
       - name: Publish package with trusted publishing
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NPM_DIST_TAG_TOKEN: ${{ secrets.NPM_DEPLOY_TOKEN }}
         run: |
-          LATEST_TAG=$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq '.tag_name')
-
           npm publish --access public --tag edge --dry-run
           npm publish --access public --tag edge
-
-          if [ "$LATEST_TAG" = "${{ github.event.release.tag_name }}" ]; then
-            PACKAGE=$(node -p "require('./package.json').name")
-            VERSION=$(node -p "require('./package.json').version")
-            NODE_AUTH_TOKEN="$NPM_DIST_TAG_TOKEN" npm dist-tag add "$PACKAGE@$VERSION" latest
-          fi
+      - name: Promote package to latest
+        if: ${{ github.event.release.prerelease == false }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_DEPLOY_TOKEN }}
+        run: |
+          PACKAGE=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          npm dist-tag add "$PACKAGE@$VERSION" latest
