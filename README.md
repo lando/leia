@@ -247,7 +247,7 @@ Lando-based setup, validation, and pull request guidance.
 
 ## Releasing
 
-To deploy and publish a new version of the package to the `npm` registry, [create a release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) with a [semver](https://semver.org) tag. Stable versions publish to the `latest` npm tag and prerelease versions publish to `edge`; the version itself determines the channel even if the GitHub release metadata is incorrect.
+To deploy and publish a new version of the package to the `npm` registry, [create a release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) with a [semver](https://semver.org) tag. Stable GitHub releases publish to the `latest` npm tag, while releases marked as prereleases publish to `edge`.
 
 The `@lando/leia` package must trust the `lando/leia` GitHub Actions publisher using `release.yml`. Publishing uses OIDC without an npm token, while `prepare-release-action` synchronizes the version and changelog.
 
