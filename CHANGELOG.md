@@ -1,9 +1,5 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Fixed npm channel selection to follow GitHub release prerelease metadata.
-
-## v1.0.0-beta.7 - [August 29, 2026](https://github.com/lando/leia/releases/tag/v1.0.0-beta.7)
-
 ### New Features
 
 - Added `--module-format` for auto or explicit CommonJS and ESM harness generation. [#59](https://github.com/lando/leia/issues/59) [#72](https://github.com/lando/leia/pull/72)
@@ -14,6 +10,7 @@
 - Fixed automatic shell selection to honor Unix account shells and explicit platform fallback precedence. [#75](https://github.com/lando/leia/issues/75) [#76](https://github.com/lando/leia/pull/76)
 - Fixed generated harness validation and serialization for numeric options, paths, shell values, and identifiers. [#73](https://github.com/lando/leia/issues/73) [#78](https://github.com/lando/leia/pull/78)
 - Fixed generated Mocha harness failures caused by valid shell syntax in executable Markdown. [#57](https://github.com/lando/leia/issues/57) [#71](https://github.com/lando/leia/pull/71)
+- Fixed npm channel selection to follow GitHub release prerelease metadata.
 - Fixed test numbering across repeated setup, test, and cleanup sections. [#75](https://github.com/lando/leia/issues/75) [#76](https://github.com/lando/leia/pull/76)
 
 ### Compatibility
