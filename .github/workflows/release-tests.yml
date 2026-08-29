@@ -1,0 +1,40 @@
+name: Release tests
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  release-tests:
+    name: release-tests (${{ matrix.npm_tag }})
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        include:
+          - release_version: v9.9.9
+            npm_tag: latest
+          - release_version: v9.9.9-ci.${{ github.event.pull_request.head.sha }}
+            npm_tag: edge
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Install Node from .node-version
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.node-version'
+          registry-url: https://registry.npmjs.org
+      - name: Prepare synthetic release
+        uses: tanaabased/prepare-release-action@v1
+        with:
+          sync: false
+          version: ${{ matrix.release_version }}
+      - name: Validate npm publish
+        env:
+          NPM_TAG: ${{ matrix.npm_tag }}
+        run: |
+          npm install --global "npm@^11.5.1"
+          npm publish --access public --tag "$NPM_TAG" --dry-run
