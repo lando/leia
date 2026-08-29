@@ -1,5 +1,11 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+### Developer Notes
+
+- Added pull-request dry runs for stable and prerelease npm publishing.
+- Fixed npm release channels to derive `latest` or `edge` from the stamped semver.
+- Removed the redundant npm release-promotion workflow.
+
 ## v1.0.0-beta.5 - [August 29, 2026](https://github.com/lando/leia/releases/tag/v1.0.0-beta.5)
 
 ### New Features
