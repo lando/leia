@@ -64,11 +64,6 @@ jobs:
         run: |
           LATEST_TAG=$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq '.tag_name')
 
-          if [ "$LATEST_TAG" = "${{ github.event.release.tag_name }}" ] && [ -z "$NPM_DIST_TAG_TOKEN" ]; then
-            echo "::error::NPM_DEPLOY_TOKEN is required to update the npm latest dist-tag."
-            exit 1
-          fi
-
           npm publish --access public --tag edge --dry-run
           npm publish --access public --tag edge
 
