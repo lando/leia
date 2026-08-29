@@ -270,6 +270,8 @@ To deploy and publish a new version of the package to the `npm` registry you nee
 
 Note that prereleases will get pushed to the `edge` tag on the `npm` registry.
 
+The `@lando/leia` package must trust the `lando/leia` GitHub Actions publisher using `release.yml`. Publishing uses OIDC; `NPM_DEPLOY_TOKEN` is retained only for `npm dist-tag` promotion and should be a granular token scoped to this package.
+
 ## Maintainers
 
 * [@pirog](https://github.com/pirog)

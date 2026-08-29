@@ -4,7 +4,10 @@
   "version": "1.0.0-beta.4",
   "author": "Mike Pirog @pirog",
   "license": "MIT",
-  "repository": "github:lando/leia",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lando/leia.git"
+  },
   "bugs": "https://github.com/lando/leia/issues/new/choose/",
   "homepage": "https://github.com/lando/leia",
   "keywords": [
@@ -19,7 +22,7 @@
   },
   "main": "lib/leia.js",
   "bin": {
-    "leia": "./bin/leia"
+    "leia": "bin/leia"
   },
   "files": [
     "/bin",
