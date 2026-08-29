@@ -8,17 +8,15 @@ permissions:
 
 jobs:
   release-tests:
-    name: release-tests (${{ matrix.channel }})
+    name: release-tests (${{ matrix.version_type }})
     runs-on: ubuntu-24.04
     strategy:
       matrix:
         include:
           - release_version: v9.9.9
-            prerelease: false
-            channel: latest
+            version_type: stable-version
           - release_version: v9.9.9-ci.${{ github.event.pull_request.head.sha }}
-            prerelease: true
-            channel: edge
+            version_type: prerelease-version
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -34,13 +32,7 @@ jobs:
         with:
           sync: false
           version: ${{ matrix.release_version }}
-      - name: Validate npm publish
-        env:
-          PRERELEASE: ${{ matrix.prerelease }}
+      - name: Validate npm edge publish
         run: |
           npm install --global "npm@^11.5.1"
-          if [ "$PRERELEASE" == "false" ]; then
-            npm publish --access public --dry-run
-          else
-            npm publish --access public --tag edge --dry-run
-          fi
+          npm publish --access public --tag edge --dry-run

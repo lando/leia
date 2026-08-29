@@ -247,9 +247,9 @@ Lando-based setup, validation, and pull request guidance.
 
 ## Releasing
 
-To deploy and publish a new version of the package to the `npm` registry, [create a release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) with a [semver](https://semver.org) tag. Stable GitHub releases publish to the `latest` npm tag, while releases marked as prereleases publish to `edge`.
+To deploy and publish a new version of the package to the `npm` registry, [create a release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) with a [semver](https://semver.org) tag. Every GitHub release publishes to the `edge` npm tag. When GitHub marks that release as the repository's latest release, the workflow also moves npm's `latest` tag to the same version; the prerelease checkbox does not choose the npm channel.
 
-The `@lando/leia` package must trust the `lando/leia` GitHub Actions publisher using `release.yml`. Publishing uses OIDC without an npm token, while `prepare-release-action` synchronizes the version and changelog.
+The `@lando/leia` package must trust the `lando/leia` GitHub Actions publisher using `release.yml`. Package publication uses OIDC without an npm token. `NPM_DEPLOY_TOKEN` is a granular package token used only to update the `latest` dist-tag, while `prepare-release-action` synchronizes the version and changelog.
 
 ## Maintainers
 
