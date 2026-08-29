@@ -1,9 +1,5 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Fixed npm releases to publish every version to `edge` and promote non-prerelease GitHub releases to `latest`.
-
-## v1.0.0-beta.8 - [August 29, 2026](https://github.com/lando/leia/releases/tag/v1.0.0-beta.8)
-
 ### New Features
 
 - Added `--module-format` for auto or explicit CommonJS and ESM harness generation. [#59](https://github.com/lando/leia/issues/59) [#72](https://github.com/lando/leia/pull/72)
@@ -25,8 +21,6 @@
 ### Developer Notes
 
 - Added pull-request dry runs for stable and prerelease npm publishing.
-- Fixed npm publishing to derive `latest` or `edge` from semver without a separate promotion workflow.
-- Updated npm prerelease promotion to move the `latest` tag when a prerelease becomes stable. [#53](https://github.com/lando/leia/pull/53)
 - Updated npm publishing to use OIDC trusted publishing and least-privilege workflow permissions. [#74](https://github.com/lando/leia/issues/74) [#79](https://github.com/lando/leia/pull/79)
 
 ## v1.0.0-beta.4 - [July 22, 2024](https://github.com/lando/leia/releases/tag/v1.0.0-beta.4)
