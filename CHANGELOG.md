@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Fixed npm channel selection to follow GitHub release prerelease metadata.
+
 ## v1.0.0-beta.7 - [August 29, 2026](https://github.com/lando/leia/releases/tag/v1.0.0-beta.7)
 
 ### New Features
