@@ -1,12 +1,26 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Added `--module-format` for auto or explicit CommonJS and ESM harness generation. [#59](https://github.com/lando/leia/issues/59)
-- Added `runAsync()` for CommonJS/ESM loading while preserving synchronous `run()` for CommonJS. [#59](https://github.com/lando/leia/issues/59)
-- Fixed automatic shell selection to honor Unix account shells and use explicit platform fallback precedence. [#75](https://github.com/lando/leia/issues/75)
-- Fixed generated Mocha harness failures caused by valid shell syntax in executable Markdown. [#57](https://github.com/lando/leia/issues/57)
-- Fixed generated harness validation and serialization for numeric options, paths, shell values, and identifiers. [#73](https://github.com/lando/leia/issues/73)
-- Fixed test numbering across repeated setup, test, and cleanup sections. [#75](https://github.com/lando/leia/issues/75)
-- Raised the supported Node.js engine floor from 18 to 24 and standardized development and automation on Node 24 LTS [#60](https://github.com/lando/leia/issues/60)
+### New Features
+
+- Added `--module-format` for auto or explicit CommonJS and ESM harness generation. [#59](https://github.com/lando/leia/issues/59) [#72](https://github.com/lando/leia/pull/72)
+- Added `runAsync()` for CommonJS/ESM loading while preserving synchronous `run()` for CommonJS. [#59](https://github.com/lando/leia/issues/59) [#72](https://github.com/lando/leia/pull/72)
+
+### Bug Fixes
+
+- Fixed automatic shell selection to honor Unix account shells and explicit platform fallback precedence. [#75](https://github.com/lando/leia/issues/75) [#76](https://github.com/lando/leia/pull/76)
+- Fixed generated harness validation and serialization for numeric options, paths, shell values, and identifiers. [#73](https://github.com/lando/leia/issues/73) [#78](https://github.com/lando/leia/pull/78)
+- Fixed generated Mocha harness failures caused by valid shell syntax in executable Markdown. [#57](https://github.com/lando/leia/issues/57) [#71](https://github.com/lando/leia/pull/71)
+- Fixed test numbering across repeated setup, test, and cleanup sections. [#75](https://github.com/lando/leia/issues/75) [#76](https://github.com/lando/leia/pull/76)
+
+### Compatibility
+
+- Raised the supported Node.js engine floor from 18 to 24 and standardized development and automation on Node 24 LTS. [#60](https://github.com/lando/leia/issues/60) [#70](https://github.com/lando/leia/pull/70)
+- Updated `mocha` from version 9 to 11. [#49](https://github.com/lando/leia/pull/49) [#50](https://github.com/lando/leia/pull/50)
+
+### Developer Notes
+
+- Updated npm prerelease promotion to move the `latest` tag when a prerelease becomes stable. [#53](https://github.com/lando/leia/pull/53)
+- Updated npm publishing to use OIDC trusted publishing and least-privilege workflow permissions. [#74](https://github.com/lando/leia/issues/74) [#79](https://github.com/lando/leia/pull/79)
 
 ## v1.0.0-beta.4 - [July 22, 2024](https://github.com/lando/leia/releases/tag/v1.0.0-beta.4)
 
