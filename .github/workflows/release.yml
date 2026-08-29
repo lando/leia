@@ -59,10 +59,13 @@ jobs:
         run: npm install --global "npm@^11.5.1"
       - name: Publish package with trusted publishing
         run: |
-          if [ "${{ github.event.release.prerelease }}" == "false" ]; then
-            npm publish --access public --dry-run
-            npm publish --access public
-          else
-            npm publish --access public --tag edge --dry-run
-            npm publish --access public --tag edge
-          fi
+          npm publish --access public --tag edge --dry-run
+          npm publish --access public --tag edge
+      - name: Promote package to latest
+        if: ${{ github.event.release.prerelease == false }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_DEPLOY_TOKEN }}
+        run: |
+          PACKAGE=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          npm dist-tag add "$PACKAGE@$VERSION" latest
