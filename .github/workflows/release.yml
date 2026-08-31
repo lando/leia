@@ -40,7 +40,7 @@ jobs:
           PUBLISHED_AT: ${{ github.event.release.published_at }}
         run: echo "RELEASE_DATE=$(date -d "$PUBLISHED_AT" "+%B %e, %Y" | tr -s ' ')" >> "$GITHUB_ENV"
       - name: Prepare release
-        uses: tanaabased/prepare-release-action@v1
+        uses: tanaabased/prepare-release-action@v99
         with:
           sync: true
           version: ${{ github.event.release.tag_name }}
