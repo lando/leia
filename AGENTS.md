@@ -3,11 +3,18 @@
 Keep this root guidance broadly applicable to repository work. Put narrower executable-example
 rules in `examples/AGENTS.md`.
 
+## Branch Routing
+
+- Target 2.0 pull requests at `2.x` and bounded 1.x maintenance pull requests at `main`.
+- Forward-port applicable 1.x fixes from `main` to `2.x` through focused pull requests.
+- Keep `main` as the default branch until the approved 2.0 release cutover.
+
 ## Product Boundaries
 
-- Leia is a Node.js CommonJS package that generates and runs Mocha harnesses from Markdown.
-- Keep the package, CLI, and implementation CommonJS. Module-format support applies to generated
-  harnesses; it is not permission to migrate Leia itself to ESM or dual-package output.
+- On `main`, Leia is a Node.js CommonJS package that generates and runs Mocha harnesses from Markdown.
+- For 1.x maintenance, keep the package, CLI, and implementation CommonJS. Module-format support
+  applies to generated harnesses; it is not permission to migrate Leia itself to ESM or dual-package
+  output.
 - Resolve one concrete module format per invocation. `auto` starts from the invocation's initial
   working directory and uses only the nearest `package.json`.
 - Generate explicit `.leia.cjs` or `.leia.mjs` files so runtime classification never depends on the
