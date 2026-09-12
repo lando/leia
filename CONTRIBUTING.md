@@ -40,6 +40,8 @@ executable example that owns the behavior you changed.
 
 ## Open a pull request
 
+- Target 2.0 development at `2.x` and bounded 1.x maintenance at `main`.
+- Forward-port applicable 1.x fixes from `main` to `2.x` through focused pull requests.
 - Keep the change focused and connect it to its issue when one exists.
 - Update the README and unreleased changelog when behavior changes for users or developers.
 - Describe what changed and include the validation you ran.
