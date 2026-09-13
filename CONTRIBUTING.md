@@ -38,6 +38,12 @@ With Lando, prefix those commands with `lando`, for example `lando npm run lint`
 The full Leia, shell, module-format, and operating-system scenarios run in CI. Add or update the narrowest unit test or
 executable example that owns the behavior you changed.
 
+CI also runs `npm run test:baseline` as the portable compatibility gate for the 2.0 rewrite. It combines the retained
+finder, parser, and generator contracts with one end-to-end Markdown scenario that verifies setup, test, and cleanup
+order; command side effects; CommonJS and ESM harnesses; and CLI exit behavior. The fixture driver accepts a replacement
+Leia command as arguments, so an incrementally ported entrypoint can run the same expectations without preserving the
+1.x source or package layout.
+
 ## Open a pull request
 
 - Target 2.0 development at `2.x` and bounded 1.x maintenance at `main`.

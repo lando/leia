@@ -51,6 +51,7 @@
   "scripts": {
     "leia": "node ./bin/leia",
     "lint": "eslint bin/leia . --ignore-pattern '*.leia.js' --ignore-pattern '*.leia.cjs' --ignore-pattern '*.leia.mjs' --ignore-pattern 'leia.readme.js'",
+    "test:baseline": "mocha --timeout 5000 test/find.spec.js test/parse.spec.js test/generate.spec.js && bash examples/compatibility/run.sh",
     "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
     "test:leia": "npx leia README.md \"examples/**/*.md\" -i \"examples/basic-cmd-example.md\" -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\"",
     "test:leia:stdin": "npx leia examples/stdin-example.md --stdin"
