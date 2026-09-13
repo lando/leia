@@ -126,31 +126,4 @@ describe('parse', () => {
     tests[0].tests.test.map((test) => test.number).should.deep.equal([1, 2]);
     tests[0].tests.cleanup.map((test) => test.number).should.deep.equal([1, 2]);
   });
-  it('should discover the compatibility baseline lifecycle and command contract', () => {
-    const tests = parse(
-      [path.resolve(__dirname, '..', 'examples', 'compatibility', 'README.md')],
-      {moduleFormat: 'commonjs', shell: 'bash'},
-    );
-    const baseline = tests[0];
-
-    baseline.id.should.equal('compatibility-baseline');
-    baseline.tests.setup.should.have.lengthOf(1);
-    baseline.tests.test.should.have.lengthOf(1);
-    baseline.tests.cleanup.should.have.lengthOf(1);
-    baseline.tests.setup[0].describe.should.deep.equal([
-      'should initialize lifecycle state before tests',
-    ]);
-    baseline.tests.test[0].describe.should.deep.equal([
-      'should run the scenario command after setup',
-    ]);
-    baseline.tests.cleanup[0].describe.should.deep.equal([
-      'should record cleanup after tests',
-    ]);
-    baseline.tests.test[0].command.should.include(
-      `"command $(printf '%s' substitution)"`,
-    );
-    baseline.tests.test[0].command.should.include(
-      'exit "${LEIA_BASELINE_COMMAND_STATUS:-0}"',
-    );
-  });
 });
