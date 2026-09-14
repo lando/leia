@@ -23,10 +23,17 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version-file: '.node-version'
-          cache: npm
+      - name: Install Bun from package.json
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - name: Check Bun version
+        run: bun run check:toolchain
       - name: Install dependencies
-        run: npm clean-install --prefer-offline --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       # Run unit tests
       - name: Run units tests
-        run: npm run test:unit
+        run: bun run test
+      - name: Verify repeatable builds and watch mode
+        run: bun run check:build

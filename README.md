@@ -241,9 +241,10 @@ User- and developer-visible changes are recorded in the
 
 ## Development
 
-Leia development requires [Node 24 LTS](https://nodejs.org/dist/latest-v24.x/). The root `.node-version` is the runtime
-authority for version-aware local tooling and GitHub Actions. See [CONTRIBUTING.md](./CONTRIBUTING.md) for local setup,
-Lando-based setup, validation, and pull request guidance.
+Leia 2.x development uses the Bun version pinned in `package.json#packageManager`, strict TypeScript ESM source,
+and `bun.lock`. Node 24 from `.node-version` remains available for compatibility tests and built JavaScript.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, canonical validation commands, source CLI execution,
+watch mode, and migration boundaries. Installed-package commands above remain npm/Node commands.
 
 ## Releasing
 

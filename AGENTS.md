@@ -23,7 +23,9 @@ rules in `examples/AGENTS.md`.
 
 ## Source Map
 
-- `cli/`: the public oclif command, flags, help, and exit behavior.
+- `src/`: strict TypeScript ESM application/CLI entrypoints and the narrow legacy adapter.
+- `scripts/`: Bun toolchain validation and repeatable development builds.
+- `cli/`: the unported oclif command, flags, help, and exit behavior.
 - `lib/`: parsing, generation, runner orchestration, shell selection, and focused helpers.
 - `templates/`: generated harness dependencies and the shared scenario body.
 - `test/`: focused Mocha unit tests for repository-owned JavaScript behavior.
@@ -55,8 +57,11 @@ rules in `examples/AGENTS.md`.
 
 ## Validation
 
-- Use the Node.js version pinned in `.node-version` and install dependencies with npm.
-- Run `npm run lint` and `npm run test:unit` for JavaScript changes when dependencies are available.
+- On `2.x`, use Bun from `package.json#packageManager` and `bun install --frozen-lockfile`.
+- Retain Node from `.node-version` for Mocha/nyc, Node-specific assertions, and built-output checks.
+- Run `bun run lint`, `bun run typecheck`, and `bun run test` for source changes.
+- Run `bun run check:build` for build or entrypoint changes; it checks clean output and bounded watch rebuild.
+- Keep new source in the explicit ESM scopes; do not reclassify unported CommonJS or weaken assertions.
 - Treat the full Leia, shell, module-format, and operating-system scenarios as CI-owned by default;
   do not run them locally unless operational validation is explicitly requested.
 - Run `git diff --check` for text or workflow changes and validate changed JSON and workflow YAML

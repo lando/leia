@@ -3,11 +3,10 @@ services:
   node:
     type: node:24
     build:
-      - npm ci
+      - npm install --global "$(node -p 'require("./package.json").packageManager')"
+      - bun install --frozen-lockfile
 tooling:
   node:
     service: node
-  npm:
-    service: node
-  npx:
+  bun:
     service: node

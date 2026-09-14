@@ -20,10 +20,17 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version-file: '.node-version'
-          cache: npm
+      - name: Install Bun from package.json
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - name: Check Bun version
+        run: bun run check:toolchain
       - name: Install dependencies
-        run: npm clean-install --prefer-offline --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       # Lint Code
       - name: Lint code
-        run: npm run lint
+        run: bun run lint
+      - name: Typecheck source and tooling
+        run: bun run typecheck

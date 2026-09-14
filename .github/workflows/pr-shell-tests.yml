@@ -24,34 +24,39 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version-file: '.node-version'
-          cache: npm
+      - name: Install Bun from package.json
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - name: Check Bun version
+        run: bun run check:toolchain
       - name: Install dependencies
-        run: npm clean-install --prefer-offline --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       # Run a few iterations of leia tests
       - name: Test macOS shells from
         if: ${{ runner.os == 'macOS' }}
         run: |
-          npx leia examples/basic-example.md --shell bash --debug
-          npx leia examples/basic-example.md --shell zsh --debug
-          npx leia examples/basic-example.md --shell sh --debug
+          bun run leia examples/basic-example.md --shell bash --debug
+          bun run leia examples/basic-example.md --shell zsh --debug
+          bun run leia examples/basic-example.md --shell sh --debug
       - name: Test Linux shells
         if: ${{ runner.os == 'Linux' }}
         run: |
-          npx leia examples/basic-example.md --shell bash --debug
-          npx leia examples/basic-example.md --shell sh --debug
+          bun run leia examples/basic-example.md --shell bash --debug
+          bun run leia examples/basic-example.md --shell sh --debug
       - name: Test Windows BASH
         if: ${{ runner.os == 'Windows' }}
         shell: bash
         run: |
-          npx leia examples/basic-cmd-example.md --shell cmd --debug
-          npx leia examples/basic-pwsh-example.md --shell pwsh --debug
-          npx leia examples/basic-pwsh-example.md --shell powershell --debug
-          npx leia examples/basic-pwsh-example.md --shell powershell --stdin --debug
+          bun run leia examples/basic-cmd-example.md --shell cmd --debug
+          bun run leia examples/basic-pwsh-example.md --shell pwsh --debug
+          bun run leia examples/basic-pwsh-example.md --shell powershell --debug
+          bun run leia examples/basic-pwsh-example.md --shell powershell --stdin --debug
       - name: Test Windows SHELLS
         if: ${{ runner.os == 'Windows' }}
         run: |
-          npx leia examples/basic-cmd-example.md --shell cmd --debug
-          npx leia examples/basic-pwsh-example.md --shell pwsh --debug
-          npx leia examples/basic-pwsh-example.md --shell powershell --debug
-          npx leia examples/basic-pwsh-example.md --shell powershell --stdin --debug
+          bun run leia examples/basic-cmd-example.md --shell cmd --debug
+          bun run leia examples/basic-pwsh-example.md --shell pwsh --debug
+          bun run leia examples/basic-pwsh-example.md --shell powershell --debug
+          bun run leia examples/basic-pwsh-example.md --shell powershell --stdin --debug

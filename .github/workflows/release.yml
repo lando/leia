@@ -27,13 +27,20 @@ jobs:
         with:
           node-version-file: '.node-version'
           registry-url: https://registry.npmjs.org
-          cache: npm
+      - name: Install Bun from package.json
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - name: Check Bun version
+        run: bun run check:toolchain
       - name: Install dependencies
-        run: npm clean-install --prefer-offline
+        run: bun install --frozen-lockfile
       - name: Validate source
         run: |
-          npm run lint
-          npm run test:unit
+          bun run lint
+          bun run typecheck
+          bun run test
+          bun run check:build
       - name: Export formatted release date
         shell: bash
         env:

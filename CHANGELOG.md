@@ -1,5 +1,11 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+### Developer Notes
+
+- Established the 2.x Bun toolchain, strict TypeScript ESM entrypoints, repeatable development builds,
+  source execution, watch mode, and matching CI commands. Legacy runtime behavior remains behind a
+  narrow CommonJS bridge while subsystem ports and npm artifact wiring proceed separately. [#63](https://github.com/lando/leia/issues/63)
+
 ## v1.0.0-beta.9 - [August 29, 2026](https://github.com/lando/leia/releases/tag/v1.0.0-beta.9)
 
 ### New Features

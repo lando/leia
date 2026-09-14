@@ -28,8 +28,7 @@
     "/bin",
     "/cli",
     "/lib",
-    "/templates",
-    "/yarn.lock"
+    "/templates"
   ],
   "nyc": {
     "include": [
@@ -49,11 +48,18 @@
     ]
   },
   "scripts": {
-    "leia": "node ./bin/leia",
-    "lint": "eslint bin/leia . --ignore-pattern '*.leia.js' --ignore-pattern '*.leia.cjs' --ignore-pattern '*.leia.mjs' --ignore-pattern 'leia.readme.js'",
+    "check:toolchain": "bun run scripts/check-toolchain.ts",
+    "dev": "bun --watch run src/cli.ts",
+    "leia": "bun run src/cli.ts",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint bin/leia . --ext .js,.ts --ignore-pattern '*.leia.js' --ignore-pattern '*.leia.cjs' --ignore-pattern '*.leia.mjs' --ignore-pattern 'leia.readme.js' --ignore-pattern dist",
+    "typecheck": "tsc --noEmit",
+    "test": "bun run test:unit",
     "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
-    "test:leia": "npx leia README.md \"examples/**/*.md\" -i \"examples/basic-cmd-example.md\" -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\"",
-    "test:leia:stdin": "npx leia examples/stdin-example.md --stdin"
+    "build": "bun run scripts/build.ts",
+    "watch": "bun run scripts/build.ts --watch",
+    "check:build": "bun run scripts/check-build.ts",
+    "test:leia": "bun run leia README.md \"examples/**/*.md\" -i \"examples/basic-cmd-example.md\" -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\" -i \"examples/custom-headers.md\" -i \"examples/environment.md\" -i \"examples/basic-pwsh-example.md\"",
+    "test:leia:stdin": "bun run leia examples/stdin-example.md --stdin"
   },
   "dependencies": {
     "@lando/argv": "^1.0.6",
@@ -79,9 +85,16 @@
     "@babel/eslint-parser": "7.15.7",
     "@oclif/dev-cli": "^1.26.0",
     "@oclif/test": "^1.2.8",
-    "eslint": "^7.3",
+    "eslint": "^8.57.1",
     "eslint-config-google": "^0.14.0",
     "mock-fs": "^4.7.0",
-    "nyc": "^15.1.0"
-  }
+    "nyc": "^15.1.0",
+    "typescript": "~5.9.3",
+    "@types/bun": "1.3.14",
+    "@typescript-eslint/parser": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@types/node": "^24.0.0"
+  },
+  "packageManager": "bun@1.3.14",
+  "type": "commonjs"
 }

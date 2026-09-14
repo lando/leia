@@ -43,8 +43,8 @@ describe('cli/default', () => {
   it('should fail the CLI and run cleanup after a failing test', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-lifecycle-'));
     const trace = path.join(tempDir, 'trace');
-    const result = spawnSync(process.execPath, [
-      path.resolve(__dirname, '..', 'bin', 'leia'),
+    const result = spawnSync('bun', [
+      path.resolve(__dirname, '..', 'src', 'cli.ts'),
       path.resolve(__dirname, 'lifecycle-failure.md'),
       '--retry',
       '0',
