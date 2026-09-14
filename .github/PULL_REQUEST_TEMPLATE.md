@@ -1,6 +1,7 @@
 ### Bare minimum self-checks
 
 > [What do you think of a person who only does the bare minimum?](https://getyarn.io/yarn-clip/dcf80710-425e-478b-bde1-c107bd11e849)
+
 - [ ] I've updated this PR with the latest code from `main`
 - [ ] I've done a cursory QA pass of my code locally
 - [ ] I've ensured all automated status check and tests pass

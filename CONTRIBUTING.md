@@ -30,19 +30,19 @@ for this Bun bootstrap and npm distribution operations, not repository dependenc
 
 ## Canonical commands
 
-| Command | Purpose |
-| --- | --- |
-| `bun run leia --help` | Execute the checked-in TypeScript CLI directly |
-| `bun run dev <files>` | Restart the source CLI when its loaded modules change |
-| `bun run lint` | Lint legacy JavaScript and type-aware TypeScript |
-| `bun run typecheck` | Strictly check source and build tooling without emitting files |
-| `bun run test` | Run the compatibility/unit suite through Node Mocha and nyc |
-| `bun run test:unit` | Run that same focused legacy suite, including source CLI failure/cleanup |
-| `bun run build` | Clean and build ESM JavaScript plus source maps into `dist/` |
-| `bun run watch` | Build once, then rebuild when files under `src/` change |
-| `bun run check:build` | Verify repeatable clean output, source/Node CLI parity, and bounded watch rebuild |
-| `bun run test:leia` | Run the portable Markdown scenarios; normally CI-owned |
-| `bun run test:leia:stdin` | Run the stdin scenario in an interactive terminal |
+| Command                   | Purpose                                                                           |
+| ------------------------- | --------------------------------------------------------------------------------- |
+| `bun run leia --help`     | Execute the checked-in TypeScript CLI directly                                    |
+| `bun run dev <files>`     | Restart the source CLI when its loaded modules change                             |
+| `bun run lint`            | Lint legacy JavaScript and type-aware TypeScript                                  |
+| `bun run typecheck`       | Strictly check source and build tooling without emitting files                    |
+| `bun run test`            | Run the compatibility/unit suite through Node Mocha and nyc                       |
+| `bun run test:unit`       | Run that same focused legacy suite, including source CLI failure/cleanup          |
+| `bun run build`           | Clean and build ESM JavaScript plus source maps into `dist/`                      |
+| `bun run watch`           | Build once, then rebuild when files under `src/` change                           |
+| `bun run check:build`     | Verify repeatable clean output, source/Node CLI parity, and bounded watch rebuild |
+| `bun run test:leia`       | Run the portable Markdown scenarios; normally CI-owned                            |
+| `bun run test:leia:stdin` | Run the stdin scenario in an interactive terminal                                 |
 
 Before opening a pull request, run:
 

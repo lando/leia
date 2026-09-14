@@ -4,11 +4,11 @@ Leia is a testing utility that tests code blocks in documentation. This makes te
 
 Leia will
 
-* Consolidate code examples and tests into a single, easy to understand and write `markdown` file
-* Write functional tests quickly in an accessible and lowest common denominator language (eg `sh/bash/dash` etc)
-* Pass on exit status code `0`, fail on anything else
-* Work cross platform-ish, with some caveats, see [Shell Considerations](#shell-considerations) below
-* Keep [Lando](https://github.com/lando/lando) honest so he can be a real hero who doesn't betray his friends again
+- Consolidate code examples and tests into a single, easy to understand and write `markdown` file
+- Write functional tests quickly in an accessible and lowest common denominator language (eg `sh/bash/dash` etc)
+- Pass on exit status code `0`, fail on anything else
+- Work cross platform-ish, with some caveats, see [Shell Considerations](#shell-considerations) below
+- Keep [Lando](https://github.com/lando/lando) honest so he can be a real hero who doesn't betray his friends again
 
 ## Installation
 
@@ -118,12 +118,12 @@ runner.run((failures) => process.exitCode = failures ? 1 : 0);
 
 For more details on specific options check out the code docs
 
-* [leia.find](https://github.com/lando/leia/blob/main/lib/leia.js)
-* [leia.generate](https://github.com/lando/leia/blob/main/lib/leia.js)
-* [leia.parse](https://github.com/lando/leia/blob/main/lib/leia.js)
-* [leia.resolveModuleFormat](https://github.com/lando/leia/blob/main/lib/leia.js)
-* [leia.run](https://github.com/lando/leia/blob/main/lib/leia.js)
-* [leia.runAsync](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.find](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.generate](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.parse](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.resolveModuleFormat](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.run](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.runAsync](https://github.com/lando/leia/blob/main/lib/leia.js)
 
 ### Module formats
 
@@ -210,8 +210,8 @@ Note: `LEIA_TEST_STAGE` can be either `setup`, `test` or `cleanup` and `LEIA_TES
 
 When `--shell` is omitted, `leia` selects a shell with deterministic platform precedence:
 
-* On Windows, `SHELL` wins, followed by `MSYSTEM=MINGW64` using `bash.exe`, `COMSPEC`, and finally `cmd.exe`.
-* On macOS and other Unix systems, the account shell from `os.userInfo()` wins, followed by `SHELL`. The final fallback is
+- On Windows, `SHELL` wins, followed by `MSYSTEM=MINGW64` using `bash.exe`, `COMSPEC`, and finally `cmd.exe`.
+- On macOS and other Unix systems, the account shell from `os.userInfo()` wins, followed by `SHELL`. The final fallback is
   `/bin/zsh` on macOS and `/bin/sh` elsewhere.
 
 Unix account lookup failures are reported instead of silently changing the selected shell. An unrecognized selected shell
@@ -254,8 +254,8 @@ The `@lando/leia` package must trust the `lando/leia` GitHub Actions publisher u
 
 ## Maintainers
 
-* [@pirog](https://github.com/pirog)
-* [@reynoldsalec](https://github.com/reynoldsalec)
+- [@pirog](https://github.com/pirog)
+- [@reynoldsalec](https://github.com/reynoldsalec)
 
 ## Contributors
 
@@ -267,7 +267,7 @@ Made with [contributors-img](https://contrib.rocks).
 
 ## Legacy Version
 
-You can still install the older version of  Leia eg `leia-parser`.
+You can still install the older version of Leia eg `leia-parser`.
 
 ```bash
 npm install leia-parser
@@ -277,7 +277,7 @@ And its documentation lives on [here](https://github.com/lando/leia/tree/v0.4.0)
 
 ## Other Resources
 
-* [LICENSE](/LICENSE)
-* [TERMS OF USE](https://docs.lando.dev/terms)
-* [PRIVACY POLICY](https://docs.lando.dev/privacy)
-* [CODE OF CONDUCT](https://docs.lando.dev/coc)
+- [LICENSE](/LICENSE)
+- [TERMS OF USE](https://docs.lando.dev/terms)
+- [PRIVACY POLICY](https://docs.lando.dev/privacy)
+- [CODE OF CONDUCT](https://docs.lando.dev/coc)

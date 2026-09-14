@@ -15,4 +15,3 @@ cat text1.txt | grep test
 # Analze the contents of our second file
 cat text2.txt | grep test2
 ```
-

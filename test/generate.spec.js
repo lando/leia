@@ -5,7 +5,7 @@
 
 'use strict';
 
-const {spawnSync} = require('child_process');
+const { spawnSync } = require('child_process');
 const chai = require('@lando/chai');
 const fs = require('fs-extra');
 const os = require('os');
@@ -17,46 +17,48 @@ const generate = require('./../lib/generate');
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-generate-'));
 const normalizePath = (file) => file.split(path.sep).join('/');
 const commands = [
-  'printf \'%s\\n\' \'both `$INTERACTIVE` and `$NONINTERACTIVE` are set.\'',
+  "printf '%s\\n' 'both `$INTERACTIVE` and `$NONINTERACTIVE` are set.'",
   'printf \'%s\\n\' "${HOME}"',
-  'printf \'\\033[31mred\\033[0m\\n\'',
-  'printf \'%s\\n\' abc | sed -E \'s/(a)/\\1/\'',
-  'printf \'%s\\n\' "$(printf \'%s\' substitution)"',
+  "printf '\\033[31mred\\033[0m\\n'",
+  "printf '%s\\n' abc | sed -E 's/(a)/\\1/'",
+  "printf '%s\\n' \"$(printf '%s' substitution)\"",
   'printf \'%s\\n\' "$HOME"',
-  'printf \'%s\\n\' \'"quoted" \\\\literal\\\\\'',
-  'printf \'%s\\n\' first\nprintf \'%s\\n\' second',
+  "printf '%s\\n' '\"quoted\" \\\\literal\\\\'",
+  "printf '%s\\n' first\nprintf '%s\\n' second",
 ];
-const getTests = (moduleFormat = 'commonjs') => [{
-  file: normalizePath(path.join(tempDir, 'mock.md')),
-  id: 'mock',
-  destination: path.join(tempDir, `mock.leia.${moduleFormat === 'esm' ? 'mjs' : 'cjs'}`),
-  moduleFormat,
-  retry: 3,
-  cwd: normalizePath(tempDir),
-  chaiPath: normalizePath(require.resolve('@lando/chai')),
-  cltPath: normalizePath(require.resolve('command-line-test')),
-  debugPath: normalizePath(require.resolve('debug')),
-  stdin: 'pipe',
-  text: 'Mock',
-  type: 'title',
-  version: 'test',
-  tests: {
-    test: commands.map((command, index) => {
-      const script = path.join(tempDir, `mock-${moduleFormat}-${index}.leia.sh`);
-      return {
-        args: [normalizePath(script)],
-        command,
-        describe: [`mock test ${index}`],
-        id: 'mock',
-        number: index + 1,
-        script,
-        section: 'test',
-        shell: 'sh',
-        skip: false,
-      };
-    }),
+const getTests = (moduleFormat = 'commonjs') => [
+  {
+    file: normalizePath(path.join(tempDir, 'mock.md')),
+    id: 'mock',
+    destination: path.join(tempDir, `mock.leia.${moduleFormat === 'esm' ? 'mjs' : 'cjs'}`),
+    moduleFormat,
+    retry: 3,
+    cwd: normalizePath(tempDir),
+    chaiPath: normalizePath(require.resolve('@lando/chai')),
+    cltPath: normalizePath(require.resolve('command-line-test')),
+    debugPath: normalizePath(require.resolve('debug')),
+    stdin: 'pipe',
+    text: 'Mock',
+    type: 'title',
+    version: 'test',
+    tests: {
+      test: commands.map((command, index) => {
+        const script = path.join(tempDir, `mock-${moduleFormat}-${index}.leia.sh`);
+        return {
+          args: [normalizePath(script)],
+          command,
+          describe: [`mock test ${index}`],
+          id: 'mock',
+          number: index + 1,
+          script,
+          section: 'test',
+          shell: 'sh',
+          skip: false,
+        };
+      }),
+    },
   },
-}];
+];
 
 describe('generate', () => {
   after(() => fs.removeSync(tempDir));
@@ -80,7 +82,7 @@ describe('generate', () => {
     const tests = getTests();
     generate(tests);
     const source = fs.readFileSync(tests[0].destination, 'utf8');
-    (() => new vm.Script(source, {filename: tests[0].destination})).should.not.throw();
+    (() => new vm.Script(source, { filename: tests[0].destination })).should.not.throw();
     tests[0].tests.test.forEach((test) => {
       source.should.include(`commands: ${JSON.stringify(test.command)}`);
     });
@@ -89,7 +91,7 @@ describe('generate', () => {
     const tests = getTests('esm');
     generate(tests);
     const source = fs.readFileSync(tests[0].destination, 'utf8');
-    source.should.include('import {createRequire} from \'node:module\';');
+    source.should.include("import {createRequire} from 'node:module';");
     source.should.include('const require = createRequire(import.meta.url);');
     source.should.include(`const chai = require(${JSON.stringify(tests[0].chaiPath)});`);
     tests[0].tests.test.forEach((test) => {
@@ -117,7 +119,9 @@ describe('generate', () => {
 
       generate(tests);
       const source = fs.readFileSync(tests[0].destination, 'utf8');
-      const syntax = spawnSync(process.execPath, ['--check', tests[0].destination], {encoding: 'utf8'});
+      const syntax = spawnSync(process.execPath, ['--check', tests[0].destination], {
+        encoding: 'utf8',
+      });
       syntax.status.should.equal(0, syntax.stderr);
       [
         tests[0].id,
@@ -134,17 +138,17 @@ describe('generate', () => {
       source.should.include(JSON.stringify(tests[0].tests.test[0].args));
 
       if (moduleFormat === 'commonjs') {
-        const captured = {chdir: [], debug: [], descriptions: [], requires: [], spawns: []};
-        const runtimeProcess = {env: {}, chdir: (cwd) => captured.chdir.push(cwd)};
+        const captured = { chdir: [], debug: [], descriptions: [], requires: [], spawns: [] };
+        const runtimeProcess = { env: {}, chdir: (cwd) => captured.chdir.push(cwd) };
         class CliTest {
           spawn(shell, args, options) {
-            captured.spawns.push({shell, args, options, env: {...runtimeProcess.env}});
-            return {then: (resolve) => resolve({error: null})};
+            captured.spawns.push({ shell, args, options, env: { ...runtimeProcess.env } });
+            return { then: (resolve) => resolve({ error: null }) };
           }
         }
         const suite = {
-          ctx: {test: {_currentRetry: 0, skip: () => {}}},
-          retries: (retry) => captured.retry = retry,
+          ctx: { test: { _currentRetry: 0, skip: () => {} } },
+          retries: (retry) => (captured.retry = retry),
         };
         const context = {
           describe: (id, callback) => {
@@ -158,7 +162,7 @@ describe('generate', () => {
           process: runtimeProcess,
           require: (dependency) => {
             captured.requires.push(dependency);
-            if (dependency === tests[0].chaiPath) return {should: () => {}};
+            if (dependency === tests[0].chaiPath) return { should: () => {} };
             if (dependency === tests[0].cltPath) return CliTest;
             if (dependency === tests[0].debugPath) {
               return (namespace) => {
@@ -170,7 +174,7 @@ describe('generate', () => {
             throw new Error(`Unexpected dependency ${dependency}`);
           },
         };
-        new vm.Script(source, {filename: tests[0].destination}).runInNewContext(context);
+        new vm.Script(source, { filename: tests[0].destination }).runInNewContext(context);
 
         const fromVm = (value) => JSON.parse(JSON.stringify(value));
         captured.id.should.equal(tests[0].id);
@@ -186,7 +190,11 @@ describe('generate', () => {
         captured.chdir.should.deep.equal([tests[0].cwd]);
         captured.spawns[0].shell.should.equal(tests[0].tests.test[0].shell);
         fromVm(captured.spawns[0].args).should.deep.equal(tests[0].tests.test[0].args);
-        fromVm(captured.spawns[0].options.stdio).should.deep.equal([tests[0].stdin, 'pipe', 'pipe']);
+        fromVm(captured.spawns[0].options.stdio).should.deep.equal([
+          tests[0].stdin,
+          'pipe',
+          'pipe',
+        ]);
         captured.spawns[0].env.LEIA_TEST_ID.should.equal(tests[0].tests.test[0].id);
         captured.spawns[0].env.LEIA_TEST_NUMBER.should.equal(tests[0].tests.test[0].number);
         captured.spawns[0].env.LEIA_TEST_STAGE.should.equal(tests[0].tests.test[0].section);
@@ -210,9 +218,9 @@ describe('generate', () => {
     const commonjsSource = fs.readFileSync(commonjsTests[0].destination, 'utf8');
     const esmSource = fs.readFileSync(esmTests[0].destination, 'utf8');
     const bodyStart = `describe(${JSON.stringify('mock')}`;
-    commonjsSource.slice(commonjsSource.indexOf(bodyStart)).should.equal(
-      esmSource.slice(esmSource.indexOf(bodyStart)),
-    );
+    commonjsSource
+      .slice(commonjsSource.indexOf(bodyStart))
+      .should.equal(esmSource.slice(esmSource.indexOf(bodyStart)));
   });
   it('should reject unsupported generated module formats', () => {
     const tests = getTests();

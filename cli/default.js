@@ -1,4 +1,4 @@
-const {Command, flags} = require('@oclif/command');
+const { Command, flags } = require('@oclif/command');
 
 const chalk = require('chalk');
 const moduleFormats = require('../lib/module-format').formats;
@@ -30,13 +30,13 @@ class LeiaCommand extends Command {
     'leia README.md --module-format esm',
   ];
 
-  static args = [{name: 'tests', description: 'files or patterns to scan for test'}];
+  static args = [{ name: 'tests', description: 'files or patterns to scan for test' }];
 
   static flags = {
     // Plugin commands and placeholder --debug for use with @lando/argv
-    'debug': flags.boolean({description: 'shows debug output'}),
-    'help': flags.help({description: 'shows help'}),
-    'version': flags.version({description: 'shows version info', char: 'v'}),
+    debug: flags.boolean({ description: 'shows debug output' }),
+    help: flags.help({ description: 'shows help' }),
+    version: flags.version({ description: 'shows version info', char: 'v' }),
 
     // Setup header
     'setup-header': flags.string({
@@ -61,7 +61,7 @@ class LeiaCommand extends Command {
     }),
 
     // Additional options
-    'ignore': flags.string({
+    ignore: flags.string({
       char: 'i',
       description: 'files or patterns to ignore',
       multiple: true,
@@ -71,21 +71,21 @@ class LeiaCommand extends Command {
       description: 'generates CommonJS or ESM harnesses, autodetected by default',
       options: moduleFormats,
     }),
-    'retry': flags.string({
+    retry: flags.string({
       char: 'r',
       description: 'non-negative number of times to retry each test',
       default: 1,
       parse: numericOption.retry,
     }),
-    'shell': flags.string({
+    shell: flags.string({
       default: shell().binary,
       description: 'runs tests with given shell, autodetected by default',
       options: ['bash', 'cmd', 'powershell', 'pwsh', 'sh', 'zsh'],
     }),
-    'stdin': flags.boolean({
+    stdin: flags.boolean({
       description: 'attachs stdin when the test is run',
     }),
-    'timeout': flags.string({
+    timeout: flags.string({
       default: 1800,
       description: `non-negative whole seconds before tests time out (max ${numericOption.MAX_TIMEOUT_SECONDS})`,
       parse: numericOption.timeout,
@@ -95,9 +95,9 @@ class LeiaCommand extends Command {
     //
     // @NOTE: --spawn is the default/only option now so the inclusion below is just so existing leia usage out in the
     // wild doesnt start erroring on an upgrade
-    'spawn': flags.boolean({hidden: true}),
-    'split-file': flags.boolean({hidden: true}),
-  }
+    spawn: flags.boolean({ hidden: true }),
+    'split-file': flags.boolean({ hidden: true }),
+  };
 
   // Override warn for chalkability of string input
   warn(input, options) {
@@ -122,7 +122,7 @@ class LeiaCommand extends Command {
     debug('starting default command execution');
 
     // Grab all teh things
-    const {args, argv, flags} = this.parse(LeiaCommand);
+    const { args, argv, flags } = this.parse(LeiaCommand);
     // Set args.files to argv
     args.tests = argv;
 
@@ -132,7 +132,7 @@ class LeiaCommand extends Command {
 
     // Combine our args and options into a parsed and camelCase-keyed object
     const options = _(_.toPairs(_.merge({}, flags, args)))
-      .map((pair) => ([_.camelCase(pair[0]), pair[1]]))
+      .map((pair) => [_.camelCase(pair[0]), pair[1]])
       .fromPairs()
       .value();
 

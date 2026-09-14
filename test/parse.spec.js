@@ -38,17 +38,18 @@ describe('parse', () => {
     tests[0].destination.should.match(/\.leia\.cjs$/);
   });
   it('should generate ESM destination metadata when requested', () => {
-    const tests = parse(
-      [path.resolve(__dirname, '..', 'examples', 'basic-example.md')],
-      {moduleFormat: 'esm'},
-    );
+    const tests = parse([path.resolve(__dirname, '..', 'examples', 'basic-example.md')], {
+      moduleFormat: 'esm',
+    });
     tests[0].moduleFormat.should.equal('esm');
     tests[0].destination.should.match(/\.leia\.mjs$/);
   });
   it('should normalize valid retry metadata and reject invalid values', () => {
     const file = path.resolve(__dirname, '..', 'examples', 'basic-example.md');
-    parse([file], {retry: '4'})[0].retry.should.equal(4);
-    (() => parse([file], {retry: 'four'})).should.throw('--retry must be an integer between 0 and');
+    parse([file], { retry: '4' })[0].retry.should.equal(4);
+    (() => parse([file], { retry: 'four' })).should.throw(
+      '--retry must be an integer between 0 and',
+    );
   });
   it('should organize tests into setup|test|cleanup buckets if applicable', () => {
     const tests = parse([path.resolve(__dirname, '..', 'examples', 'setup-cleanup-example.md')]);
@@ -81,47 +82,47 @@ describe('parse', () => {
   });
   it('should fold multiline continuations and preserve separate commands', () => {
     const tests = parse([path.resolve(__dirname, '..', 'examples', 'basic-example.md')]);
-    const test = tests[0].tests.test.find(({describe}) => (
-      describe.includes('should not concatenate if escape is used')
-    ));
+    const test = tests[0].tests.test.find(({ describe }) =>
+      describe.includes('should not concatenate if escape is used'),
+    );
 
-    test.command.should.equal([
-      'export TEST=thing  TEST2=stuff  TEST3=morestuff',
-      'env | grep TEST',
-      'env | grep TEST2',
-      'env | grep TEST3',
-      'unset TEST',
-      'unset TEST2',
-      'unset TEST3',
-    ].join(os.EOL));
+    test.command.should.equal(
+      [
+        'export TEST=thing  TEST2=stuff  TEST3=morestuff',
+        'env | grep TEST',
+        'env | grep TEST2',
+        'env | grep TEST3',
+        'unset TEST',
+        'unset TEST2',
+        'unset TEST3',
+      ].join(os.EOL),
+    );
   });
   it('should combine tests from multiple code blocks under one section', () => {
     const tests = parse([path.resolve(__dirname, 'parse-code-blocks.md')]);
 
-    tests[0].tests.test.map((test) => test.describe[0]).should.deep.equal([
-      'should parse the first code block',
-      'should parse the second code block',
-    ]);
-    tests[0].tests.test.map((test) => test.command).should.deep.equal([
-      'echo first',
-      'echo second',
-    ]);
+    tests[0].tests.test
+      .map((test) => test.describe[0])
+      .should.deep.equal([
+        'should parse the first code block',
+        'should parse the second code block',
+      ]);
+    tests[0].tests.test
+      .map((test) => test.command)
+      .should.deep.equal(['echo first', 'echo second']);
   });
   it('should combine tests from repeated setup, test, and cleanup sections', () => {
     const tests = parse([path.resolve(__dirname, 'parse-sections.md')]);
 
-    tests[0].tests.setup.map((test) => test.describe[0]).should.deep.equal([
-      'should run first setup',
-      'should run second setup',
-    ]);
-    tests[0].tests.test.map((test) => test.describe[0]).should.deep.equal([
-      'should run first test',
-      'should run second test',
-    ]);
-    tests[0].tests.cleanup.map((test) => test.describe[0]).should.deep.equal([
-      'should run first cleanup',
-      'should run second cleanup',
-    ]);
+    tests[0].tests.setup
+      .map((test) => test.describe[0])
+      .should.deep.equal(['should run first setup', 'should run second setup']);
+    tests[0].tests.test
+      .map((test) => test.describe[0])
+      .should.deep.equal(['should run first test', 'should run second test']);
+    tests[0].tests.cleanup
+      .map((test) => test.describe[0])
+      .should.deep.equal(['should run first cleanup', 'should run second cleanup']);
     tests[0].tests.setup.map((test) => test.number).should.deep.equal([1, 2]);
     tests[0].tests.test.map((test) => test.number).should.deep.equal([1, 2]);
     tests[0].tests.cleanup.map((test) => test.number).should.deep.equal([1, 2]);

@@ -1,14 +1,14 @@
-import {mkdir, rm, writeFile} from 'node:fs/promises';
-import {watch} from 'node:fs';
-import {fileURLToPath} from 'node:url';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { watch } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import './check-toolchain.ts';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const outdir = `${root}dist`;
 
-const build = async(): Promise<void> => {
-  await rm(outdir, {recursive: true, force: true});
-  await mkdir(outdir, {recursive: true});
+const build = async (): Promise<void> => {
+  await rm(outdir, { recursive: true, force: true });
+  await mkdir(outdir, { recursive: true });
   const result = await Bun.build({
     entrypoints: [`${root}src/cli.ts`, `${root}src/index.ts`],
     outdir,
@@ -26,7 +26,7 @@ await build();
 if (process.argv.includes('--watch')) {
   // Serialize rebuilds so rapid edits cannot interleave output cleanup and emission.
   let pending = Promise.resolve();
-  watch(`${root}src`, {recursive: true}, () => {
+  watch(`${root}src`, { recursive: true }, () => {
     pending = pending.then(build).catch((error: unknown) => {
       process.stderr.write(`${String(error)}\n`);
     });

@@ -1,0 +1,16 @@
+node_modules
+dist
+coverage
+.nyc_output
+temp
+.temp
+cache
+bun.lock
+*.leia.js
+*.leia.cjs
+*.leia.mjs
+leia.readme.js
+examples/**/.tmp/
+# Parser fixtures and generator templates retain their literal whitespace.
+test/*.md
+templates/
