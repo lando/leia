@@ -48,21 +48,23 @@
     ]
   },
   "scripts": {
-    "check:toolchain": "bun run scripts/check-toolchain.ts",
-    "dev": "bun --watch run src/cli.ts",
-    "leia": "bun run src/cli.ts",
+    "check:toolchain": "bun run tooling/scripts/check-toolchain-task.ts",
+    "dev": "bun --watch run app/bin/leia.ts",
+    "leia": "bun run app/bin/leia.ts",
     "lint": "bun run lint:eslint && bun run format:check",
     "typecheck": "tsc --noEmit",
     "test": "bun run test:unit",
-    "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
-    "build": "bun run scripts/build.ts",
-    "watch": "bun run scripts/build.ts --watch",
-    "check:build": "bun run scripts/check-build.ts",
+    "test:unit": "bun run test:legacy && bun run test:typescript",
+    "build": "bun run tooling/scripts/build-cli.ts",
+    "watch": "bun run tooling/scripts/build-cli.ts --watch",
+    "check:build": "bun run tooling/scripts/check-build-task.ts",
     "test:leia": "bun run leia README.md \"examples/**/*.md\" -i \"examples/basic-cmd-example.md\" -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\" -i \"examples/custom-headers.md\" -i \"examples/environment.md\" -i \"examples/basic-pwsh-example.md\"",
     "test:leia:stdin": "bun run leia examples/stdin-example.md --stdin",
     "lint:eslint": "eslint --config eslint.config.mjs . bin/leia",
     "format:check": "prettier . --check --ignore-unknown",
-    "format:write": "prettier . --write --ignore-unknown"
+    "format:write": "prettier . --write --ignore-unknown",
+    "test:legacy": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
+    "test:typescript": "bun --bun node_modules/mocha/bin/mocha.js \"{app,tooling}/test/**/*.spec.ts\""
   },
   "dependencies": {
     "@lando/argv": "^1.0.6",
@@ -96,7 +98,8 @@
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.12.0",
     "prettier": "^3.9.6",
-    "typescript-eslint": "^8.57.1"
+    "typescript-eslint": "^8.57.1",
+    "@types/mocha": "^10.0.10"
   },
   "packageManager": "bun@1.3.14",
   "type": "commonjs"

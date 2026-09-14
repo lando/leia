@@ -1,0 +1,146 @@
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { cp, mkdtemp, readFile, readdir, rm, stat, symlink, writeFile } from 'node:fs/promises';
+import { join, sep } from 'node:path';
+import { tmpdir } from 'node:os';
+
+async function run(root: string, command: string[]): Promise<string> {
+  const child = Bun.spawn(command, { cwd: root, stdout: 'pipe', stderr: 'pipe', timeout: 20000 });
+  const [stdout, stderr, code] = await Promise.all([
+    new Response(child.stdout).text(),
+    new Response(child.stderr).text(),
+    child.exited,
+  ]);
+  assert.equal(code, 0, `${command.join(' ')}\n${stderr}\n${stdout}`);
+  return stdout;
+}
+
+async function snapshot(root: string): Promise<Record<string, string>> {
+  const outdir = join(root, 'dist');
+  const entries = await Promise.all(
+    (await readdir(outdir, { recursive: true })).map(async (file) => {
+      const path = join(outdir, file);
+      if (!(await stat(path)).isFile()) return [];
+      return [
+        [
+          file.split(sep).join('/'),
+          createHash('sha256')
+            .update(await readFile(path))
+            .digest('hex'),
+        ],
+      ];
+    }),
+  );
+  return Object.fromEntries(
+    entries.flat().sort(([left = ''], [right = '']) => left.localeCompare(right)),
+  );
+}
+
+async function checkWatch(root: string): Promise<void> {
+  const sourcePath = join(root, 'app/lib/app.ts');
+  const original = await readFile(sourcePath, 'utf8');
+  const marker = 'leiaWatchRebuildProbe';
+  const watcher = Bun.spawn([process.execPath, 'run', 'tooling/scripts/build-cli.ts', '--watch'], {
+    cwd: root,
+    stdout: 'pipe',
+    stderr: 'pipe',
+    timeout: 30000,
+  });
+  let watchOutput = '';
+  const output = (async (): Promise<void> => {
+    for await (const chunk of watcher.stdout) watchOutput += new TextDecoder().decode(chunk);
+  })();
+  const errors = new Response(watcher.stderr).text();
+  const waitFor = async (predicate: () => Promise<boolean>): Promise<void> => {
+    const deadline = Date.now() + 20000;
+    while (!(await predicate())) {
+      assert.equal(watcher.exitCode, null, `Watch process exited early: ${watchOutput}`);
+      assert.ok(Date.now() < deadline, `Watch startup/rebuild timed out: ${watchOutput}`);
+      await Bun.sleep(50);
+    }
+  };
+  try {
+    await waitFor(() => Promise.resolve(watchOutput.includes('Watching app/')));
+    await writeFile(sourcePath, `${original}\nexport const ${marker} = true;\n`);
+    await waitFor(async () =>
+      (await readFile(join(root, 'dist/lib/app.js'), 'utf8').catch(() => '')).includes(marker),
+    );
+  } finally {
+    watcher.kill();
+    await watcher.exited;
+    await writeFile(sourcePath, original);
+    await output;
+    const stderr = await errors;
+    if (stderr) process.stderr.write(stderr);
+  }
+}
+
+/** Exercise the actual source and build commands without editing the contributor's checkout. */
+export async function checkBuild(repositoryRoot: string): Promise<void> {
+  const root = await mkdtemp(join(tmpdir(), 'leia-build-'));
+  try {
+    await Promise.all(
+      ['.bun-version', 'package.json', 'app', 'tooling', 'bin', 'cli', 'lib', 'templates'].map(
+        (path) => cp(join(repositoryRoot, path), join(root, path), { recursive: true }),
+      ),
+    );
+    // A Windows junction avoids requiring symlink privileges on contributor machines.
+    await symlink(
+      join(repositoryRoot, 'node_modules'),
+      join(root, 'node_modules'),
+      process.platform === 'win32' ? 'junction' : 'dir',
+    );
+
+    await run(root, [process.execPath, 'run', 'build']);
+    const first = await snapshot(root);
+    assert.deepEqual(Object.keys(first), [
+      'bin/leia.js',
+      'bin/leia.js.map',
+      'lib/app.js',
+      'lib/app.js.map',
+      'package.json',
+    ]);
+    await writeFile(join(root, 'dist/stale.js'), 'stale output');
+    await run(root, [process.execPath, 'run', 'build']);
+    assert.deepEqual(
+      await snapshot(root),
+      first,
+      'Builds must clean stale files and emit identical bytes',
+    );
+
+    for (const flag of ['--help', '--version']) {
+      const source = await run(root, [process.execPath, 'run', 'app/bin/leia.ts', flag]);
+      const built = await run(root, ['node', 'dist/bin/leia.js', flag]);
+      const legacy = await run(root, ['node', 'bin/leia', flag]);
+      // oclif reports Bun's Node-compatibility version in source-mode version output.
+      const stableOutput = (value: string): string =>
+        flag === '--version' ? value.replace(/ node-v\d+\.\d+\.\d+\s*$/, '') : value;
+      assert.equal(
+        stableOutput(source),
+        stableOutput(built),
+        `Source and Node-built CLI disagree on ${flag}`,
+      );
+      assert.equal(built, legacy, `Built and legacy Node CLI disagree on ${flag}`);
+      assert.ok(source.includes(flag === '--help' ? '--module-format' : '@lando/leia'));
+    }
+    await run(root, [
+      'node',
+      '--input-type=module',
+      '-e',
+      "import {runCLI} from './dist/lib/app.js'; if (typeof runCLI !== 'function') process.exit(1)",
+    ]);
+
+    await checkWatch(root);
+    await run(root, [process.execPath, 'run', 'build']);
+    assert.deepEqual(
+      await snapshot(root),
+      first,
+      'Watch verification must restore the original build',
+    );
+    process.stdout.write(
+      'Isolated repeatable build, source/Node CLI parity, and watch rebuild passed.\n',
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}

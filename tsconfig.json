@@ -16,7 +16,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "skipLibCheck": true,
-    "types": ["bun"]
+    "types": ["bun"],
+    "allowJs": true
   },
-  "include": ["src/**/*.ts", "scripts/**/*.ts", "test/**/*.test.ts"]
+  "include": ["app/**/*.ts", "tooling/**/*.ts"]
 }

@@ -76,9 +76,5 @@ export default defineConfig([
     files: ['**/test/**/*.{js,mjs,cjs,ts,tsx}'],
     languageOptions: { globals: globals.mocha },
   },
-  {
-    files: ['src/legacy.ts'],
-    rules: { 'no-restricted-syntax': 'off' },
-  },
   prettierConfig,
 ]);

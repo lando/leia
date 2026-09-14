@@ -46,7 +46,7 @@ describe('cli/default', () => {
     const result = spawnSync(
       'bun',
       [
-        path.resolve(__dirname, '..', 'src', 'cli.ts'),
+        path.resolve(__dirname, '..', 'app', 'bin', 'leia.ts'),
         path.resolve(__dirname, 'lifecycle-failure.md'),
         '--retry',
         '0',

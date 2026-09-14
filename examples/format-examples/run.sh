@@ -4,7 +4,7 @@ set -euo pipefail
 
 module_format="${1:-auto}"
 root="$(cd "$(dirname "$0")" && pwd)"
-leia="$root/../../src/cli.ts"
+leia="$root/../../app/bin/leia.ts"
 
 for scenario in commonjs esm untyped nested/commonjs; do
   expected=cjs
