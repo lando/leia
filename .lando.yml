@@ -3,8 +3,9 @@ services:
   node:
     type: node:24
     build:
-      - npm install --global "$(node -p 'require("./package.json").packageManager')"
-      - bun install --frozen-lockfile
+      - npm install --global "bun@$(cat .bun-version)"
+      - bun run check:toolchain
+      - bun install --frozen-lockfile --ignore-scripts
 tooling:
   node:
     service: node

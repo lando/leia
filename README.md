@@ -241,16 +241,16 @@ User- and developer-visible changes are recorded in the
 
 ## Development
 
-Leia 2.x development uses the Bun version pinned in `package.json#packageManager`, strict TypeScript ESM source,
+Leia 2.x development uses the Bun version pinned in `.bun-version`, strict TypeScript ESM source,
 and `bun.lock`. Node 24 from `.node-version` remains available for compatibility tests and built JavaScript.
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, canonical validation commands, source CLI execution,
 watch mode, and migration boundaries. Installed-package commands above remain npm/Node commands.
 
 ## Releasing
 
-To deploy and publish a new version of the package to the `npm` registry, [create a release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) with a [semver](https://semver.org) tag. Every GitHub release publishes to the `edge` npm tag. Releases not marked as prereleases also move npm's `latest` tag to the same version, regardless of the version string.
+To deploy and publish a new version of the package to the `npm` registry, [create a release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) with a [semver](https://semver.org) tag. Prereleases publish to npm's `edge` tag. Releases not marked as prereleases publish directly to `latest` and also update `edge` to that version, regardless of the version string.
 
-The `@lando/leia` package must trust the `lando/leia` GitHub Actions publisher using `release.yml`. Package publication uses OIDC without an npm token. `NPM_DEPLOY_TOKEN` is a granular package token used only to update the `latest` dist-tag, while `prepare-release-action` synchronizes the version and changelog.
+The `@lando/leia` package must trust the `lando/leia` GitHub Actions publisher using `release.yml`. Package publication uses OIDC without an npm token. `NPM_DEPLOY_TOKEN` is a granular package token used only to update the `edge` dist-tag after stable publication, while `prepare-release-action` synchronizes the version and changelog.
 
 ## Maintainers
 

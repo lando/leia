@@ -1,4 +1,4 @@
-name: Run Unit Tests
+name: Check Development Build
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 jobs:
-  unit-tests:
+  build-checks:
     runs-on: ${{ matrix.os }}
     env:
       TERM: xterm
@@ -34,6 +34,5 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
 
-      # Run unit tests
-      - name: Run units tests
-        run: bun run test
+      - name: Verify repeatable builds, CLI parity, and isolated watch mode
+        run: bun run check:build
