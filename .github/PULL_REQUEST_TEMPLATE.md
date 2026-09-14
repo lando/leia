@@ -1,7 +1,8 @@
 ### Bare minimum self-checks
 
 > [What do you think of a person who only does the bare minimum?](https://getyarn.io/yarn-clip/dcf80710-425e-478b-bde1-c107bd11e849)
-- [ ] I've updated this PR with the latest code from `main`
+
+- [ ] I've updated this PR with its target branch: `2.x` for 2.0 development or `main` for 1.x maintenance
 - [ ] I've done a cursory QA pass of my code locally
 - [ ] I've ensured all automated status check and tests pass
 - [ ] I've [connected this PR to an issue](https://help.zenhub.com/support/solutions/articles/43000010350-connecting-pull-requests-to-github-issues)

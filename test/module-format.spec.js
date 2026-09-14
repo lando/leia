@@ -36,7 +36,7 @@ describe('lib/module-format', () => {
     const packageDir = path.join(tempDir, 'module-package');
     const nestedDir = path.join(packageDir, 'nested', 'deeper');
     fsExtra.mkdirpSync(nestedDir);
-    fs.writeFileSync(path.join(packageDir, 'package.json'), JSON.stringify({type: 'module'}));
+    fs.writeFileSync(path.join(packageDir, 'package.json'), JSON.stringify({ type: 'module' }));
 
     resolveModuleFormat('auto', nestedDir).should.equal('esm');
   });
@@ -47,9 +47,9 @@ describe('lib/module-format', () => {
     const untypedDir = path.join(packageDir, 'untyped');
     fsExtra.mkdirpSync(commonjsDir);
     fsExtra.mkdirpSync(untypedDir);
-    fs.writeFileSync(path.join(packageDir, 'package.json'), JSON.stringify({type: 'module'}));
-    fs.writeFileSync(path.join(commonjsDir, 'package.json'), JSON.stringify({type: 'commonjs'}));
-    fs.writeFileSync(path.join(untypedDir, 'package.json'), JSON.stringify({name: 'untyped'}));
+    fs.writeFileSync(path.join(packageDir, 'package.json'), JSON.stringify({ type: 'module' }));
+    fs.writeFileSync(path.join(commonjsDir, 'package.json'), JSON.stringify({ type: 'commonjs' }));
+    fs.writeFileSync(path.join(untypedDir, 'package.json'), JSON.stringify({ name: 'untyped' }));
 
     resolveModuleFormat('auto', commonjsDir).should.equal('commonjs');
     resolveModuleFormat('auto', untypedDir).should.equal('commonjs');

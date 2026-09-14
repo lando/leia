@@ -23,7 +23,9 @@ rules in `examples/AGENTS.md`.
 
 ## Source Map
 
-- `cli/`: the public oclif command, flags, help, and exit behavior.
+- `app/`: TypeScript ESM application; public entrypoint in `bin/`, orchestration and adapter in `lib/`.
+- `tooling/`: build/check libraries, thin internal `scripts/`, focused `utils/`, and flat TypeScript `test/`.
+- `cli/`: the unported oclif command, flags, help, and exit behavior.
 - `lib/`: parsing, generation, runner orchestration, shell selection, and focused helpers.
 - `templates/`: generated harness dependencies and the shared scenario body.
 - `test/`: focused Mocha unit tests for repository-owned JavaScript behavior.
@@ -55,8 +57,15 @@ rules in `examples/AGENTS.md`.
 
 ## Validation
 
-- Use the Node.js version pinned in `.node-version` and install dependencies with npm.
-- Run `npm run lint` and `npm run test:unit` for JavaScript changes when dependencies are available.
+- On `2.x`, use `.bun-version` as the Bun authority and keep `package.json#packageManager` in sync.
+- Run `bun run check:toolchain` and `bun install --frozen-lockfile --ignore-scripts`.
+- Keep flat ESLint and standalone Prettier separate; `lint` composes lint and format checks.
+- Use explicit ESM `.mjs` tool configs while the package root remains CommonJS.
+- Retain Node from `.node-version` for Mocha/nyc, Node-specific assertions, and built-output checks.
+- Run `bun run lint`, `bun run typecheck`, and `bun run test` for source changes.
+- Run `bun run check:build` for build or entrypoint changes; it validates clean output and watch rebuild in a temporary copy.
+- Keep TypeScript specs beside their owning scope; the combined test command includes legacy Node and Bun Mocha suites.
+- Keep new source in the explicit ESM scopes; do not reclassify unported CommonJS or weaken assertions.
 - Treat the full Leia, shell, module-format, and operating-system scenarios as CI-owned by default;
   do not run them locally unless operational validation is explicitly requested.
 - Run `git diff --check` for text or workflow changes and validate changed JSON and workflow YAML

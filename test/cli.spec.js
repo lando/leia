@@ -5,7 +5,7 @@
 
 'use strict';
 
-const {spawnSync} = require('child_process');
+const { spawnSync } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -43,29 +43,33 @@ describe('cli/default', () => {
   it('should fail the CLI and run cleanup after a failing test', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-lifecycle-'));
     const trace = path.join(tempDir, 'trace');
-    const result = spawnSync(process.execPath, [
-      path.resolve(__dirname, '..', 'bin', 'leia'),
-      path.resolve(__dirname, 'lifecycle-failure.md'),
-      '--retry',
-      '0',
-      '--shell',
-      'bash',
-    ], {
-      cwd: path.resolve(__dirname, '..'),
-      encoding: 'utf8',
-      env: {
-        ...process.env,
-        LEIA_LIFECYCLE_TRACE: trace.split(path.sep).join('/'),
-        TERM: 'xterm',
+    const result = spawnSync(
+      'bun',
+      [
+        path.resolve(__dirname, '..', 'app', 'bin', 'leia.ts'),
+        path.resolve(__dirname, 'lifecycle-failure.md'),
+        '--retry',
+        '0',
+        '--shell',
+        'bash',
+      ],
+      {
+        cwd: path.resolve(__dirname, '..'),
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          LEIA_LIFECYCLE_TRACE: trace.split(path.sep).join('/'),
+          TERM: 'xterm',
+        },
       },
-    });
+    );
 
     try {
       chai.expect(result.error).to.equal(undefined);
       chai.expect(result.status, result.stderr || result.stdout).to.equal(1);
       fs.readFileSync(trace, 'utf8').should.equal('setup\ntest\ncleanup\n');
     } finally {
-      fs.rmSync(tempDir, {recursive: true, force: true});
+      fs.rmSync(tempDir, { recursive: true, force: true });
     }
   });
 });

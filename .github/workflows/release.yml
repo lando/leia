@@ -27,13 +27,20 @@ jobs:
         with:
           node-version-file: '.node-version'
           registry-url: https://registry.npmjs.org
-          cache: npm
+      - name: Install Bun from .bun-version
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - name: Check Bun version
+        run: bun run check:toolchain
       - name: Install dependencies
-        run: npm clean-install --prefer-offline
+        run: bun install --frozen-lockfile --ignore-scripts
       - name: Validate source
         run: |
-          npm run lint
-          npm run test:unit
+          bun run lint
+          bun run typecheck
+          bun run test
+          bun run check:build
       - name: Export formatted release date
         shell: bash
         env:
@@ -42,6 +49,7 @@ jobs:
       - name: Prepare release
         uses: tanaabased/prepare-release-action@v1
         with:
+          commands: bun run format:write
           sync: true
           version: ${{ github.event.release.tag_name }}
           sync-token: ${{ secrets.RTFM47_COAXIUM_INJECTOR }}
@@ -55,17 +63,26 @@ jobs:
             UNRELEASED_DATE=${{ env.RELEASE_DATE }}
             UNRELEASED_LINK=${{ github.event.release.html_url }}
             UNRELEASED_VERSION=${{ github.event.release.tag_name }}
+      # The action stamps files after its commands; validate those mutations too.
+      - name: Check prepared package formatting
+        run: bun run format:check
       - name: Upgrade npm for trusted publishing
         run: npm install --global "npm@^11.5.1"
-      - name: Publish package with trusted publishing
+      - name: Publish stable package with trusted publishing
+        if: github.event.release.prerelease == false
+        run: |
+          npm publish --access public --tag latest --dry-run
+          npm publish --access public --tag latest
+      - name: Publish prerelease package with trusted publishing
+        if: github.event.release.prerelease == true
         run: |
           npm publish --access public --tag edge --dry-run
           npm publish --access public --tag edge
-      - name: Promote package to latest
-        if: ${{ github.event.release.prerelease == false }}
+      - name: Synchronize edge to the stable release
+        if: github.event.release.prerelease == false
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_DEPLOY_TOKEN }}
         run: |
           PACKAGE=$(node -p "require('./package.json').name")
           VERSION=$(node -p "require('./package.json').version")
-          npm dist-tag add "$PACKAGE@$VERSION" latest
+          npm dist-tag add "$PACKAGE@$VERSION" edge

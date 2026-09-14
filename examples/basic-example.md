@@ -41,7 +41,6 @@ skip
 
 You can also add aditional code blocks under a section. This allows you to better organize and structure your markdown file.
 
-
 ```bash
 # Should also run this
 true
@@ -56,4 +55,3 @@ You can also add additional testing sections by using the `--test-header` flag. 
 # Should also also run this
 true
 ```
-

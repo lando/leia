@@ -3,6 +3,9 @@ name: Run Leia Tests
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   leia-tests:
     runs-on: ${{ matrix.os }}
@@ -17,33 +20,37 @@ jobs:
           - windows-2025
 
     steps:
-      # Install deps and cache
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Install Node from .node-version
         uses: actions/setup-node@v7
         with:
           node-version-file: '.node-version'
-          cache: npm
+      - name: Install Bun from .bun-version
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - name: Check Bun version
+        run: bun run check:toolchain
       - name: Install dependencies
-        run: npm clean-install --prefer-offline --frozen-lockfile
+        run: bun install --frozen-lockfile --ignore-scripts
 
       # Run a few iterations of leia tests
       - name: Run Leia tests
         shell: bash
         run: |
           # Try a basic example
-          npx leia examples/basic-example.md --debug
+          bun run leia examples/basic-example.md --debug
           # Try globs and ignores
-          npx leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md" -i "examples/basic-pwsh-example.md"
+          bun run leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md" -i "examples/basic-pwsh-example.md"
           # Try custom headers
-          npx leia examples/custom-headers.md -s Hello -t Sup -c Goodbye
+          bun run leia examples/custom-headers.md -s Hello -t Sup -c Goodbye
           # Try all other options, including legacy ones
-          npx leia examples/basic-example.md --retry 2 --split-file --stdin --spawn
+          bun run leia examples/basic-example.md --retry 2 --split-file --stdin --spawn
           # Try a comma separated list of headers
-          npx leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye
+          bun run leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye
           # Assess envvars
-          npx leia examples/environment.md examples/basic-example.md --retry 4 --timeout 5 --debug
+          bun run leia examples/environment.md examples/basic-example.md --retry 4 --timeout 5 --debug
 
       # Run auto detection from each package scope with a repository-local temporary directory
       - name: Test automatic module format detection

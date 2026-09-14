@@ -4,11 +4,11 @@ Leia is a testing utility that tests code blocks in documentation. This makes te
 
 Leia will
 
-* Consolidate code examples and tests into a single, easy to understand and write `markdown` file
-* Write functional tests quickly in an accessible and lowest common denominator language (eg `sh/bash/dash` etc)
-* Pass on exit status code `0`, fail on anything else
-* Work cross platform-ish, with some caveats, see [Shell Considerations](#shell-considerations) below
-* Keep [Lando](https://github.com/lando/lando) honest so he can be a real hero who doesn't betray his friends again
+- Consolidate code examples and tests into a single, easy to understand and write `markdown` file
+- Write functional tests quickly in an accessible and lowest common denominator language (eg `sh/bash/dash` etc)
+- Pass on exit status code `0`, fail on anything else
+- Work cross platform-ish, with some caveats, see [Shell Considerations](#shell-considerations) below
+- Keep [Lando](https://github.com/lando/lando) honest so he can be a real hero who doesn't betray his friends again
 
 ## Installation
 
@@ -118,12 +118,12 @@ runner.run((failures) => process.exitCode = failures ? 1 : 0);
 
 For more details on specific options check out the code docs
 
-* [leia.find](https://github.com/lando/leia/blob/main/lib/leia.js)
-* [leia.generate](https://github.com/lando/leia/blob/main/lib/leia.js)
-* [leia.parse](https://github.com/lando/leia/blob/main/lib/leia.js)
-* [leia.resolveModuleFormat](https://github.com/lando/leia/blob/main/lib/leia.js)
-* [leia.run](https://github.com/lando/leia/blob/main/lib/leia.js)
-* [leia.runAsync](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.find](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.generate](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.parse](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.resolveModuleFormat](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.run](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.runAsync](https://github.com/lando/leia/blob/main/lib/leia.js)
 
 ### Module formats
 
@@ -210,8 +210,8 @@ Note: `LEIA_TEST_STAGE` can be either `setup`, `test` or `cleanup` and `LEIA_TES
 
 When `--shell` is omitted, `leia` selects a shell with deterministic platform precedence:
 
-* On Windows, `SHELL` wins, followed by `MSYSTEM=MINGW64` using `bash.exe`, `COMSPEC`, and finally `cmd.exe`.
-* On macOS and other Unix systems, the account shell from `os.userInfo()` wins, followed by `SHELL`. The final fallback is
+- On Windows, `SHELL` wins, followed by `MSYSTEM=MINGW64` using `bash.exe`, `COMSPEC`, and finally `cmd.exe`.
+- On macOS and other Unix systems, the account shell from `os.userInfo()` wins, followed by `SHELL`. The final fallback is
   `/bin/zsh` on macOS and `/bin/sh` elsewhere.
 
 Unix account lookup failures are reported instead of silently changing the selected shell. An unrecognized selected shell
@@ -241,20 +241,21 @@ User- and developer-visible changes are recorded in the
 
 ## Development
 
-Leia development requires [Node 24 LTS](https://nodejs.org/dist/latest-v24.x/). The root `.node-version` is the runtime
-authority for version-aware local tooling and GitHub Actions. See [CONTRIBUTING.md](./CONTRIBUTING.md) for local setup,
-Lando-based setup, validation, and pull request guidance.
+Leia 2.x development uses the Bun version pinned in `.bun-version`, strict TypeScript ESM source,
+and `bun.lock`. Node 24 from `.node-version` remains available for compatibility tests and built JavaScript.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, canonical validation commands, source CLI execution,
+watch mode, and migration boundaries. Installed-package commands above remain npm/Node commands.
 
 ## Releasing
 
-To deploy and publish a new version of the package to the `npm` registry, [create a release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) with a [semver](https://semver.org) tag. Every GitHub release publishes to the `edge` npm tag. Releases not marked as prereleases also move npm's `latest` tag to the same version, regardless of the version string.
+To deploy and publish a new version of the package to the `npm` registry, [create a release on GitHub](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) with a [semver](https://semver.org) tag. Prereleases publish to npm's `edge` tag. Releases not marked as prereleases publish directly to `latest` and also update `edge` to that version, regardless of the version string.
 
-The `@lando/leia` package must trust the `lando/leia` GitHub Actions publisher using `release.yml`. Package publication uses OIDC without an npm token. `NPM_DEPLOY_TOKEN` is a granular package token used only to update the `latest` dist-tag, while `prepare-release-action` synchronizes the version and changelog.
+The `@lando/leia` package must trust the `lando/leia` GitHub Actions publisher using `release.yml`. Package publication uses OIDC without an npm token. `NPM_DEPLOY_TOKEN` is a granular package token used only to update the `edge` dist-tag after stable publication, while `prepare-release-action` synchronizes the version and changelog.
 
 ## Maintainers
 
-* [@pirog](https://github.com/pirog)
-* [@reynoldsalec](https://github.com/reynoldsalec)
+- [@pirog](https://github.com/pirog)
+- [@reynoldsalec](https://github.com/reynoldsalec)
 
 ## Contributors
 
@@ -266,7 +267,7 @@ Made with [contributors-img](https://contrib.rocks).
 
 ## Legacy Version
 
-You can still install the older version of  Leia eg `leia-parser`.
+You can still install the older version of Leia eg `leia-parser`.
 
 ```bash
 npm install leia-parser
@@ -276,7 +277,7 @@ And its documentation lives on [here](https://github.com/lando/leia/tree/v0.4.0)
 
 ## Other Resources
 
-* [LICENSE](/LICENSE)
-* [TERMS OF USE](https://docs.lando.dev/terms)
-* [PRIVACY POLICY](https://docs.lando.dev/privacy)
-* [CODE OF CONDUCT](https://docs.lando.dev/coc)
+- [LICENSE](/LICENSE)
+- [TERMS OF USE](https://docs.lando.dev/terms)
+- [PRIVACY POLICY](https://docs.lando.dev/privacy)
+- [CODE OF CONDUCT](https://docs.lando.dev/coc)

@@ -3,6 +3,9 @@ name: Run Unit Tests
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   unit-tests:
     runs-on: ${{ matrix.os }}
@@ -16,17 +19,21 @@ jobs:
           - ubuntu-24.04
           - windows-2025
     steps:
-      # Install deps and cache
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Install Node from .node-version
         uses: actions/setup-node@v7
         with:
           node-version-file: '.node-version'
-          cache: npm
+      - name: Install Bun from .bun-version
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - name: Check Bun version
+        run: bun run check:toolchain
       - name: Install dependencies
-        run: npm clean-install --prefer-offline --frozen-lockfile
+        run: bun install --frozen-lockfile --ignore-scripts
 
       # Run unit tests
       - name: Run units tests
-        run: npm run test:unit
+        run: bun run test

@@ -6,7 +6,7 @@ Here is an example that does some setup and cleanup before running tests. Note t
 Hello
 -----
 
-These commands should run __before__ your main testing ones and can be used to do some setup that you need beforehand. You do not need for this section to come first in the markdown file, Leia should parse it first regardless.
+These commands should run **before** your main testing ones and can be used to do some setup that you need beforehand. You do not need for this section to come first in the markdown file, Leia should parse it first regardless.
 
 ```bash
 # Create a file we can grep for a word
@@ -26,10 +26,9 @@ cat test.txt | grep "bubba"
 Goodbye
 -------
 
-These commands should run __after__ your main testing ones and can be used to undo the commands you ran during setup before. You do not need for this section to come last in the markdown file, Leia should parse it last regardless.
+These commands should run **after** your main testing ones and can be used to undo the commands you ran during setup before. You do not need for this section to come last in the markdown file, Leia should parse it last regardless.
 
 ```bash
 # Destroy our test file
 rm -f test.txt
 ```
-

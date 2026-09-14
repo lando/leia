@@ -1,5 +1,10 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added a pinned Bun toolchain, strict TypeScript ESM scopes, and isolated build/watch checks for 2.x development. [#63](https://github.com/lando/leia/issues/63)
+- Standardized linting, formatting, TypeScript tests, and CI/release validation. [#63](https://github.com/lando/leia/issues/63)
+
+<!-- prettier-ignore-start -->
+
 ## v1.0.0-beta.9 - [August 29, 2026](https://github.com/lando/leia/releases/tag/v1.0.0-beta.9)
 
 ### New Features
@@ -112,3 +117,5 @@
 ## v0.3.0 - [November 27, 2018](https://github.com/lando/leia/releases/tag/v0.3.0)
 
 * Just a little placeholder [#1](https://github.com/lando/leia/issues/1)
+
+<!-- prettier-ignore-end -->

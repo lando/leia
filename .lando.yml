@@ -3,11 +3,11 @@ services:
   node:
     type: node:24
     build:
-      - npm ci
+      - npm install --global "bun@$(cat .bun-version)"
+      - bun run check:toolchain
+      - bun install --frozen-lockfile --ignore-scripts
 tooling:
   node:
     service: node
-  npm:
-    service: node
-  npx:
+  bun:
     service: node

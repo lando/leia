@@ -20,7 +20,7 @@ describe('lib/shell', () => {
   let originalUserInfo;
 
   const setPlatform = (platform) => {
-    Object.defineProperty(process, 'platform', {...originalPlatform, value: platform});
+    Object.defineProperty(process, 'platform', { ...originalPlatform, value: platform });
   };
 
   beforeEach(() => {
@@ -42,7 +42,7 @@ describe('lib/shell', () => {
   it('should prefer the account shell on Unix', () => {
     setPlatform('linux');
     process.env.SHELL = '/bin/zsh';
-    os.userInfo = () => ({shell: '/bin/bash'});
+    os.userInfo = () => ({ shell: '/bin/bash' });
 
     getShell().binary.should.equal('/bin/bash');
   });
@@ -80,21 +80,21 @@ describe('lib/shell', () => {
   it('should use SHELL on Unix without an account shell', () => {
     setPlatform('linux');
     process.env.SHELL = '/bin/bash';
-    os.userInfo = () => ({shell: ''});
+    os.userInfo = () => ({ shell: '' });
 
     getShell().binary.should.equal('/bin/bash');
   });
 
   it('should default to zsh on macOS', () => {
     setPlatform('darwin');
-    os.userInfo = () => ({shell: ''});
+    os.userInfo = () => ({ shell: '' });
 
     getShell().binary.should.equal('/bin/zsh');
   });
 
   it('should default to sh on other Unix platforms', () => {
     setPlatform('freebsd');
-    os.userInfo = () => ({shell: ''});
+    os.userInfo = () => ({ shell: '' });
 
     getShell().binary.should.equal('/bin/sh');
   });

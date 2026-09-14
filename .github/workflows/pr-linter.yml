@@ -3,6 +3,9 @@ name: Lint Code
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   linter:
     runs-on: ${{ matrix.os }}
@@ -13,17 +16,23 @@ jobs:
         os:
           - ubuntu-24.04
     steps:
-      # Install deps and cache
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Install Node from .node-version
         uses: actions/setup-node@v7
         with:
           node-version-file: '.node-version'
-          cache: npm
+      - name: Install Bun from .bun-version
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - name: Check Bun version
+        run: bun run check:toolchain
       - name: Install dependencies
-        run: npm clean-install --prefer-offline --frozen-lockfile
+        run: bun install --frozen-lockfile --ignore-scripts
 
       # Lint Code
       - name: Lint code
-        run: npm run lint
+        run: bun run lint
+      - name: Typecheck source and tooling
+        run: bun run typecheck
