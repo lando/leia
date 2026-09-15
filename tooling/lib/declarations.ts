@@ -95,6 +95,6 @@ export async function declarations(root: string): Promise<void> {
   // require('@lando/leia') returns the constructor, not the emitted module namespace.
   await writeFile(
     join(root, 'dist/cjs/index.d.cts'),
-    "import { Leia } from './lib/leia.cjs';\ndeclare const Constructor: typeof Leia & { Leia: typeof Leia; default: typeof Leia; 'module.exports': typeof Leia };\nexport = Constructor;\n",
+    "import { Leia as LeiaClass } from './lib/leia.cjs';\ndeclare const Constructor: typeof LeiaClass & { Leia: typeof LeiaClass; default: typeof LeiaClass; 'module.exports': typeof LeiaClass };\ntype Constructor = LeiaClass;\ndeclare namespace Constructor { type Leia = LeiaClass; }\nexport = Constructor;\n",
   );
 }

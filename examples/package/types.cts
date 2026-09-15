@@ -1,4 +1,5 @@
 import Leia = require('@lando/leia');
+import { Leia as NamedLeia } from '@lando/leia';
 import { find } from '@lando/leia/find';
 import {
   parse,
@@ -36,7 +37,9 @@ runner.run((failures) => exitCode(runner, failures));
 void runAsync(generated, runOptions).then((runner) =>
   runner.run((failures) => exitCode(runner, failures)),
 );
-const leia = new Leia();
+const leia: Leia = new Leia();
+const named: NamedLeia = new NamedLeia();
+void named;
 const parsed: compiler.Harness[] = leia.parse(files, options);
 const code: number = exitCode(leia.run(generated), 0);
 const version: string = metadata.version;
