@@ -1,5 +1,9 @@
 # Markdown compiler contract
 
+This maintainer reference documents Leia's typed compiler boundaries. Start with the
+[README](../README.md) for the primary user path or the [Programmatic API](./api.md) for public
+entrypoints.
+
 The strict TypeScript ESM compiler lives in `lib/`; `compiler.ts` is its entrypoint.
 Discovery, Markdown reading, normalization, validation, rendering, and file emission are separate
 steps. The typed CLI and Mocha runner share these modules directly; Node callers select the ESM or CommonJS artifact through the package export map.
@@ -72,5 +76,5 @@ source/cwd paths and path-derived destination hashes. Build checks also exercise
 parsing, and rendering after removing TypeScript sources from the isolated copy.
 
 Canonical lint, typecheck, unit, and build checks run locally. Executable Leia, shell, module-format,
-and operating-system scenario matrices remain CI-owned. The [public package entrypoints](../README.md#module) expose the compiler and individual stages;
+and operating-system scenario matrices remain CI-owned. The [public package entrypoints](./api.md#public-entrypoints) expose the compiler and individual stages;
 installed-tarball checks verify both JavaScript formats and their declarations.

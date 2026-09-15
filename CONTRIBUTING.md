@@ -111,7 +111,7 @@ ESM files use `.js`, and CommonJS files use `.cjs`. Dependencies stay external. 
 embed the original TypeScript and support Node diagnostics with `--enable-source-maps`, including
 when the artifacts are relocated without application source.
 `package.json` routes imports to ESM and requires to CommonJS, preserves the constructor API,
-and exposes only the [documented subpaths](./README.md#module). Bun remains the sole JavaScript
+and exposes only the [documented subpaths](./docs/api.md#public-entrypoints). Bun remains the sole JavaScript
 emitter. The pinned CJS bundler needs independent entrypoint builds to avoid shared-export
 mislinking and an emitted-file URL banner for relocatable paths; installed Node consumers exercise
 that output. TypeScript emits declarations only, with `.js`/`.d.ts` references for ESM and
@@ -145,6 +145,8 @@ rather than repeating the general examples.
 
 - Target 2.0 development at `2.x` and bounded 1.x maintenance at `main`.
 - Forward-port applicable 1.x fixes from `main` to `2.x` through focused pull requests.
+- Use the [2.0 migration guide](./docs/migrating-to-2.md) when a change affects a retained or
+  replaced 1.x contract.
 - Keep the change focused and connect it to its issue when one exists.
 - Update the README and unreleased changelog when behavior changes for users or developers.
 - Describe what changed and include the validation you ran.

@@ -1,5 +1,9 @@
 # CLI and execution lifecycle
 
+This maintainer reference records Leia's process and execution guarantees. Start with the
+[README](../README.md) for the primary user path or [Using Leia](./using-leia.md) for the CLI and
+troubleshooting reference.
+
 ## Typed boundaries
 
 `lib/cli.ts` parses arguments without a CLI framework. `lib/run-cli.ts` initializes debug before loading

@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
 import { checkDistribution, distributionFiles } from './distribution.ts';
+import { checkDocumentationLinks, extractDocumentationExample } from '../utils/documentation.ts';
 import { runCommand } from '../utils/run-command.ts';
 
 const publicModules = [
@@ -31,6 +32,23 @@ export async function checkPackage(
   scenarios = false,
 ): Promise<void> {
   await checkDistribution(root);
+  const documentation = [
+    'README.md',
+    'CONTRIBUTING.md',
+    'docs/api.md',
+    'docs/compiler.md',
+    'docs/lifecycle.md',
+    'docs/migrating-to-2.md',
+    'docs/using-leia.md',
+  ];
+  await checkDocumentationLinks(root, documentation);
+  const readExample = async (file: string, id: string): Promise<string> =>
+    extractDocumentationExample(await readFile(join(root, file), 'utf8'), id).source;
+  const quickstart = await readExample('README.md', 'quickstart-scenario');
+  const quickstartCommand = await readExample('README.md', 'quickstart-command');
+  const lifecycle = await readExample('docs/using-leia.md', 'lifecycle-scenario');
+  const apiESM = await readExample('docs/api.md', 'api-esm');
+  const apiCommonJS = await readExample('docs/api.md', 'api-commonjs');
   const scratch = await mkdtemp(join(tmpdir(), 'leia-package-'));
   try {
     const packDirectory = destination ? resolve(root, destination) : join(scratch, 'pack');
@@ -68,6 +86,12 @@ export async function checkPackage(
       '--no-fund',
       '--save-exact',
       tarball,
+    ]);
+    await Promise.all([
+      writeFile(join(consumer, 'quickstart.md'), quickstart),
+      writeFile(join(consumer, 'lifecycle.md'), lifecycle),
+      writeFile(join(consumer, 'documentation-api.mjs'), apiESM),
+      writeFile(join(consumer, 'documentation-api.cjs'), apiCommonJS),
     ]);
     await lstat(
       join(consumer, 'node_modules/.bin', process.platform === 'win32' ? 'leia.cmd' : 'leia'),
@@ -142,6 +166,16 @@ export async function checkPackage(
     }
     if (scenarios) {
       const cli = join(installed, metadata.bin.leia);
+      const documentedCommand = quickstartCommand.trim().split(/\s+/);
+      assert.deepEqual(documentedCommand, [
+        'npm',
+        'exec',
+        '--offline',
+        '--',
+        'leia',
+        'quickstart.md',
+      ]);
+      await runCommand(consumer, documentedCommand);
       await runCommand(consumer, [
         'node',
         cli,
@@ -149,6 +183,15 @@ export async function checkPackage(
         '--shell',
         process.platform === 'win32' ? 'cmd' : 'sh',
       ]);
+      await runCommand(consumer, [
+        'node',
+        cli,
+        'lifecycle.md',
+        '--shell',
+        process.platform === 'win32' ? 'cmd' : 'sh',
+      ]);
+      await runCommand(consumer, ['node', 'documentation-api.mjs']);
+      await runCommand(consumer, ['node', 'documentation-api.cjs']);
     }
     assert.equal(
       createHash('sha1')
@@ -158,7 +201,7 @@ export async function checkPackage(
       'Publish the same tarball that passed consumer verification.',
     );
     process.stdout.write(
-      `Verified ${tarball}: ESM, CommonJS, declarations, metadata, and contents${scenarios ? ', installed CLI scenarios' : ''}.\n`,
+      `Verified ${tarball}: ESM, CommonJS, declarations, metadata, contents, and documentation links${scenarios ? ', documentation examples, installed CLI scenarios' : ''}.\n`,
     );
   } finally {
     await rm(scratch, { recursive: true, force: true });
