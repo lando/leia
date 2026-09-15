@@ -42,6 +42,7 @@ for this Bun bootstrap and npm distribution operations, not repository dependenc
 | `bun run lint`            | Run ESLint and format checking                                                                |
 | `bun run typecheck`       | Strictly check application, tooling, and TypeScript tests without emitting files              |
 | `bun run test`            | Run application and tooling TypeScript unit tests without building                            |
+| `bun run test:coverage`   | Measure selected Node ESM unit tests against original TypeScript; requires an existing build  |
 | `bun run test:unit`       | Run selected application tests and Bun tooling tests                                          |
 | `bun run build`           | Clean and build Node ESM/CommonJS JavaScript and source maps into `dist/esm/` and `dist/cjs/` |
 | `bun run watch`           | Build once, then rebuild when files under `bin/`, `lib/`, or `utils/` change                  |
@@ -50,8 +51,16 @@ for this Bun bootstrap and npm distribution operations, not repository dependenc
 | `bun run test:leia`       | Run the portable Markdown scenarios; normally CI-owned                                        |
 | `bun run test:leia:stdin` | Run the stdin scenario in an interactive terminal                                             |
 
-The retired `nyc` configuration measured adapters, not application coverage. No coverage percentage
-is reported until source-aware coverage is established in the validation pass.
+Run `bun run build` followed by `bun run test:coverage` to measure application unit coverage.
+The command uses Node ESM and linked source maps to report original `lib/**/*.ts` and
+`utils/**/*.ts` files, including unexecuted modules. It rejects empty, incomplete, or incorrectly
+mapped reports. Reports are written to ignored `coverage/` as text, JSON, LCOV, and HTML.
+
+CI collects coverage once, in the existing Ubuntu ESM unit job, and uploads the reports as the
+`typescript-unit-coverage` artifact. It does not add another suite run or execution target.
+The report excludes type-only modules, generated launchers, dependencies, tests, and tooling;
+it does not measure the separate cross-platform lifecycle scenarios. No percentage threshold is
+imposed; this establishes a source-aware baseline without replacing behavioral assertions.
 
 Before opening a pull request, run:
 
@@ -91,7 +100,9 @@ Run `bun run build` before using the Node CLI or package API in a source checkou
 
 The build generates thin Node launchers over the same `lib/app.ts` implementation used by the
 Bun source launcher. Each artifact scope contains its own compiler, runtime, API, and utilities;
-ESM files use `.js`, and CommonJS files use `.cjs`. Dependencies stay external.
+ESM files use `.js`, and CommonJS files use `.cjs`. Dependencies stay external. Linked source maps
+embed the original TypeScript and support Node diagnostics with `--enable-source-maps`, including
+when the artifacts are relocated without application source.
 `package.json` points at the ESM CLI and constructor; direct CommonJS artifacts also preserve
 `require()` returning the Leia constructor. Final npm conditional exports, declaration distribution,
 and tarball verification remain in [#66](https://github.com/lando/leia/issues/66).

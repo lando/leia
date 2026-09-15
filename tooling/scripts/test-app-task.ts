@@ -1,18 +1,9 @@
 #!/usr/bin/env bun
 
 import { repositoryRoot } from '../lib/toolchain.ts';
-import { executionTarget } from '../utils/execution-target.ts';
+import { testApp } from '../lib/test-app.ts';
 
-const target = executionTarget(process.env.LEIA_RUNTIME ?? 'source', repositoryRoot);
-const child = Bun.spawn(
-  [
-    target.executable,
-    ...(target.name === 'source' ? ['--bun'] : []),
-    'node_modules/mocha/bin/mocha.js',
-    '--timeout',
-    '5000',
-    'test/*.spec.ts',
-  ],
-  { cwd: repositoryRoot, stdin: 'inherit', stdout: 'inherit', stderr: 'inherit' },
-);
-process.exitCode = await child.exited;
+const args = process.argv.slice(2);
+if (args.length && (args.length !== 1 || args[0] !== '--coverage'))
+  throw new Error('Expected no arguments or --coverage');
+process.exitCode = await testApp(repositoryRoot, args[0] === '--coverage');

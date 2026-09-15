@@ -1,6 +1,6 @@
 import { watch } from 'node:fs';
 import { chmod, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join, relative, resolve, sep } from 'node:path';
 
 export async function build(root: string): Promise<void> {
   const outdir = join(root, 'dist');
@@ -20,7 +20,7 @@ export async function build(root: string): Promise<void> {
         target: 'node',
         format,
         packages: 'external',
-        sourcemap: 'external',
+        sourcemap: 'linked',
         ...(format === 'cjs'
           ? {
               // Bun otherwise embeds source URLs in CJS. Resolve from the emitted file at runtime.
@@ -30,6 +30,14 @@ export async function build(root: string): Promise<void> {
           : {}),
       });
       if (!result.success) throw new AggregateError(result.logs, `${format} build failed`);
+      // Bun's sources are relative to outdir, not to a nested map's own directory.
+      for (const artifact of result.outputs.filter((output) => output.kind === 'sourcemap')) {
+        const map = JSON.parse(await artifact.text()) as { sources: string[] };
+        map.sources = map.sources.map((source) =>
+          relative(dirname(artifact.path), resolve(destination, source)).split(sep).join('/'),
+        );
+        await writeFile(artifact.path, JSON.stringify(map) + '\n');
+      }
     }
     await writeFile(
       join(destination, 'package.json'),

@@ -44,6 +44,7 @@
     "format:write": "prettier . --write --ignore-unknown",
     "test:lifecycle": "bun run build && node examples/lifecycle/verify.cjs",
     "test:app": "bun run tooling/scripts/test-app-task.ts",
+    "test:coverage": "bun run tooling/scripts/test-app-task.ts --coverage",
     "test:tooling": "bun --bun node_modules/mocha/bin/mocha.js --timeout 5000 \"tooling/test/*.spec.ts\""
   },
   "dependencies": {
@@ -67,6 +68,7 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.0.0",
     "@types/object-hash": "^3.0.6",
+    "c8": "^12.0.0",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.12.0",

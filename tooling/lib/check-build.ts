@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { cp, mkdtemp, readFile, readdir, rm, stat, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, sep } from 'node:path';
+import { basename, dirname, join, relative, resolve, sep } from 'node:path';
 
 import { executionTarget, targetNames, type TargetName } from '../utils/execution-target.ts';
 
@@ -88,6 +88,30 @@ async function checkWatch(root: string): Promise<void> {
   }
 }
 
+async function checkSourceMaps(root: string, files: string[]): Promise<void> {
+  for (const file of files.filter((file) => file.endsWith('.map'))) {
+    const filename = join(root, 'dist', file);
+    const map = JSON.parse(await readFile(filename, 'utf8')) as {
+      sources: string[];
+      sourcesContent: string[];
+    };
+    assert.ok(
+      (await readFile(filename.slice(0, -4), 'utf8')).includes(
+        `//# sourceMappingURL=${basename(filename)}`,
+      ),
+    );
+    for (const [index, source] of map.sources.entries()) {
+      const sourceFile = resolve(dirname(filename), source);
+      assert.match(relative(root, sourceFile).split(sep).join('/'), /^(lib|utils)\/.+\.ts$/);
+      assert.equal(
+        map.sourcesContent[index],
+        await readFile(sourceFile, 'utf8'),
+        'Source map content must match TypeScript',
+      );
+    }
+  }
+}
+
 async function checkCLI(root: string, name: TargetName): Promise<void> {
   const target = executionTarget(name, root);
   const entry = [target.executable, target.cli];
@@ -136,6 +160,12 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
 
     await run(root, [process.execPath, 'run', 'build']);
     const first = await snapshot(root);
+    await checkSourceMaps(root, Object.keys(first));
+    const throwLine =
+      (await readFile(join(root, 'utils/parse-non-negative-integer.ts'), 'utf8'))
+        .split('\n')
+        .findIndex((line) => line.includes('throw new Error')) + 1;
+    assert.ok(throwLine > 0);
     for (const format of ['esm', 'cjs']) {
       const extension = format === 'esm' ? 'js' : 'cjs';
       for (const module of ['bin/leia', 'lib/api', 'lib/compiler', 'lib/runtime', 'lib/leia'])
@@ -188,6 +218,18 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
           await assert.rejects(stat(join(isolated, absent)), { code: 'ENOENT' });
         await checkCLI(isolated, name);
         const target = executionTarget(name, isolated);
+        await run(isolated, [
+          'node',
+          '--enable-source-maps',
+          '--input-type=commonjs',
+          '-e',
+          `const assert = require('node:assert/strict');
+          const {parseNonNegativeInteger} = require(${JSON.stringify(join(target.directory, `utils/parse-non-negative-integer.${target.extension}`))});
+          assert.throws(() => parseNonNegativeInteger(-1, '--probe', 10), error => {
+            assert.ok(error.stack.includes(${JSON.stringify(join(isolated, 'utils/parse-non-negative-integer.ts'))} + ':${throwLine}:'), error.stack);
+            return true;
+          });`,
+        ]);
         await run(isolated, [
           'node',
           '--input-type=commonjs',
