@@ -70,7 +70,7 @@ export const parseCLI = (argv: string[]): CLIOptions => {
       if (name === 'split-file') options.splitFile = true;
       else options[name as 'stdin' | 'debug' | 'help' | 'version' | 'spawn'] = true;
       if (name === 'help' || name === 'version') return options;
-      if (inline !== undefined) args.unshift(inline);
+      if (inline !== undefined && name !== 'debug') args.unshift(inline);
       continue;
     }
     const value = inline ?? args.shift();

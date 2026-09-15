@@ -22,7 +22,7 @@ for this repository's development dependencies. Bun is the development toolchain
 requirement for installed npm artifacts.
 
 Node 24, selected by `.node-version`, remains required for generated-harness syntax checks, Node-based
-example commands, and built JavaScript validation. Source and tooling specs run on Bun;
+example commands, and built JavaScript validation. Source and development helper specs run on Bun;
 the same application specs run against both built targets on Node 24.
 
 For [Lando](https://docs.lando.dev/basics/installation.html), `lando start` provisions Node 24 and
@@ -40,10 +40,10 @@ for this Bun bootstrap and npm distribution operations, not repository dependenc
 | `bun run format:check`    | Check standalone Prettier formatting                                                                         |
 | `bun run format:write`    | Apply the repository's formatting rules                                                                      |
 | `bun run lint`            | Run ESLint and format checking                                                                               |
-| `bun run typecheck`       | Strictly check application, tooling, and TypeScript tests without emitting files                             |
-| `bun run test`            | Run application and tooling TypeScript unit tests without building                                           |
+| `bun run typecheck`       | Strictly check application, development helpers, and TypeScript tests without emitting files                 |
+| `bun run test`            | Run application and development helper TypeScript unit tests without building                                |
 | `bun run test:coverage`   | Measure selected Node ESM unit tests against original TypeScript; requires an existing build                 |
-| `bun run test:unit`       | Run selected application tests and Bun tooling tests                                                         |
+| `bun run test:unit`       | Run selected application tests and Bun development helper tests                                              |
 | `bun run build`           | Clean and build Node ESM/CommonJS JavaScript, declarations, and source maps into `dist/esm/` and `dist/cjs/` |
 | `bun run watch`           | Build once, then rebuild when files under `bin/`, `lib/`, or `utils/` change                                 |
 | `bun run check:build`     | Verify repeatability, declaration emission, freshness gates, and watch rebuild in a temporary copy           |
@@ -60,7 +60,7 @@ mapped reports. Reports are written to ignored `coverage/` as text, JSON, LCOV, 
 
 CI collects coverage once, in the existing Ubuntu ESM unit job, and uploads the reports as the
 `typescript-unit-coverage` artifact. It does not add another suite run or execution target.
-The report excludes type-only modules, generated launchers, dependencies, tests, and tooling;
+The report excludes type-only modules, generated launchers, dependencies, tests, and development helpers;
 it does not measure the separate cross-platform lifecycle scenarios. No percentage threshold is
 imposed; this establishes a source-aware baseline without replacing behavioral assertions.
 
@@ -92,7 +92,7 @@ are excluded with Prettier range markers. Preserve those behavior-bearing inputs
 Leia is one package, so its source lives directly under the repository root: `bin/` for the
 public CLI, `lib/` for the [compiler](./docs/compiler.md) and [execution lifecycle](./docs/lifecycle.md),
 `utils/` for independently testable functions, and flat `test/` for specs and fixtures.
-`tooling/` separately owns build and validation; `dist/` contains generated artifacts only.
+`dev/` separately owns build and validation; `dist/` contains generated artifacts only.
 
 The root package is ESM; each built target declares its own module format. Root-level `auto` harness detection therefore selects
 ESM; explicit format overrides and scenario-owned CommonJS or untyped packages retain their behavior.
@@ -105,7 +105,7 @@ Run `bun run build` before using the Node CLI or package API in a source checkou
 | Node ESM      | `node dist/esm/bin/leia.js`  | Yes             |
 | Node CommonJS | `node dist/cjs/bin/leia.cjs` | Yes             |
 
-The build generates thin Node launchers over the same `lib/app.ts` implementation used by the
+The build generates thin Node launchers over the same `lib/run-cli.ts` implementation used by the
 Bun source launcher. Each artifact scope contains its own compiler, runtime, API, and utilities;
 ESM files use `.js`, and CommonJS files use `.cjs`. Dependencies stay external. Linked source maps
 embed the original TypeScript and support Node diagnostics with `--enable-source-maps`, including
@@ -122,7 +122,7 @@ The build writes `dist/build-receipt.json` last, recording input and artifact ha
 and source-directory `npm publish` run `check:dist` through `prepack`; changed inputs, altered or
 missing output, and extra stale files require a fresh `bun run build`. The receipt is not published.
 The tarball includes only `dist/esm`, `dist/cjs`, and npm's package metadata, README, and license.
-Source maps embed TypeScript for diagnostics; standalone source, tests, and build tooling are excluded.
+Source maps embed TypeScript for diagnostics; standalone source, tests, and development helpers are excluded.
 
 Release checks build after version stamping, validate an installed tarball, and dry-run/publish that
 same `.tgz`. `check:package --pack-destination=.temp/package --scenarios` retains the verified tarball
@@ -130,7 +130,7 @@ for this CI-owned path. This command does not publish anything.
 
 `LEIA_RUNTIME=source|esm|cjs` selects the target for `bun run test:app` and executable scenarios.
 The same TypeScript application specs run on Bun for source and Node 24 for built targets;
-tooling specs run only on Bun via `bun run test:tooling`. Application and tooling unit commands never build implicitly.
+Development helper specs run only on Bun via `bun run test:dev`. Application and development helper unit commands never build implicitly.
 The source CI jobs assert that `dist/` does not exist. Built CI jobs remove application source and
 the sibling artifact before testing. The isolated build check uses focused API/CLI and runtime
 probes in relocated temporary copies, without rerunning the unit suite. It also verifies clean

@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
 
-import { runCLI } from '../lib/app.ts';
+import { runCLI } from '../lib/run-cli.ts';
 
 void runCLI();

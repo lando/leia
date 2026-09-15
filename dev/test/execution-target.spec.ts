@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { executionTarget } from '../utils/execution-target.ts';
 
-describe('tooling/utils/execution-target', () => {
+describe('dev/utils/execution-target', () => {
   it('should keep source, ESM, and CommonJS execution distinct', () => {
     const root = path.resolve('package');
     assert.equal(executionTarget('source', root).cli, path.join(root, 'bin/leia.ts'));

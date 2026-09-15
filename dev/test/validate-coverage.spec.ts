@@ -10,7 +10,7 @@ const file = (hits = 1) => ({
   f: { '0': hits },
 });
 
-describe('tooling/utils/validate-coverage', () => {
+describe('dev/utils/validate-coverage', () => {
   it('should accept source-aligned coverage including untested files', () => {
     const untested = 'lib/untested.ts';
     validateCoverage(

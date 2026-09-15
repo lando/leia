@@ -102,7 +102,7 @@ async function verify(entry, format, mode, { signal, secondSignal, retry = 1, ti
 }
 
 (async () => {
-  const { executionTarget, targetNames } = await import('../../tooling/utils/execution-target.ts');
+  const { executionTarget, targetNames } = await import('../../dev/utils/execution-target.ts');
   const selected = process.env.LEIA_RUNTIME ? [process.env.LEIA_RUNTIME] : targetNames;
   const entries = selected.map((name) => {
     const target = executionTarget(name, root);

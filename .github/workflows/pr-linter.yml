@@ -34,5 +34,5 @@ jobs:
       # Lint Code
       - name: Lint code
         run: bun run lint
-      - name: Typecheck source and tooling
+      - name: Typecheck source and development helpers
         run: bun run typecheck

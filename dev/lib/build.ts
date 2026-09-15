@@ -50,8 +50,8 @@ export async function build(root: string): Promise<void> {
     const cli = join(destination, `bin/leia.${format === 'cjs' ? 'cjs' : 'js'}`);
     const launcher =
       format === 'esm'
-        ? "import {runCLI} from '../lib/app.js';"
-        : "const {runCLI} = require('../lib/app.cjs');";
+        ? "import {runCLI} from '../lib/run-cli.js';"
+        : "const {runCLI} = require('../lib/run-cli.cjs');";
     await writeFile(cli, `#!/usr/bin/env node\n${launcher}\nvoid runCLI();\n`);
     await chmod(cli, 0o755);
     if (format === 'cjs') {

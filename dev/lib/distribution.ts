@@ -27,7 +27,7 @@ async function inputs(root: string): Promise<Record<string, string>> {
     '.bun-version',
     'tsconfig.json',
     'tsconfig.build.json',
-    ...new Bun.Glob('{bin,lib,utils,tooling}/**/*.ts').scanSync(root),
+    ...new Bun.Glob('{bin,lib,utils,dev}/**/*.ts').scanSync(root),
   ]);
 }
 

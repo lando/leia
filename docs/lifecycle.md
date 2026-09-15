@@ -2,7 +2,7 @@
 
 ## Typed boundaries
 
-`lib/cli.ts` parses arguments without a CLI framework. `app.ts` initializes debug before loading
+`lib/cli.ts` parses arguments without a CLI framework. `lib/run-cli.ts` initializes debug before loading
 orchestration and dispatches help, version, discovery, parsing, generation, and execution. `leia.ts`
 provides the shared programmatic API. `run.ts` owns Mocha loading and invocation-scoped signals.
 `runtime.ts` connects generated tests to `execute.ts`, which owns child processes and stream closure.

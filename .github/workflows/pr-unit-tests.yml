@@ -65,6 +65,6 @@ jobs:
             coverage/lcov-report/
           if-no-files-found: error
           retention-days: 14
-      - name: Run tooling unit tests
+      - name: Run development helper unit tests
         if: matrix.runtime == 'source'
-        run: bun run test:tooling
+        run: bun run test:dev
