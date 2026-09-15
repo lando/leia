@@ -34,7 +34,7 @@ for this Bun bootstrap and npm distribution operations, not repository dependenc
 | Command                   | Purpose                                                                                     |
 | ------------------------- | ------------------------------------------------------------------------------------------- |
 | `bun run check:toolchain` | Verify the Bun runtime and matching package-manager metadata                                |
-| `bun run leia --help`     | Execute `app/bin/leia.ts` directly                                                          |
+| `bun run leia --help`     | Execute `bin/leia.ts` directly                                                              |
 | `bun run dev <files>`     | Restart the source CLI when its loaded modules change                                       |
 | `bun run lint:eslint`     | Run flat ESLint with the shared TypeScript layer and scenario overrides                     |
 | `bun run format:check`    | Check standalone Prettier formatting                                                        |
@@ -44,7 +44,7 @@ for this Bun bootstrap and npm distribution operations, not repository dependenc
 | `bun run test`            | Run application and tooling TypeScript unit tests without building                          |
 | `bun run test:unit`       | Run the same source unit suite                                                              |
 | `bun run build`           | Clean and build Node-compatible ESM JavaScript and source maps into `dist/`                 |
-| `bun run watch`           | Build once, then rebuild when files under `app/` change                                     |
+| `bun run watch`           | Build once, then rebuild when files under `bin/`, `lib/`, or `utils/` change                |
 | `bun run check:build`     | Verify repeatability, source/Node CLI parity, and bounded watch rebuild in a temporary copy |
 | `bun run test:lifecycle`  | Check source/build lifecycle parity, including timeout, signals, retries, and stdin         |
 | `bun run test:leia`       | Run the portable Markdown scenarios; normally CI-owned                                      |
@@ -73,13 +73,14 @@ are excluded with Prettier range markers. Preserve those behavior-bearing inputs
 
 ## Source and build boundaries
 
-`app/` owns the strict TypeScript ESM application, [compiler](./docs/compiler.md), and
-[execution lifecycle](./docs/lifecycle.md). The public entrypoint lives in `app/bin/`; parsing,
-orchestration, process execution, and APIs live in `app/lib/`. `tooling/` owns build and validation.
+Leia is one package, so its source lives directly under the repository root: `bin/` for the
+public CLI, `lib/` for the [compiler](./docs/compiler.md) and [execution lifecycle](./docs/lifecycle.md),
+`utils/` for independently testable functions, and flat `test/` for specs and fixtures.
+`tooling/` separately owns build and validation; `dist/` contains generated artifacts only.
 
-There are no root `bin/`, `lib/`, or application `test/` migration adapters. Source and tests live
-under `app/`; intentional CommonJS scenario fixtures remain. The root package stays CommonJS for
-root-level `auto` harness detection, while application source and build output are explicitly ESM.
+The root package and built output are ESM. Root-level `auto` harness detection therefore selects
+ESM; explicit format overrides and scenario-owned CommonJS or untyped packages retain their behavior.
+CommonJS helpers use `.cjs`. There are no migration adapters or parallel application implementations.
 Run `bun run build` before using the Node CLI or package API in a source checkout.
 
 `dist/bin/leia.js` runs with Node 24. `dist/lib/app.js` exports the CLI entrypoint;

@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
-import type Mocha from 'mocha';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+
+import type Mocha from 'mocha';
 
 import { run, runAsync } from '../lib/run.ts';
 
@@ -13,10 +14,13 @@ const runMocha = (mocha: Mocha): Promise<number> => new Promise((resolve) => moc
 
 describe('lib/run', () => {
   before(() => {
-    fs.writeFileSync(commonjsHarness, "describe('commonjs', () => { it('passes', () => {}); });\n");
+    fs.writeFileSync(
+      commonjsHarness,
+      "describe('commonjs', () => { it('should pass', () => {}); });\n",
+    );
     fs.writeFileSync(
       esmHarness,
-      "describe('esm', () => { it('passes', () => {}); });\nexport {};\n",
+      "describe('esm', () => { it('should pass', () => {}); });\nexport {};\n",
     );
   });
 

@@ -1,8 +1,9 @@
 # Markdown compiler contract
 
-The strict TypeScript ESM compiler lives in `app/lib/`; `compiler.ts` is its entrypoint.
+The strict TypeScript ESM compiler lives in `lib/`; `compiler.ts` is its entrypoint.
 Discovery, Markdown reading, normalization, validation, rendering, and file emission are separate
-steps. The typed CLI and Mocha runner share these modules directly; CommonJS APIs use thin adapters.
+steps. The typed CLI and Mocha runner share these modules directly; Node 24 CommonJS callers use
+the ESM build through native interoperability, without adapters.
 
 ## Intermediate representation
 
@@ -54,19 +55,19 @@ and replacement definition directories are not compiler extension points.
 
 ## Development entrypoints and verification
 
-Bun loads `app/lib/compiler.ts` directly. Node loads `dist/lib/compiler.js`, so run `bun run build`
+Bun loads `lib/compiler.ts` directly. Node loads `dist/lib/compiler.js`, so run `bun run build`
 before using `node dist/bin/leia.js` or the package API in a source checkout. `bun run test`
 loads the source directly without a build. Compiler APIs remain synchronous. Generated harnesses load the typed runtime via `runtimePath`
 (source on Bun, built ESM on Node), replacing the former `cltPath` dependency field.
 
-`app/test/fixtures/parse-baseline.json` and the two harness `*-baseline.json` files were captured from the
-approved `2.x` implementation at `19a4a18`. The lifecycle port deliberately updates the runtime
+`test/parse-baseline.json` and the two harness `*-baseline.json` files were captured from the
+approved `2.x` implementation at `19a4a18`. The optimizer updates fixture paths and generated comments; command bytes and lifecycle assertions remain locked. The lifecycle port deliberately updates the runtime
 dependency field and harness snapshots to delegate process execution to `runScenario`; command
 bytes, ordering, environment metadata, and assertions remain intact. Tests compare the complete parser IR
 (with repository/temp paths and host newlines normalized) and complete rendered bytes. Harness fixture lines are JSON-encoded to retain significant trailing
 spaces and final newlines without introducing whitespace errors in the repository. The harness
 fixture covers setup, ordinary tests, skip, cleanup, and shell-significant command content.
-The existing compatibility assertions now live in TypeScript specs under `app/test/` and exercise
+The existing compatibility assertions now live in TypeScript specs under `test/` and exercise
 the source directly. Moved Markdown fixtures retain their bytes; parser snapshots update only their
 source/cwd paths and path-derived destination hashes. Build checks also exercise discovery,
 parsing, and rendering after removing TypeScript sources from the isolated copy.

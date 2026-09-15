@@ -37,7 +37,7 @@ async function snapshot(root: string): Promise<Record<string, string>> {
 }
 
 async function checkWatch(root: string): Promise<void> {
-  const sourcePath = join(root, 'app/lib/app.ts');
+  const sourcePath = join(root, 'lib/app.ts');
   const original = await readFile(sourcePath, 'utf8');
   const marker = 'leiaWatchRebuildProbe';
   const watcher = Bun.spawn([process.execPath, 'run', 'tooling/scripts/build-cli.ts', '--watch'], {
@@ -60,7 +60,7 @@ async function checkWatch(root: string): Promise<void> {
     }
   };
   try {
-    await waitFor(() => Promise.resolve(watchOutput.includes('Watching app/')));
+    await waitFor(() => Promise.resolve(watchOutput.includes('Watching bin/, lib/, utils/')));
     await writeFile(sourcePath, `${original}\nexport const ${marker} = true;\n`);
     await waitFor(async () =>
       (await readFile(join(root, 'dist/lib/app.js'), 'utf8').catch(() => '')).includes(marker),
@@ -80,7 +80,7 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
   const root = await mkdtemp(join(tmpdir(), 'leia-build-'));
   try {
     await Promise.all(
-      ['.bun-version', 'package.json', 'app', 'tooling'].map((path) =>
+      ['.bun-version', 'package.json', 'bin', 'lib', 'utils', 'tooling'].map((path) =>
         cp(join(repositoryRoot, path), join(root, path), { recursive: true }),
       ),
     );
@@ -117,7 +117,7 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
     );
 
     for (const flag of ['--help', '--version']) {
-      const source = await run(root, [process.execPath, 'run', 'app/bin/leia.ts', flag]);
+      const source = await run(root, [process.execPath, 'run', 'bin/leia.ts', flag]);
       const built = await run(root, ['node', 'dist/bin/leia.js', flag]);
       // Version output includes the runtime's Node-compatibility version.
       const stableOutput = (value: string): string =>
@@ -130,7 +130,7 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       assert.ok(source.includes(flag === '--help' ? '--module-format' : '@lando/leia'));
     }
     for (const entry of [
-      [process.execPath, 'run', 'app/bin/leia.ts'],
+      [process.execPath, 'run', 'bin/leia.ts'],
       ['node', 'dist/bin/leia.js'],
     ]) {
       const help = await run(root, [...entry, '--help']);
@@ -160,7 +160,11 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       'Watch verification must restore the original build',
     );
     // Prove the package entrypoint and emitted compiler do not depend on TypeScript sources.
-    await rm(join(root, 'app'), { recursive: true, force: true });
+    await Promise.all(
+      ['bin', 'lib', 'utils'].map((directory) =>
+        rm(join(root, directory), { recursive: true, force: true }),
+      ),
+    );
     await writeFile(
       join(root, 'compiler-probe.md'),
       '# Compiler probe\n\n## Test\n\n```sh\n# preserves bytes\nprintf "%s\\n" "$HOME"\n```\n',

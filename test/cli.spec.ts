@@ -1,16 +1,17 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
+
 import { debugNamespace, parseCLI } from '../lib/cli.ts';
 import { getShell } from '../lib/shell.ts';
 
 const dirname = fileURLToPath(new URL('.', import.meta.url));
 
-describe('CLI compatibility', () => {
-  it('retains defaults and no-argument help dispatch inputs', () => {
+describe('lib/cli', () => {
+  it('should retain defaults and no-argument help dispatch inputs', () => {
     assert.deepEqual(parseCLI([]), {
       tests: [],
       ignore: [],
@@ -29,7 +30,7 @@ describe('CLI compatibility', () => {
       splitFile: false,
     });
   });
-  it('retains all short aliases, repeated values, and equals/attached spellings', () => {
+  it('should retain all short aliases, repeated values, and equals/attached spellings', () => {
     const options = parseCLI([
       'a.md',
       '-s',
@@ -52,7 +53,7 @@ describe('CLI compatibility', () => {
     assert.equal(options.retry, 2);
     assert.equal(parseCLI(['-v']).version, true);
   });
-  it('retains every long flag including hidden no-ops', () => {
+  it('should retain every long flag including hidden no-ops', () => {
     const options = parseCLI([
       'a.md',
       '--setup-header=One,Two',
@@ -85,7 +86,7 @@ describe('CLI compatibility', () => {
     for (const format of ['auto', 'commonjs', 'esm'])
       assert.equal(parseCLI(['--module-format', format]).moduleFormat, format);
   });
-  it('retains non-strict patterns, end-of-options, and scalar last-value wins', () => {
+  it('should retain non-strict patterns, end-of-options, and scalar last-value wins', () => {
     assert.deepEqual(parseCLI(['a', '--unknown', '-h', '--', '--stdin']).tests, [
       'a',
       '--unknown',
@@ -96,7 +97,7 @@ describe('CLI compatibility', () => {
     assert.deepEqual(parseCLI(['a', '--stdin=false']).tests, ['a', 'false']);
     assert.deepEqual(parseCLI(['-s', 'One,Two', '-s', 'Three']).setupHeader, ['One,Two', 'Three']);
   });
-  it('rejects missing values and invalid numeric or enumerated options', () => {
+  it('should reject missing values and invalid numeric or enumerated options', () => {
     for (const name of ['retry', 'timeout']) {
       for (const value of ['-1', '1.5', '1x', 'nope', '9007199254740992'])
         assert.throws(() => parseCLI([`--${name}`, value]), new RegExp(`--${name} must be`));
@@ -106,7 +107,7 @@ describe('CLI compatibility', () => {
     assert.throws(() => parseCLI(['--module-format=amd']), /Expected --module-format/);
     assert.throws(() => parseCLI(['--shell=fish']), /Expected --shell/);
   });
-  it('initializes debug before dispatch without overriding an existing namespace', () => {
+  it('should initialize debug before dispatch without overriding an existing namespace', () => {
     assert.equal(debugNamespace(['--debug'], {}), '*');
     assert.equal(debugNamespace(['--debug=leia:*'], { DEBUG: '' }), 'leia:*');
     assert.equal(debugNamespace(['--debug'], { DEBUG: 'existing' }), undefined);
@@ -126,7 +127,7 @@ describe('CLI compatibility', () => {
         'bash',
       ],
       {
-        cwd: path.resolve(dirname, '../..'),
+        cwd: path.resolve(dirname, '..'),
         encoding: 'utf8',
         env: {
           ...process.env,

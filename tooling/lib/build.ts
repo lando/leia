@@ -8,14 +8,14 @@ export async function build(root: string): Promise<void> {
   await mkdir(outdir, { recursive: true });
   const result = await Bun.build({
     entrypoints: [
-      join(root, 'app/bin/leia.ts'),
-      join(root, 'app/lib/app.ts'),
-      join(root, 'app/lib/compiler.ts'),
-      join(root, 'app/lib/runtime.ts'),
-      join(root, 'app/lib/api.ts'),
-      join(root, 'app/lib/leia.ts'),
+      join(root, 'bin/leia.ts'),
+      join(root, 'lib/app.ts'),
+      join(root, 'lib/compiler.ts'),
+      join(root, 'lib/runtime.ts'),
+      join(root, 'lib/api.ts'),
+      join(root, 'lib/leia.ts'),
     ],
-    root: join(root, 'app'),
+    root,
     outdir,
     naming: '[dir]/[name].[ext]',
     target: 'node',
@@ -37,12 +37,13 @@ export async function watchBuild(root: string): Promise<void> {
   await build(root);
   // Serialize rebuilds so rapid edits cannot interleave cleanup and emission.
   let pending = Promise.resolve();
-  watch(join(root, 'app'), { recursive: true }, () => {
-    pending = pending
-      .then(() => build(root))
-      .catch((error: unknown) => {
-        process.stderr.write(`${String(error)}\n`);
-      });
-  });
-  process.stdout.write('Watching app/\n');
+  for (const directory of ['bin', 'lib', 'utils'])
+    watch(join(root, directory), { recursive: true }, () => {
+      pending = pending
+        .then(() => build(root))
+        .catch((error: unknown) => {
+          process.stderr.write(`${String(error)}\n`);
+        });
+    });
+  process.stdout.write('Watching bin/, lib/, utils/\n');
 }

@@ -1,5 +1,6 @@
 import os from 'node:os';
 import path from 'node:path';
+
 import type { Shell } from './compiler-types.ts';
 
 const userShell = (): string => {

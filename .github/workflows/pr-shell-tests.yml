@@ -22,7 +22,7 @@ jobs:
         runtime: [source, built]
         include:
           - runtime: source
-            cli: bun app/bin/leia.ts
+            cli: bun bin/leia.ts
           - runtime: built
             cli: node dist/bin/leia.js
 

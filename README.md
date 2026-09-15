@@ -135,12 +135,12 @@ runner.run((failures) => process.exitCode = failures ? 1 : 0);
 
 For more details on specific options check out the code docs
 
-- [leia.find](https://github.com/lando/leia/blob/2.x/app/lib/leia.ts)
-- [leia.generate](https://github.com/lando/leia/blob/2.x/app/lib/leia.ts)
-- [leia.parse](https://github.com/lando/leia/blob/2.x/app/lib/leia.ts)
-- [leia.resolveModuleFormat](https://github.com/lando/leia/blob/2.x/app/lib/leia.ts)
-- [leia.run](https://github.com/lando/leia/blob/2.x/app/lib/leia.ts)
-- [leia.runAsync](https://github.com/lando/leia/blob/2.x/app/lib/leia.ts)
+- [leia.find](https://github.com/lando/leia/blob/2.x/lib/leia.ts)
+- [leia.generate](https://github.com/lando/leia/blob/2.x/lib/leia.ts)
+- [leia.parse](https://github.com/lando/leia/blob/2.x/lib/leia.ts)
+- [leia.resolveModuleFormat](https://github.com/lando/leia/blob/2.x/lib/leia.ts)
+- [leia.run](https://github.com/lando/leia/blob/2.x/lib/leia.ts)
+- [leia.runAsync](https://github.com/lando/leia/blob/2.x/lib/leia.ts)
 
 ### Module formats
 

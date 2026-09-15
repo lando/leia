@@ -7,7 +7,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '../..');
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const entries = [
-  ['bun', path.join(root, 'app/bin/leia.ts')],
+  ['bun', path.join(root, 'bin/leia.ts')],
   ['node', path.join(root, 'dist/bin/leia.js')],
 ];
 

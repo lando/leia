@@ -1,5 +1,5 @@
-import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
+import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -7,9 +7,9 @@ import { parse } from '../lib/parse.ts';
 
 const dirname = fileURLToPath(new URL('.', import.meta.url));
 
-describe('parse', () => {
+describe('lib/parse', () => {
   it('should return leia testing metadata with the default keys', () => {
-    const tests = parse([path.resolve(dirname, '..', '..', 'examples', 'basic-example.md')]);
+    const tests = parse([path.resolve(dirname, '..', 'examples', 'basic-example.md')]);
     const keys = [
       'cwd',
       'chaiPath',
@@ -27,18 +27,18 @@ describe('parse', () => {
       'version',
     ];
     assert.deepEqual(Object.keys(tests[0]!).sort(), [...keys].sort());
-    assert.equal(tests[0]!.moduleFormat, 'commonjs');
-    assert.match(tests[0]!.destination, /\.leia\.cjs$/);
+    assert.equal(tests[0]!.moduleFormat, 'esm');
+    assert.match(tests[0]!.destination, /\.leia\.mjs$/);
   });
   it('should generate ESM destination metadata when requested', () => {
-    const tests = parse([path.resolve(dirname, '..', '..', 'examples', 'basic-example.md')], {
+    const tests = parse([path.resolve(dirname, '..', 'examples', 'basic-example.md')], {
       moduleFormat: 'esm',
     });
     assert.equal(tests[0]!.moduleFormat, 'esm');
     assert.match(tests[0]!.destination, /\.leia\.mjs$/);
   });
   it('should normalize valid retry metadata and reject invalid values', () => {
-    const file = path.resolve(dirname, '..', '..', 'examples', 'basic-example.md');
+    const file = path.resolve(dirname, '..', 'examples', 'basic-example.md');
     assert.equal(parse([file], { retry: '4' })[0]!.retry, 4);
     assert.throws(
       () => parse([file], { retry: 'four' }),
@@ -46,18 +46,16 @@ describe('parse', () => {
     );
   });
   it('should organize tests into setup|test|cleanup buckets if applicable', () => {
-    const tests = parse([
-      path.resolve(dirname, '..', '..', 'examples', 'setup-cleanup-example.md'),
-    ]);
+    const tests = parse([path.resolve(dirname, '..', 'examples', 'setup-cleanup-example.md')]);
     assert.ok(Array.isArray(tests[0]!.tests.setup!) && tests[0]!.tests.setup!.length > 0);
     assert.ok(Array.isArray(tests[0]!.tests.test!) && tests[0]!.tests.test!.length > 0);
     assert.ok(Array.isArray(tests[0]!.tests.cleanup!) && tests[0]!.tests.cleanup!.length > 0);
-    const tests2 = parse([path.resolve(dirname, '..', '..', 'examples', 'basic-example.md')]);
+    const tests2 = parse([path.resolve(dirname, '..', 'examples', 'basic-example.md')]);
     assert.notDeepEqual(Object.keys(tests2[0]!.tests).sort(), ['setup', 'cleanup'].sort());
     assert.deepEqual(Object.keys(tests2[0]!.tests).sort(), ['test', 'invalid'].sort());
   });
   it('should return tests as objects with description and command', () => {
-    const tests = parse([path.resolve(dirname, '..', '..', 'examples', 'basic-example.md')]);
+    const tests = parse([path.resolve(dirname, '..', 'examples', 'basic-example.md')]);
     const test = tests[0]!.tests.test![0]!;
 
     assert.deepEqual(
@@ -70,7 +68,7 @@ describe('parse', () => {
     assert.equal(test.command, 'true');
   });
   it('should fold multiline continuations and preserve separate commands', () => {
-    const tests = parse([path.resolve(dirname, '..', '..', 'examples', 'basic-example.md')]);
+    const tests = parse([path.resolve(dirname, '..', 'examples', 'basic-example.md')]);
     const test = tests[0]!.tests.test!.find(({ describe }) =>
       describe.includes('should not concatenate if escape is used'),
     );

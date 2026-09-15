@@ -5,7 +5,7 @@ import path from 'node:path';
 
 import { find } from '../lib/find.ts';
 
-describe('find', () => {
+describe('lib/find', () => {
   let tempDir: string;
   const pattern = (relative: string): string =>
     path.join(tempDir, relative).split(path.sep).join('/');

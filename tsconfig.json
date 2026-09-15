@@ -18,5 +18,5 @@
     "skipLibCheck": true,
     "types": ["bun"]
   },
-  "include": ["app/**/*.ts", "tooling/**/*.ts"]
+  "include": ["bin/**/*.ts", "lib/**/*.ts", "utils/**/*.ts", "test/**/*.ts", "tooling/**/*.ts"]
 }

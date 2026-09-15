@@ -1,8 +1,11 @@
 import fs from 'node:fs';
-import createDebug from 'debug';
+
 import chalk from 'chalk';
+import createDebug from 'debug';
+
 import { debugNamespace, parseCLI } from './cli.ts';
 import { helpText } from './help.ts';
+import { runtimeLayout } from '../utils/runtime-layout.ts';
 
 export const runCLI = async (argv = process.argv.slice(2)): Promise<void> => {
   try {
@@ -13,7 +16,7 @@ export const runCLI = async (argv = process.argv.slice(2)): Promise<void> => {
     const options = parseCLI(argv);
     if (options.version) {
       const metadata = JSON.parse(
-        fs.readFileSync(new URL('../../package.json', import.meta.url), 'utf8'),
+        fs.readFileSync(runtimeLayout(import.meta.url).packageFile, 'utf8'),
       ) as { name: string; version: string };
       process.stdout.write(
         `${metadata.name}/${metadata.version} ${process.platform}-${process.arch} node-${process.version}\n`,

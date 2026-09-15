@@ -11,4 +11,4 @@ bun.lock
 leia.readme.js
 examples/**/.tmp/
 # Parser and generated-output fixtures retain their literal whitespace.
-app/test/*.md
+test/*.md

@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
-import { execute, processError } from '../lib/execute.ts';
-import { Lifecycle } from '../lib/runtime.ts';
 
-describe('typed execution boundary', () => {
-  it('drains both output streams, propagates cwd/environment, and closes unattached stdin', async () => {
+import { execute } from '../lib/execute.ts';
+import { processError } from '../utils/process-error.ts';
+
+describe('lib/execute', () => {
+  it('should drain both output streams, propagate cwd/environment, and close unattached stdin', async () => {
     const result = await execute({
       shell: process.execPath,
       args: [
@@ -19,7 +20,7 @@ describe('typed execution boundary', () => {
     assert.equal(result.stderr, 'stderr');
     assert.equal(processError(result), undefined);
   });
-  it('reports a nonzero exit and spawn errors without duplicate completion', async () => {
+  it('should report a nonzero exit and spawn errors without duplicate completion', async () => {
     const result = await execute({
       shell: process.execPath,
       args: ['-e', "process.stdout.write('out'); process.stderr.write('err'); process.exitCode=7"],
@@ -33,7 +34,7 @@ describe('typed execution boundary', () => {
     });
     assert.match(processError(missing)!.message, /ENOENT/);
   });
-  it('waits for child termination on timeout', async () => {
+  it('should wait for child termination on timeout', async () => {
     const result = await execute({
       shell: process.execPath,
       args: ['-e', 'setInterval(() => {}, 1000)'],
@@ -43,7 +44,7 @@ describe('typed execution boundary', () => {
     assert.equal(result.timedOut, true);
     assert.match(processError(result)!.message, /ETIMEDOUT/);
   });
-  it('does not spawn a pre-cancelled request', async () => {
+  it('should not spawn a pre-cancelled request', async () => {
     const controller = new AbortController();
     controller.abort();
     const result = await execute({
@@ -57,7 +58,7 @@ describe('typed execution boundary', () => {
     assert.match(processError(result)!.message, /ABORT_ERR/);
   });
 
-  it('treats a signal-only child exit as failure', async function () {
+  it('should treat a signal-only child exit as failure', async function () {
     if (process.platform === 'win32') this.skip();
     const result = await execute({
       shell: process.execPath,
@@ -67,21 +68,5 @@ describe('typed execution boundary', () => {
     assert.equal(result.code, null);
     assert.equal(result.signal, 'SIGTERM');
     assert.match(processError(result)!.message, /CODE: SIGTERM/);
-  });
-
-  it('cancels cleanup when the first signal arrives during cleanup', () => {
-    const lifecycle = new Lifecycle();
-    lifecycle.activeStage = 'cleanup';
-    lifecycle.interrupt('SIGINT');
-    assert.equal(lifecycle.cleanup.signal.aborted, true);
-  });
-  it('reserves cleanup for the first interrupt and cancels it on a second interrupt', () => {
-    const lifecycle = new Lifecycle();
-    lifecycle.interrupt('SIGINT');
-    assert.equal(lifecycle.commands.signal.aborted, true);
-    assert.equal(lifecycle.cleanup.signal.aborted, false);
-    lifecycle.interrupt('SIGTERM');
-    assert.equal(lifecycle.cleanup.signal.aborted, true);
-    assert.equal(lifecycle.signal, 'SIGINT');
   });
 });

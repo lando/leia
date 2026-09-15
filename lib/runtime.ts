@@ -1,5 +1,7 @@
 import type Mocha from 'mocha';
-import { execute, processError, type ProcessRequest } from './execute.ts';
+
+import { execute, type ProcessRequest } from './execute.ts';
+import { processError } from '../utils/process-error.ts';
 
 export class Lifecycle {
   readonly commands = new AbortController();

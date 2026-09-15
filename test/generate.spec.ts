@@ -1,13 +1,15 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import vm from 'node:vm';
-import { createRequire } from 'node:module';
-import type { ProcessRequest } from '../lib/execute.ts';
-const require = createRequire(import.meta.url);
+
 import { generate } from '../lib/generate.ts';
+import type { ProcessRequest } from '../lib/execute.ts';
+
+const require = createRequire(import.meta.url);
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-generate-'));
 const normalizePath = (file: string) => file.split(path.sep).join('/');
 const commands = [
@@ -55,7 +57,7 @@ const getTests = (moduleFormat = 'commonjs') =>
     },
   ] satisfies [object];
 
-describe('generate', () => {
+describe('lib/generate', () => {
   after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
 
   it('should return a list of outputted files', () => {
@@ -176,7 +178,6 @@ describe('generate', () => {
                 return (...args: unknown[]) => captured.debug.push(args);
               };
             }
-            if (dependency === 'path') return {};
             throw new Error(`Unexpected dependency ${dependency}`);
           },
         };
@@ -190,7 +191,6 @@ describe('generate', () => {
           tests[0].chaiPath,
           tests[0].runtimePath,
           tests[0].debugPath,
-          'path',
         ]);
         assert.deepEqual(captured.descriptions, [tests[0].tests.test[0]!.describe[0]]);
         assert.deepEqual(captured.chdir, [tests[0].cwd]);

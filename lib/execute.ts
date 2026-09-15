@@ -1,5 +1,7 @@
-import { spawn, spawnSync } from 'node:child_process';
 import { isatty } from 'node:tty';
+import { spawn, spawnSync } from 'node:child_process';
+
+import { processTree } from '../utils/process-tree.ts';
 
 export interface ProcessRequest {
   shell: string;
@@ -104,18 +106,7 @@ export const execute = (request: ProcessRequest): Promise<ProcessResult> =>
             result.error ??=
               snapshot.error ??
               new Error(`Cannot inspect terminal process tree: ${snapshot.stderr}`);
-          const tree = (snapshot.stdout ?? '')
-            .trim()
-            .split('\n')
-            .map((line) => line.trim().split(/\s+/).map(Number));
-          const descendants = new Set([child.pid]);
-          let previous = 0;
-          while (previous !== descendants.size) {
-            previous = descendants.size;
-            for (const [pid, parent] of tree)
-              if (pid && parent && descendants.has(parent)) descendants.add(pid);
-          }
-          targets = [...descendants].reverse();
+          targets = processTree(snapshot.stdout ?? '', child.pid);
         }
         terminate('SIGTERM');
         escalation = setTimeout(() => {
@@ -154,21 +145,3 @@ export const execute = (request: ProcessRequest): Promise<ProcessResult> =>
         stop();
       }, request.timeout);
   });
-
-export const processError = (result: ProcessResult): Error | undefined => {
-  if (!result.error && result.code === 0 && !result.signal && !result.timedOut && !result.cancelled)
-    return undefined;
-  const code = result.timedOut
-    ? 'ETIMEDOUT'
-    : result.cancelled
-      ? 'ABORT_ERR'
-      : (result.signal ?? (result.error as NodeJS.ErrnoException | null)?.code ?? result.code);
-  return new Error(
-    [
-      `CODE: ${code}`,
-      `STDOUT: ${result.stdout}`,
-      `STDERR: ${result.stderr}`,
-      ...(result.error ? [result.error.message] : []),
-    ].join('\n'),
-  );
-};

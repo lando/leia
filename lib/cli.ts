@@ -1,6 +1,6 @@
+import { getShell } from './shell.ts';
 import type { ParseOptions } from './compiler-types.ts';
 import { retry, timeout } from './numeric-option.ts';
-import { getShell } from './shell.ts';
 
 export interface CLIOptions extends ParseOptions {
   tests: string[];

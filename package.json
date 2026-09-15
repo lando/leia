@@ -28,12 +28,12 @@
   ],
   "scripts": {
     "check:toolchain": "bun run tooling/scripts/check-toolchain-task.ts",
-    "dev": "bun --watch run app/bin/leia.ts",
-    "leia": "bun run app/bin/leia.ts",
+    "dev": "bun --watch run bin/leia.ts",
+    "leia": "bun run bin/leia.ts",
     "lint": "bun run lint:eslint && bun run format:check",
     "typecheck": "tsc --noEmit",
     "test": "bun run test:unit",
-    "test:unit": "bun --bun node_modules/mocha/bin/mocha.js --timeout 5000 \"{app,tooling}/test/**/*.spec.ts\"",
+    "test:unit": "bun --bun node_modules/mocha/bin/mocha.js --timeout 5000 \"test/*.spec.ts\" \"tooling/test/*.spec.ts\"",
     "build": "bun run tooling/scripts/build-cli.ts",
     "watch": "bun run tooling/scripts/build-cli.ts --watch",
     "check:build": "bun run tooling/scripts/check-build-task.ts",
@@ -73,5 +73,5 @@
     "typescript-eslint": "^8.57.1"
   },
   "packageManager": "bun@1.3.14",
-  "type": "commonjs"
+  "type": "module"
 }

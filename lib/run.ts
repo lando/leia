@@ -1,8 +1,10 @@
 import path from 'node:path';
+
 import createDebug from 'debug';
 import Mocha from 'mocha';
-import { timeout as validateTimeout } from './numeric-option.ts';
+
 import { Lifecycle, type ScenarioContext } from './runtime.ts';
+import { timeout as validateTimeout } from './numeric-option.ts';
 
 const debug = createDebug('leia:run');
 export interface RunOptions {

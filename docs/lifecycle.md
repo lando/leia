@@ -2,7 +2,7 @@
 
 ## Typed boundaries
 
-`app/lib/cli.ts` parses arguments without a CLI framework. `app.ts` initializes debug before loading
+`lib/cli.ts` parses arguments without a CLI framework. `app.ts` initializes debug before loading
 orchestration and dispatches help, version, discovery, parsing, generation, and execution. `leia.ts`
 provides the shared programmatic API. `run.ts` owns Mocha loading and invocation-scoped signals.
 `runtime.ts` connects generated tests to `execute.ts`, which owns child processes and stream closure.
@@ -55,9 +55,10 @@ termination with retries. Mocha signal handlers are scoped to each run and remov
 
 ## Verification
 
-`app/test/cli.spec.ts` covers every flag and alias, numeric rejection, debug precedence, and parser
+`test/cli.spec.ts` covers every flag and alias, numeric rejection, debug precedence, and parser
 edge cases. `execute.spec.ts` covers stream draining, EOF, cwd/environment, spawn/nonzero failures,
-timeouts, and cancellation state. Existing compiler and runner assertions now run from TypeScript under `app/test/`;
+timeouts, and cancellation state. Focused `test/process-tree.spec.ts`, `test/process-error.spec.ts`, and
+`test/runtime-layout.spec.ts` cover descendant selection, error precedence, and source/build paths. Existing compiler and runner assertions now run from TypeScript under `test/`;
 renderer snapshots explicitly reflect the new runtime call.
 
 `bun run test:lifecycle` executes the same checked-in scenario through Bun source and Node build,

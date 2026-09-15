@@ -7,7 +7,7 @@ root="$(cd "$(dirname "$0")" && pwd)"
 if [[ "${LEIA_RUNTIME:-source}" == built ]]; then
   leia=(node "$root/../../dist/bin/leia.js")
 else
-  leia=(bun "$root/../../app/bin/leia.ts")
+  leia=(bun "$root/../../bin/leia.ts")
 fi
 
 for scenario in commonjs esm untyped nested/commonjs; do

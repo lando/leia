@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Simplified 2.x source layout to root `bin/`, `lib/`, `utils/`, and `test/`; run source with `bun bin/leia.ts`. The root package is ESM, so repository-root `auto` harness detection now selects ESM. [#65](https://github.com/lando/leia/issues/65)
 - Removed root CommonJS migration adapters and launcher, moved application compatibility tests to TypeScript, and pointed package entrypoints at the ESM build. Removed obsolete adapter coverage and test dependencies. [#65](https://github.com/lando/leia/issues/65)
 - Ported CLI parsing, orchestration, Mocha runner ownership, and shell execution to strict TypeScript ESM; removed oclif, `@lando/argv`, and `command-line-test`. [#65](https://github.com/lando/leia/issues/65)
 - Timeouts terminate child process trees before retry or cleanup. Catchable POSIX termination signals cancel active commands, skip remaining setup/tests, and allow cleanup; unattached stdin now receives EOF. [#65](https://github.com/lando/leia/issues/65)

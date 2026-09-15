@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
+import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import {
   compileHarness,
@@ -15,8 +15,8 @@ import {
   type ModuleFormat,
 } from '../lib/compiler.ts';
 
-const fixtures = fileURLToPath(new URL('./fixtures/', import.meta.url));
-const root = fileURLToPath(new URL('../../', import.meta.url));
+const fixtures = fileURLToPath(new URL('./', import.meta.url));
+const root = fileURLToPath(new URL('../', import.meta.url));
 const fixture = (name: string): string => fs.readFileSync(path.join(fixtures, name), 'utf8');
 const input = (): Harness => JSON.parse(fixture('harness-input.json')) as Harness;
 const globPath = (file: string): string => file.split(path.sep).join('/');
@@ -37,7 +37,7 @@ const normalizePaths = (value: unknown, field = ''): unknown => {
   return field === 'destination' ? normalized.split(path.sep).join('/') : normalized;
 };
 
-describe('TypeScript compiler', () => {
+describe('lib/compiler', () => {
   let temp: string;
   beforeEach(() => {
     temp = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-compiler-'));
@@ -49,12 +49,12 @@ describe('TypeScript compiler', () => {
     return file;
   };
 
-  it('matches the locked parser IR without changing legacy assertions', () => {
+  it('should match the locked parser IR without changing legacy assertions', () => {
     const files = [
       'examples/basic-example.md',
       'examples/setup-cleanup-example.md',
-      'app/test/parse-sections.md',
-      'app/test/parse-code-blocks.md',
+      'test/parse-sections.md',
+      'test/parse-code-blocks.md',
     ];
     assert.deepEqual(
       normalizePaths(parse(files, { shell: 'bash', moduleFormat: 'commonjs' })),
@@ -63,7 +63,7 @@ describe('TypeScript compiler', () => {
   });
 
   for (const moduleFormat of ['commonjs', 'esm'] as const) {
-    it(`matches the typed ${moduleFormat} runtime harness byte-for-byte`, () => {
+    it(`should match the typed ${moduleFormat} runtime harness byte-for-byte`, () => {
       const harness = { ...input(), moduleFormat };
       assert.equal(
         compileHarness(harness).source,
@@ -72,7 +72,7 @@ describe('TypeScript compiler', () => {
     });
   }
 
-  it('discovers real paths once, preserves pattern order, and excludes directories and ignored files', () => {
+  it('should discover real paths once, preserve pattern order, and exclude directories and ignored files', () => {
     const first = markdown('# First', 'first file.md');
     const second = markdown('# Second', 'second.md');
     fs.mkdirSync(path.join(temp, 'directory.md'));
@@ -88,7 +88,7 @@ describe('TypeScript compiler', () => {
     assert.deepEqual(find([globPath(path.join(temp, 'missing*.md'))]), []);
   });
 
-  it('deduplicates symlink aliases by real path', function () {
+  it('should deduplicate symlink aliases by real path', function () {
     // File symlinks on Windows require privileges; directory junctions do not.
     const directory = path.join(temp, 'original');
     const alias = path.join(temp, 'alias');
@@ -101,7 +101,7 @@ describe('TypeScript compiler', () => {
     ]);
   });
 
-  it('returns no harnesses for absent matches, empty files, or documents without test sections', () => {
+  it('should return no harnesses for absent matches, empty files, or documents without test sections', () => {
     assert.deepEqual(parse([], { moduleFormat: 'commonjs' }), []);
     assert.deepEqual(parse([markdown('')]), []);
     assert.deepEqual(
@@ -112,7 +112,7 @@ describe('TypeScript compiler', () => {
     assert.throws(() => parse([path.join(temp, 'missing.md')]), /ENOENT/);
   });
 
-  it('retains only top-level code and first- or second-level headings', () => {
+  it('should retain only top-level code and first- or second-level headings', () => {
     const file = markdown(
       '# Title\n\nprose\n\n> ## Test quoted\n\n## Test real\n\n### Detail\n\n```sh\n# one\necho one\n```',
     );
@@ -123,7 +123,7 @@ describe('TypeScript compiler', () => {
     assert.equal(parse([file], { shell: 'sh' })[0]?.tests.test?.[0]?.command, 'echo one');
   });
 
-  it('reports missing titles and descriptions while preserving permissive Markdown lexing', () => {
+  it('should report missing titles and descriptions while preserving permissive Markdown lexing', () => {
     assert.throws(
       () => parse([markdown('## Test\n\n```sh\n# one\necho one\n```')]),
       /level-one title/,
@@ -138,7 +138,7 @@ describe('TypeScript compiler', () => {
     );
   });
 
-  it('keeps the first title, repeated-section numbering, custom prefix priority, and ignored buckets', () => {
+  it('should keep the first title, repeated-section numbering, custom prefix priority, and ignored buckets', () => {
     const file = markdown(
       '# First\n\n## Both one\n\n```\n# setup\necho setup\n```\n\n# Second\n\n## Test one\n\n```\n# first\nskip\n```\n\n## Other\n\n```\n# ignored\necho ignored\n```\n\n## Test two\n\n```\n# second\necho two\n```',
     );
@@ -162,7 +162,7 @@ describe('TypeScript compiler', () => {
     assert.ok(!output.source.includes('echo ignored'));
   });
 
-  it('normalizes CRLF, continuation lines, descriptions, and PowerShell exactly once', () => {
+  it('should normalize CRLF, continuation lines, descriptions, and PowerShell exactly once', () => {
     const source =
       '# Title\r\n\r\n## Test\r\n\r\n```sh\r\n# a description\r\n  echo first \\\r\n  second\r\n  echo last\r\n```';
     const file = markdown(source);
@@ -176,7 +176,7 @@ describe('TypeScript compiler', () => {
     assert.equal(normalizeCommand('', 'sh'), '');
   });
 
-  it('preserves command bytes, Unicode separators, script modes, and literal metadata in both formats', () => {
+  it('should preserve command bytes, Unicode separators, script modes, and literal metadata in both formats', () => {
     const special = 'quotes \'" \\ ` ${HOME} $(echo nope) \\033 \\1\r\n\t\u2028\u2029';
     for (const moduleFormat of ['commonjs', 'esm'] as const) {
       const harness = input();
@@ -211,7 +211,7 @@ describe('TypeScript compiler', () => {
     }
   });
 
-  it('validates every harness before writing any output', () => {
+  it('should validate every harness before writing any output', () => {
     const first = input();
     first.destination = path.join(temp, 'not-created', 'test.cjs');
     const malformed = { ...input(), stdin: 'invalid' };
@@ -235,7 +235,7 @@ describe('TypeScript compiler', () => {
     }
   });
 
-  it('resolves concrete formats and validates retry even with no inputs', () => {
+  it('should resolve concrete formats and validate retry even with no inputs', () => {
     assert.throws(() => parse([], { retry: -1 }), /--retry/);
     assert.throws(
       () => parse([], { moduleFormat: 'invalid' as ModuleFormat }),

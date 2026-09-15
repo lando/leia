@@ -1,11 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
+
 import createDebug from 'debug';
 
-import type { GenerateOptions, Scenario } from './compiler-types.ts';
 import { boolean, integer, record, sourceLiteral, string, strings } from './compiler-validation.ts';
-import { retry } from './numeric-option.ts';
+import type { GenerateOptions, Scenario } from './compiler-types.ts';
 import { renderHarness, type RenderHarness, type RenderScenario } from './render.ts';
+import { retry } from './numeric-option.ts';
 
 const debug = createDebug('leia:generate');
 

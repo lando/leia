@@ -1,14 +1,15 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import createDebug from 'debug';
 import detectNewline from 'detect-newline';
+import hash from 'object-hash';
 import lodash from 'lodash';
 import { marked } from 'marked';
-import hash from 'object-hash';
 
+import { boolean, strings } from './compiler-validation.ts';
+import { getShell } from './shell.ts';
 import type {
   Harness,
   MarkdownDocument,
@@ -18,13 +19,15 @@ import type {
   SectionRole,
   Shell,
 } from './compiler-types.ts';
-import { boolean, strings } from './compiler-validation.ts';
+import { normalizeCommand } from '../utils/normalize-command.ts';
 import { resolveModuleFormat } from './module-format.ts';
+import { runtimeLayout } from '../utils/runtime-layout.ts';
 import { retry as validateRetry } from './numeric-option.ts';
-import { getShell } from './shell.ts';
+
+export { normalizeCommand } from '../utils/normalize-command.ts';
 
 const debug = createDebug('leia:parse');
-const repositoryRoot = fileURLToPath(new URL('../../', import.meta.url));
+const { root: repositoryRoot, runtimePath } = runtimeLayout(import.meta.url);
 const normalizePath = (file: string): string => file.split(path.sep).join('/');
 
 const findClosestModule = (dependency: string): string => {
@@ -56,23 +59,6 @@ export const readMarkdown = (files: string[]): MarkdownDocument[] => {
     documents.set(file, document);
   }
   return [...documents.values()];
-};
-
-/** Markdown normalization happens here, never during code generation. */
-export const normalizeCommand = (command: string, shell: string): string => {
-  // Marked normalizes line endings; the fallback also handles single-line/empty code blocks.
-  const newline = detectNewline(command) ?? '\n';
-  const trimmed = command
-    .split(newline)
-    .map((line) => line.trim())
-    .join(newline);
-  const lines = trimmed
-    .replace(new RegExp(`\\\\${newline}`, 'g'), ' ')
-    .split(newline)
-    .filter((line) => !line.startsWith('#'))
-    .map((line) => line.trim());
-  if (shell === 'pwsh' || shell === 'powershell') lines.unshift('$ErrorActionPreference = "Stop"');
-  return lines.join(os.EOL);
 };
 
 const normalizeCode = (
@@ -175,16 +161,7 @@ export const normalizeMarkdown = (
       file,
       id,
       chaiPath: findClosestModule('@lando/chai'),
-      runtimePath: normalizePath(
-        fileURLToPath(
-          new URL(
-            import.meta.url.endsWith('.ts')
-              ? '../../app/lib/runtime.ts'
-              : '../../dist/lib/runtime.js',
-            import.meta.url,
-          ),
-        ),
-      ),
+      runtimePath: normalizePath(runtimePath),
       debugPath: findClosestModule('debug'),
       destination: path.resolve(
         os.tmpdir(),
