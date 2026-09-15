@@ -1,17 +1,24 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { cp, mkdtemp, readFile, readdir, rm, stat, symlink, writeFile } from 'node:fs/promises';
-import { join, sep } from 'node:path';
 import { tmpdir } from 'node:os';
+import { basename, dirname, join, relative, resolve, sep } from 'node:path';
 
-async function run(root: string, command: string[]): Promise<string> {
-  const child = Bun.spawn(command, { cwd: root, stdout: 'pipe', stderr: 'pipe', timeout: 20000 });
+import { executionTarget, targetNames, type TargetName } from '../utils/execution-target.ts';
+
+async function run(root: string, command: string[], expectedCode = 0): Promise<string> {
+  const child = Bun.spawn(command, {
+    cwd: root,
+    stdout: 'pipe',
+    stderr: 'pipe',
+    timeout: 30000,
+  });
   const [stdout, stderr, code] = await Promise.all([
     new Response(child.stdout).text(),
     new Response(child.stderr).text(),
     child.exited,
   ]);
-  assert.equal(code, 0, `${command.join(' ')}\n${stderr}\n${stdout}`);
+  assert.equal(code, expectedCode, `${command.join(' ')}\n${stderr}\n${stdout}`);
   return stdout;
 }
 
@@ -19,13 +26,13 @@ async function snapshot(root: string): Promise<Record<string, string>> {
   const outdir = join(root, 'dist');
   const entries = await Promise.all(
     (await readdir(outdir, { recursive: true })).map(async (file) => {
-      const path = join(outdir, file);
-      if (!(await stat(path)).isFile()) return [];
+      const filename = join(outdir, file);
+      if (!(await stat(filename)).isFile()) return [];
       return [
         [
           file.split(sep).join('/'),
           createHash('sha256')
-            .update(await readFile(path))
+            .update(await readFile(filename))
             .digest('hex'),
         ],
       ];
@@ -37,7 +44,7 @@ async function snapshot(root: string): Promise<Record<string, string>> {
 }
 
 async function checkWatch(root: string): Promise<void> {
-  const sourcePath = join(root, 'app/lib/app.ts');
+  const sourcePath = join(root, 'lib/app.ts');
   const original = await readFile(sourcePath, 'utf8');
   const marker = 'leiaWatchRebuildProbe';
   const watcher = Bun.spawn([process.execPath, 'run', 'tooling/scripts/build-cli.ts', '--watch'], {
@@ -60,10 +67,16 @@ async function checkWatch(root: string): Promise<void> {
     }
   };
   try {
-    await waitFor(() => Promise.resolve(watchOutput.includes('Watching app/')));
+    await waitFor(() => Promise.resolve(watchOutput.includes('Watching bin/, lib/, utils/')));
     await writeFile(sourcePath, `${original}\nexport const ${marker} = true;\n`);
     await waitFor(async () =>
-      (await readFile(join(root, 'dist/lib/app.js'), 'utf8').catch(() => '')).includes(marker),
+      (
+        await Promise.all(
+          ['esm/lib/app.js', 'cjs/lib/app.cjs'].map(async (file) =>
+            (await readFile(join(root, 'dist', file), 'utf8').catch(() => '')).includes(marker),
+          ),
+        )
+      ).every(Boolean),
     );
   } finally {
     watcher.kill();
@@ -75,33 +88,93 @@ async function checkWatch(root: string): Promise<void> {
   }
 }
 
-/** Exercise the actual source and build commands without editing the contributor's checkout. */
+async function checkSourceMaps(root: string, files: string[]): Promise<void> {
+  for (const file of files.filter((file) => file.endsWith('.map'))) {
+    const filename = join(root, 'dist', file);
+    const map = JSON.parse(await readFile(filename, 'utf8')) as {
+      sources: string[];
+      sourcesContent: string[];
+    };
+    assert.ok(
+      (await readFile(filename.slice(0, -4), 'utf8')).includes(
+        `//# sourceMappingURL=${basename(filename)}`,
+      ),
+    );
+    for (const [index, source] of map.sources.entries()) {
+      const sourceFile = resolve(dirname(filename), source);
+      assert.match(relative(root, sourceFile).split(sep).join('/'), /^(lib|utils)\/.+\.ts$/);
+      assert.equal(
+        map.sourcesContent[index],
+        await readFile(sourceFile, 'utf8'),
+        'Source map content must match TypeScript',
+      );
+    }
+  }
+}
+
+async function checkCLI(root: string, name: TargetName): Promise<void> {
+  const target = executionTarget(name, root);
+  const entry = [target.executable, target.cli];
+  const help = await run(root, [...entry, '--help']);
+  assert.ok(help.includes('--module-format'));
+  assert.equal(await run(root, entry), help);
+  assert.ok(!help.includes('--spawn') && !help.includes('--split-file'));
+  const version = await run(root, [...entry, '--version']);
+  assert.ok(version.includes('@lando/leia/'));
+  assert.equal(await run(root, [...entry, '-v']), version);
+  for (const args of [
+    ['missing-scenario.md'],
+    ['--retry=-1'],
+    ['--timeout=2147484'],
+    ['--module-format=amd'],
+  ])
+    await run(root, [...entry, ...args], 1);
+}
+
+async function copyFixtures(from: string, to: string): Promise<void> {
+  await Promise.all(
+    ['.bun-version', 'package.json', 'tooling'].map((file) =>
+      cp(join(from, file), join(to, file), { recursive: true }),
+    ),
+  );
+  await symlink(
+    join(from, 'node_modules'),
+    join(to, 'node_modules'),
+    process.platform === 'win32' ? 'junction' : 'dir',
+  );
+}
+
+/** Prove build-free source and independently relocatable Node artifacts in disposable copies. */
 export async function checkBuild(repositoryRoot: string): Promise<void> {
   const root = await mkdtemp(join(tmpdir(), 'leia-build-'));
   try {
+    await copyFixtures(repositoryRoot, root);
     await Promise.all(
-      ['.bun-version', 'package.json', 'app', 'tooling', 'bin', 'cli', 'lib'].map((path) =>
-        cp(join(repositoryRoot, path), join(root, path), { recursive: true }),
+      ['bin', 'lib', 'utils'].map((file) =>
+        cp(join(repositoryRoot, file), join(root, file), { recursive: true }),
       ),
     );
-    // A Windows junction avoids requiring symlink privileges on contributor machines.
-    await symlink(
-      join(repositoryRoot, 'node_modules'),
-      join(root, 'node_modules'),
-      process.platform === 'win32' ? 'junction' : 'dir',
-    );
+    await assert.rejects(stat(join(root, 'dist')), { code: 'ENOENT' });
+    await checkCLI(root, 'source');
+    await assert.rejects(stat(join(root, 'dist')), { code: 'ENOENT' });
 
     await run(root, [process.execPath, 'run', 'build']);
     const first = await snapshot(root);
-    assert.deepEqual(Object.keys(first), [
-      'bin/leia.js',
-      'bin/leia.js.map',
-      'lib/app.js',
-      'lib/app.js.map',
-      'lib/compiler.js',
-      'lib/compiler.js.map',
-      'package.json',
-    ]);
+    await checkSourceMaps(root, Object.keys(first));
+    const throwLine =
+      (await readFile(join(root, 'utils/parse-non-negative-integer.ts'), 'utf8'))
+        .split('\n')
+        .findIndex((line) => line.includes('throw new Error')) + 1;
+    assert.ok(throwLine > 0);
+    for (const format of ['esm', 'cjs']) {
+      const extension = format === 'esm' ? 'js' : 'cjs';
+      for (const module of ['bin/leia', 'lib/api', 'lib/compiler', 'lib/runtime', 'lib/leia'])
+        assert.ok(first[`${format}/${module}.${extension}`]);
+    }
+    assert.ok(
+      Object.keys(first).every((file) => /^(esm|cjs)\//.test(file)),
+      'Build must emit only the two target scopes',
+    );
     await writeFile(join(root, 'dist/stale.js'), 'stale output');
     await run(root, [process.execPath, 'run', 'build']);
     assert.deepEqual(
@@ -109,29 +182,22 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       first,
       'Builds must clean stale files and emit identical bytes',
     );
-
     for (const flag of ['--help', '--version']) {
-      const source = await run(root, [process.execPath, 'run', 'app/bin/leia.ts', flag]);
-      const built = await run(root, ['node', 'dist/bin/leia.js', flag]);
-      const legacy = await run(root, ['node', 'bin/leia', flag]);
-      // oclif reports Bun's Node-compatibility version in source-mode version output.
-      const stableOutput = (value: string): string =>
-        flag === '--version' ? value.replace(/ node-v\d+\.\d+\.\d+\s*$/, '') : value;
-      assert.equal(
-        stableOutput(source),
-        stableOutput(built),
-        `Source and Node-built CLI disagree on ${flag}`,
+      const outputs = await Promise.all(
+        targetNames.map((name) => {
+          const target = executionTarget(name, root);
+          return run(root, [target.executable, target.cli, flag]);
+        }),
       );
-      assert.equal(built, legacy, `Built and legacy Node CLI disagree on ${flag}`);
-      assert.ok(source.includes(flag === '--help' ? '--module-format' : '@lando/leia'));
+      const stable = outputs.map((output) =>
+        flag === '--version' ? output.replace(/ node-v\d+\.\d+\.\d+\s*$/, '') : output,
+      );
+      assert.ok(stable[0]);
+      assert.ok(
+        stable.every((output) => output === stable[0]),
+        `Targets disagree on ${flag}`,
+      );
     }
-    await run(root, [
-      'node',
-      '--input-type=module',
-      '-e',
-      "import {runCLI} from './dist/lib/app.js'; if (typeof runCLI !== 'function') process.exit(1)",
-    ]);
-
     await checkWatch(root);
     await run(root, [process.execPath, 'run', 'build']);
     assert.deepEqual(
@@ -139,34 +205,61 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       first,
       'Watch verification must restore the original build',
     );
-    // Prove the legacy adapter and emitted compiler do not depend on TypeScript sources.
-    await rm(join(root, 'app'), { recursive: true, force: true });
-    await writeFile(
-      join(root, 'compiler-probe.md'),
-      '# Compiler probe\n\n## Test\n\n```sh\n# preserves bytes\nprintf "%s\\n" "$HOME"\n```\n',
+    await Promise.all(
+      ['bin', 'lib', 'utils'].map((file) => rm(join(root, file), { recursive: true, force: true })),
     );
-    await run(root, [
-      'node',
-      '--input-type=commonjs',
-      '-e',
-      `
-      const assert = require('node:assert/strict');
-      const Leia = require('./lib/leia.js');
-      const {compileHarness} = require('./dist/lib/compiler.js');
-      const leia = new Leia();
-      const files = leia.find(['compiler-probe.md']);
-      assert.equal(files.length, 1);
-      for (const moduleFormat of ['commonjs', 'esm']) {
-        const [harness] = leia.parse(files, {moduleFormat, shell: 'sh'});
-        assert.equal(harness.tests.test[0].describe[0], 'preserves bytes');
-        const output = compileHarness(harness);
-        assert.ok(output.source.includes(JSON.stringify(harness.tests.test[0].command)));
-        assert.ok(output.destination.endsWith(moduleFormat === 'esm' ? '.leia.mjs' : '.leia.cjs'));
+
+    for (const name of ['esm', 'cjs'] as const) {
+      const isolated = await mkdtemp(join(tmpdir(), `leia-${name}-`));
+      try {
+        await copyFixtures(root, isolated);
+        await cp(join(root, 'dist', name), join(isolated, 'dist', name), { recursive: true });
+        for (const absent of ['bin', 'lib', 'utils', `dist/${name === 'esm' ? 'cjs' : 'esm'}`])
+          await assert.rejects(stat(join(isolated, absent)), { code: 'ENOENT' });
+        await checkCLI(isolated, name);
+        const target = executionTarget(name, isolated);
+        await run(isolated, [
+          'node',
+          '--enable-source-maps',
+          '--input-type=commonjs',
+          '-e',
+          `const assert = require('node:assert/strict');
+          const {parseNonNegativeInteger} = require(${JSON.stringify(join(target.directory, `utils/parse-non-negative-integer.${target.extension}`))});
+          assert.throws(() => parseNonNegativeInteger(-1, '--probe', 10), error => {
+            assert.ok(error.stack.includes(${JSON.stringify(join(isolated, 'utils/parse-non-negative-integer.ts'))} + ':${throwLine}:'), error.stack);
+            return true;
+          });`,
+        ]);
+        await run(isolated, [
+          'node',
+          '--input-type=commonjs',
+          '-e',
+          `
+          const assert = require('node:assert/strict');
+          const Leia = require(${JSON.stringify(join(target.directory, `lib/leia.${target.extension}`))});
+          assert.equal(typeof Leia, 'function');
+          assert.equal(typeof new Leia().parse, 'function');
+          ${name === 'esm' ? "assert.equal(require('./'), Leia);" : ''}
+        `,
+        ]);
+        await writeFile(
+          join(isolated, 'runtime-probe.md'),
+          '# Runtime probe\n\n## Test\n\n```sh\n# should run without source or sibling artifacts\nnode -e "process.exit(0)"\n```\n',
+        );
+        for (const format of ['commonjs', 'esm'])
+          await run(isolated, [
+            'node',
+            target.cli,
+            'runtime-probe.md',
+            `--module-format=${format}`,
+            `--shell=${process.platform === 'win32' ? 'cmd' : 'sh'}`,
+          ]);
+      } finally {
+        await rm(isolated, { recursive: true, force: true });
       }
-    `,
-    ]);
+    }
     process.stdout.write(
-      'Isolated repeatable build, source/Node CLI parity, watch rebuild, and source-free compiler passed.\n',
+      'Build-free source, isolated ESM/CJS API and CLI, repeatable builds, and dual-target watch passed.\n',
     );
   } finally {
     await rm(root, { recursive: true, force: true });

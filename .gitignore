@@ -18,7 +18,6 @@
 logs
 
 # coverage reporting
-.nyc_output
 coverage/
 
 # Dependencies and build output

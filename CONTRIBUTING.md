@@ -21,9 +21,9 @@ commit the resulting lockfile. Do not generate npm or Yarn lockfiles. Install sc
 for this repository's development dependencies. Bun is the development toolchain, not a new runtime
 requirement for installed npm artifacts.
 
-Node 24, selected by `.node-version`, remains required for the legacy Mocha/nyc suite, generated-harness
-syntax checks, Node-based example commands, and built JavaScript validation. New TypeScript tests run
-through Mocha on Bun; the legacy suite retains Node compatibility with dependencies such as `mock-fs`.
+Node 24, selected by `.node-version`, remains required for generated-harness syntax checks, Node-based
+example commands, and built JavaScript validation. Source and tooling specs run on Bun;
+the same application specs run against both built targets on Node 24.
 
 For [Lando](https://docs.lando.dev/basics/installation.html), `lando start` provisions Node 24 and
 bootstraps Bun from `.bun-version` through npm. Then use `lando bun run <script>`. npm is used only
@@ -31,25 +31,36 @@ for this Bun bootstrap and npm distribution operations, not repository dependenc
 
 ## Canonical commands
 
-| Command                   | Purpose                                                                                     |
-| ------------------------- | ------------------------------------------------------------------------------------------- |
-| `bun run check:toolchain` | Verify the Bun runtime and matching package-manager metadata                                |
-| `bun run leia --help`     | Execute `app/bin/leia.ts` directly                                                          |
-| `bun run dev <files>`     | Restart the source CLI when its loaded modules change                                       |
-| `bun run lint:eslint`     | Run flat ESLint with the shared TypeScript layer and legacy overrides                       |
-| `bun run format:check`    | Check standalone Prettier formatting                                                        |
-| `bun run format:write`    | Apply the repository's formatting rules                                                     |
-| `bun run lint`            | Run ESLint and format checking                                                              |
-| `bun run typecheck`       | Strictly check application, tooling, and TypeScript tests without emitting files            |
-| `bun run test`            | Run both the legacy and TypeScript unit suites                                              |
-| `bun run test:unit`       | Run the same combined unit suite                                                            |
-| `bun run test:legacy`     | Build, then run existing compatibility tests through Node Mocha and nyc                     |
-| `bun run test:typescript` | Run scope-local `app/` and `tooling/` `.spec.ts` tests through Bun Mocha                    |
-| `bun run build`           | Clean and build Node-compatible ESM JavaScript and source maps into `dist/`                 |
-| `bun run watch`           | Build once, then rebuild when files under `app/` change                                     |
-| `bun run check:build`     | Verify repeatability, source/Node CLI parity, and bounded watch rebuild in a temporary copy |
-| `bun run test:leia`       | Run the portable Markdown scenarios; normally CI-owned                                      |
-| `bun run test:leia:stdin` | Run the stdin scenario in an interactive terminal                                           |
+| Command                   | Purpose                                                                                       |
+| ------------------------- | --------------------------------------------------------------------------------------------- |
+| `bun run check:toolchain` | Verify the Bun runtime and matching package-manager metadata                                  |
+| `bun run leia --help`     | Execute `bin/leia.ts` directly                                                                |
+| `bun run dev <files>`     | Restart the source CLI when its loaded modules change                                         |
+| `bun run lint:eslint`     | Run flat ESLint with the shared TypeScript layer and scenario overrides                       |
+| `bun run format:check`    | Check standalone Prettier formatting                                                          |
+| `bun run format:write`    | Apply the repository's formatting rules                                                       |
+| `bun run lint`            | Run ESLint and format checking                                                                |
+| `bun run typecheck`       | Strictly check application, tooling, and TypeScript tests without emitting files              |
+| `bun run test`            | Run application and tooling TypeScript unit tests without building                            |
+| `bun run test:coverage`   | Measure selected Node ESM unit tests against original TypeScript; requires an existing build  |
+| `bun run test:unit`       | Run selected application tests and Bun tooling tests                                          |
+| `bun run build`           | Clean and build Node ESM/CommonJS JavaScript and source maps into `dist/esm/` and `dist/cjs/` |
+| `bun run watch`           | Build once, then rebuild when files under `bin/`, `lib/`, or `utils/` change                  |
+| `bun run check:build`     | Verify repeatability, source/Node CLI parity, and bounded watch rebuild in a temporary copy   |
+| `bun run test:lifecycle`  | Check three-target lifecycle parity, including timeout, signals, retries, and stdin           |
+| `bun run test:leia`       | Run the portable Markdown scenarios; normally CI-owned                                        |
+| `bun run test:leia:stdin` | Run the stdin scenario in an interactive terminal                                             |
+
+Run `bun run build` followed by `bun run test:coverage` to measure application unit coverage.
+The command uses Node ESM and linked source maps to report original `lib/**/*.ts` and
+`utils/**/*.ts` files, including unexecuted modules. It rejects empty, incomplete, or incorrectly
+mapped reports. Reports are written to ignored `coverage/` as text, JSON, LCOV, and HTML.
+
+CI collects coverage once, in the existing Ubuntu ESM unit job, and uploads the reports as the
+`typescript-unit-coverage` artifact. It does not add another suite run or execution target.
+The report excludes type-only modules, generated launchers, dependencies, tests, and tooling;
+it does not measure the separate cross-platform lifecycle scenarios. No percentage threshold is
+imposed; this establishes a source-aware baseline without replacing behavioral assertions.
 
 Before opening a pull request, run:
 
@@ -69,24 +80,45 @@ Prettier owns formatting; ESLint owns code-quality checks. Embedded Markdown cod
 parser fixtures and generator templates retain their literal whitespace, and archived changelog entries
 are excluded with Prettier range markers. Preserve those behavior-bearing inputs during mechanical changes.
 
-## Migration boundaries
+## Source and build boundaries
 
-`app/` owns the TypeScript ESM application and the [Markdown compiler](./docs/compiler.md): the thin public entrypoint lives in `app/bin/`, with
-orchestration and the typed CommonJS adapter in `app/lib/`. `tooling/` owns build and validation
-libraries, thin internal commands, and focused tests. Keep future ports in their nearest purpose-owned
-scope, using `bin/`, `lib/`, `utils/`, `scripts/`, and flat `test/` directories where needed.
+Leia is one package, so its source lives directly under the repository root: `bin/` for the
+public CLI, `lib/` for the [compiler](./docs/compiler.md) and [execution lifecycle](./docs/lifecycle.md),
+`utils/` for independently testable functions, and flat `test/` for specs and fixtures.
+`tooling/` separately owns build and validation; `dist/` contains generated artifacts only.
 
-The root package stays explicitly CommonJS for `bin/`, `cli/`, `lib/`, legacy tests, and existing root-level
-`auto` harness detection. `app/package.json` and `tooling/package.json` define the ESM scopes. Bun loads the compiler source through a narrow CommonJS bridge; Node loads the built ESM compiler.
-Run `bun run build` before invoking the legacy Node CLI or programmatic API in a source checkout. The compiler supports gradual JavaScript adoption through
-`allowJs`, with scoped inclusion and strict TypeScript checks rather than a wholesale legacy conversion.
+The root package is ESM; each built target declares its own module format. Root-level `auto` harness detection therefore selects
+ESM; explicit format overrides and scenario-owned CommonJS or untyped packages retain their behavior.
+CommonJS helpers use `.cjs`. There are no migration adapters or parallel application implementations.
+Run `bun run build` before using the Node CLI or package API in a source checkout.
 
-`dist/bin/leia.js` runs with Node 24; `dist/lib/app.js` exports the application entrypoint, and
-`dist/lib/compiler.js` exports the compiler. The build
-preserves the relative CommonJS bridge and keeps dependencies external. It is an incremental development
-build, not a standalone npm artifact: final exports, declarations, dual-format packaging, and installed-runtime
-policy belong to [#66](https://github.com/lando/leia/issues/66). The compiler and CLI/runner ports belong to
-[#64](https://github.com/lando/leia/issues/64) and [#65](https://github.com/lando/leia/issues/65).
+| Target        | Invocation                   | Build required? |
+| ------------- | ---------------------------- | --------------- |
+| Bun source    | `bun bin/leia.ts`            | No              |
+| Node ESM      | `node dist/esm/bin/leia.js`  | Yes             |
+| Node CommonJS | `node dist/cjs/bin/leia.cjs` | Yes             |
+
+The build generates thin Node launchers over the same `lib/app.ts` implementation used by the
+Bun source launcher. Each artifact scope contains its own compiler, runtime, API, and utilities;
+ESM files use `.js`, and CommonJS files use `.cjs`. Dependencies stay external. Linked source maps
+embed the original TypeScript and support Node diagnostics with `--enable-source-maps`, including
+when the artifacts are relocated without application source.
+`package.json` points at the ESM CLI and constructor; direct CommonJS artifacts also preserve
+`require()` returning the Leia constructor. Final npm conditional exports, declaration distribution,
+and tarball verification remain in [#66](https://github.com/lando/leia/issues/66).
+
+`LEIA_RUNTIME=source|esm|cjs` selects the target for `bun run test:app` and executable scenarios.
+The same TypeScript application specs run on Bun for source and Node 24 for built targets;
+tooling specs run only on Bun via `bun run test:tooling`. Application and tooling unit commands never build implicitly.
+The source CI jobs assert that `dist/` does not exist. Built CI jobs remove application source and
+the sibling artifact before testing. The isolated build check uses focused API/CLI and runtime
+probes in relocated temporary copies, without rerunning the unit suite. It also verifies clean
+output, CLI parity, and watch rebuilds of both formats.
+
+Execution target and generated harness format are separate axes: all three targets run across
+macOS, Ubuntu, and Windows. Lifecycle probes cover both harness formats for every target;
+the Linux module-format matrix focuses on explicit overrides and package-boundary assertions
+rather than repeating the general examples.
 
 ## Open a pull request
 

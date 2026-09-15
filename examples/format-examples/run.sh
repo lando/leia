@@ -4,7 +4,12 @@ set -euo pipefail
 
 module_format="${1:-auto}"
 root="$(cd "$(dirname "$0")" && pwd)"
-leia="$root/../../app/bin/leia.ts"
+case "${LEIA_RUNTIME:-source}" in
+  source) leia=(bun "$root/../../bin/leia.ts") ;;
+  esm) leia=(node "$root/../../dist/esm/bin/leia.js") ;;
+  cjs) leia=(node "$root/../../dist/cjs/bin/leia.cjs") ;;
+  *) echo "Unknown Leia execution target: $LEIA_RUNTIME" >&2; exit 1 ;;
+esac
 
 for scenario in commonjs esm untyped nested/commonjs; do
   expected=cjs
@@ -26,7 +31,7 @@ for scenario in commonjs esm untyped nested/commonjs; do
       args+=(--module-format "$module_format")
     fi
 
-    bun "$leia" "${args[@]}"
+    "${leia[@]}" "${args[@]}"
     harnesses="$(find .tmp -type f -name "*.leia.$expected" -print)"
     harness_count="$(printf '%s\n' "$harnesses" | sed '/^$/d' | wc -l | tr -d ' ')"
     if [[ "$harness_count" != 1 ]]; then

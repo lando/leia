@@ -1,0 +1,9 @@
+{
+  "all": true,
+  "src": ["dist/esm"],
+  "include": ["dist/esm/lib/**/*.js", "dist/esm/utils/**/*.js"],
+  "exclude": ["**/compiler-types.js"],
+  "exclude-after-remap": false,
+  "reporter": ["text", "json", "json-summary", "lcov"],
+  "reports-dir": "coverage"
+}

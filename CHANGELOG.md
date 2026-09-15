@@ -1,9 +1,15 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Ported the Markdown compiler to strict TypeScript ESM with a documented scenario representation, validated rendering, and preserved CommonJS/ESM harness output. Node development entrypoints use the built compiler. [#64](https://github.com/lando/leia/issues/64)
-- Added focused errors for missing scenario titles and malformed generation metadata before file emission. [#64](https://github.com/lando/leia/issues/64)
 - Added a pinned Bun toolchain, strict TypeScript ESM scopes, and isolated build/watch checks for 2.x development. [#63](https://github.com/lando/leia/issues/63)
+- Added focused errors for missing scenario titles and malformed generation metadata before file emission. [#64](https://github.com/lando/leia/issues/64)
+- Added independent Node ESM and CommonJS builds with generated CLI launchers, alongside build-free Bun source execution. Shared application and scenario tests cover all three targets without source or sibling-artifact fallback. [#65](https://github.com/lando/leia/issues/65)
+- Fixed built ESM/CommonJS source maps so coverage and Node stack traces resolve to original TypeScript after relocation. [#65](https://github.com/lando/leia/issues/65)
+- Ported CLI parsing, orchestration, Mocha runner ownership, and shell execution to strict TypeScript ESM; removed oclif, `@lando/argv`, and `command-line-test`. [#65](https://github.com/lando/leia/issues/65)
+- Ported the Markdown compiler to strict TypeScript ESM with a documented scenario representation, validated rendering, and preserved CommonJS/ESM harness output. Node development entrypoints use the built compiler. [#64](https://github.com/lando/leia/issues/64)
+- Removed root CommonJS migration adapters and launcher, moved application compatibility tests to TypeScript, and pointed package entrypoints at the ESM build. Removed obsolete adapter coverage and test dependencies. [#65](https://github.com/lando/leia/issues/65)
+- Simplified 2.x source layout to root `bin/`, `lib/`, `utils/`, and `test/`; run source with `bun bin/leia.ts`. The root package is ESM, so repository-root `auto` harness detection now selects ESM. [#65](https://github.com/lando/leia/issues/65)
 - Standardized linting, formatting, TypeScript tests, and CI/release validation. [#63](https://github.com/lando/leia/issues/63)
+- Timeouts terminate child process trees before retry or cleanup. Catchable POSIX termination signals cancel active commands, skip remaining setup/tests, and allow cleanup; unattached stdin now receives EOF. [#65](https://github.com/lando/leia/issues/65)
 
 <!-- prettier-ignore-start -->
 

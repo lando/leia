@@ -11,6 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       TERM: xterm
+      LEIA_RUNTIME: ${{ matrix.runtime }}
     strategy:
       fail-fast: false
       matrix:
@@ -18,6 +19,7 @@ jobs:
           - macos-26
           - ubuntu-24.04
           - windows-2025
+        runtime: [source, esm, cjs]
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -34,6 +36,35 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
 
-      # Run unit tests
-      - name: Run units tests
-        run: bun run test
+      - name: Build Node entrypoints
+        if: matrix.runtime != 'source'
+        run: bun run build
+      - name: Enforce execution target isolation
+        shell: bash
+        run: |
+          if [[ "$LEIA_RUNTIME" == source ]]; then
+            test ! -e dist
+          else
+            node -e "const fs = require('node:fs'); for (const directory of ['bin', 'lib', 'utils', 'dist/' + (process.env.LEIA_RUNTIME === 'esm' ? 'cjs' : 'esm')]) fs.rmSync(directory, {recursive: true, force: true})"
+          fi
+      - name: Run shared application unit tests
+        if: matrix.os != 'ubuntu-24.04' || matrix.runtime != 'esm'
+        run: bun run test:app
+      - name: Run shared application unit tests with TypeScript coverage
+        if: matrix.os == 'ubuntu-24.04' && matrix.runtime == 'esm'
+        run: bun run test:coverage
+      - name: Upload TypeScript coverage reports
+        if: matrix.os == 'ubuntu-24.04' && matrix.runtime == 'esm'
+        uses: actions/upload-artifact@v7
+        with:
+          name: typescript-unit-coverage
+          path: |
+            coverage/coverage-final.json
+            coverage/coverage-summary.json
+            coverage/lcov.info
+            coverage/lcov-report/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Run tooling unit tests
+        if: matrix.runtime == 'source'
+        run: bun run test:tooling
