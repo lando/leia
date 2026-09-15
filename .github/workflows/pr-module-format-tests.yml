@@ -58,7 +58,7 @@ jobs:
       - name: Test module format CLI contract
         shell: bash
         run: |
-          ${{ matrix.cli }} --help | grep -- '--module-format=auto|commonjs|esm'
+          ${{ matrix.cli }} --help | grep -F -- '--module-format <auto|commonjs|esm>'
           if ${{ matrix.cli }} examples/basic-example.md --module-format amd; then
             echo 'Leia accepted an unsupported module format'
             exit 1
