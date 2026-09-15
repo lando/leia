@@ -2,7 +2,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 
-import { executionTarget } from '../tooling/utils/execution-target.ts';
+import { executionTarget } from '../dev/utils/execution-target.ts';
 import type * as LibCliModule from '../lib/cli.ts';
 import type * as LibCompilerModule from '../lib/compiler.ts';
 import type * as LibExecuteModule from '../lib/execute.ts';

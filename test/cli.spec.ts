@@ -123,6 +123,13 @@ describe('lib/cli', () => {
     assert.throws(() => parseCLI(['--module-format=amd']), /Expected --module-format/);
     assert.throws(() => parseCLI(['--shell=fish']), /Expected --shell/);
   });
+  it('should consume inline debug namespaces without adding input patterns', () => {
+    for (const namespace of ['leia:*', '*', '']) {
+      const options = parseCLI(['README.md', `--debug=${namespace}`, 'examples/*.md']);
+      assert.equal(options.debug, true);
+      assert.deepEqual(options.tests, ['README.md', 'examples/*.md']);
+    }
+  });
   it('should initialize debug before dispatch without overriding an existing namespace', () => {
     assert.equal(debugNamespace(['--debug'], {}), '*');
     assert.equal(debugNamespace(['--debug=leia:*'], { DEBUG: '' }), 'leia:*');

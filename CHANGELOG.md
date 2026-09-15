@@ -1,13 +1,14 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Modernized CLI help, status, warnings, actionable errors, and completion summaries with accessible Lando styling and stable no-color, non-TTY, and CI output. Legacy `--spawn` and `--split-file` no-ops remain accepted and now warn so callers can remove them during the 2.0 migration. [#67](https://github.com/lando/leia/issues/67)
-- Added explicit ESM/CommonJS package exports for the Leia constructor and reusable compiler/runner libraries, with TypeScript declarations for every entrypoint. Deep implementation imports are private. [#66](https://github.com/lando/leia/issues/66)
-- Added isolated npm-tarball consumer checks and fail-closed packaging for missing, modified, or stale build output. Releases validate and publish the same prepared tarball. [#66](https://github.com/lando/leia/issues/66)
-
 - Added a pinned Bun toolchain, strict TypeScript ESM scopes, and isolated build/watch checks for 2.x development. [#63](https://github.com/lando/leia/issues/63)
+- Added explicit ESM/CommonJS package exports for the Leia constructor and reusable compiler/runner libraries, with TypeScript declarations for every entrypoint. Deep implementation imports are private. [#66](https://github.com/lando/leia/issues/66)
 - Added focused errors for missing scenario titles and malformed generation metadata before file emission. [#64](https://github.com/lando/leia/issues/64)
 - Added independent Node ESM and CommonJS builds with generated CLI launchers, alongside build-free Bun source execution. Shared application and scenario tests cover all three targets without source or sibling-artifact fallback. [#65](https://github.com/lando/leia/issues/65)
+- Added isolated npm-tarball consumer checks and fail-closed packaging for missing, modified, or stale build output. Releases validate and publish the same prepared tarball. [#66](https://github.com/lando/leia/issues/66)
+- Fixed `--debug=<namespace>` adding the namespace to input file patterns.
 - Fixed built ESM/CommonJS source maps so coverage and Node stack traces resolve to original TypeScript after relocation. [#65](https://github.com/lando/leia/issues/65)
+- Fixed programmatic runners ignoring the `reporter` option.
+- Modernized CLI help, status, warnings, actionable errors, and completion summaries with accessible Lando styling and stable no-color, non-TTY, and CI output. Legacy `--spawn` and `--split-file` no-ops remain accepted and now warn so callers can remove them during the 2.0 migration. [#67](https://github.com/lando/leia/issues/67)
 - Ported CLI parsing, orchestration, Mocha runner ownership, and shell execution to strict TypeScript ESM; removed oclif, `@lando/argv`, and `command-line-test`. [#65](https://github.com/lando/leia/issues/65)
 - Ported the Markdown compiler to strict TypeScript ESM with a documented scenario representation, validated rendering, and preserved CommonJS/ESM harness output. Node development entrypoints use the built compiler. [#64](https://github.com/lando/leia/issues/64)
 - Removed root CommonJS migration adapters and launcher, moved application compatibility tests to TypeScript, and pointed package entrypoints at the ESM build. Removed obsolete adapter coverage and test dependencies. [#65](https://github.com/lando/leia/issues/65)

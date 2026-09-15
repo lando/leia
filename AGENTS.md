@@ -24,7 +24,7 @@ rules in `examples/AGENTS.md`.
 ## Source Map
 
 - The repository root owns Leia: `bin/` for the public CLI, `lib/` for compiler and lifecycle orchestration, `utils/` for independently testable functions, and flat `test/` for their specs and fixtures. No extra `app/` or `src/` wrapper.
-- `tooling/`: build/check libraries, thin internal `scripts/`, focused `utils/`, and flat TypeScript `test/`.
+- `dev/`: build/check libraries, thin internal `scripts/`, focused `utils/`, and flat TypeScript `test/`.
 - `lib/render.ts`: typed harness templates; `docs/compiler.md` documents the compiler IR.
 - `examples/`: executable Leia specifications and their scenario-owned package boundaries or
   fixtures.
@@ -61,7 +61,7 @@ rules in `examples/AGENTS.md`.
 - Retain Node from `.node-version` for generated-harness syntax, Node-specific assertions, and built-output checks.
 - Run `bun run lint`, `bun run typecheck`, and `bun run test` for source changes.
 - Run `bun run check:build` for build or entrypoint changes; it validates clean output and watch rebuild in a temporary copy.
-- Keep TypeScript specs beside their owning scope. `test:app` runs the same application specs against `LEIA_RUNTIME=source|esm|cjs` using Bun or Node 24; `test:tooling` always uses Bun. Neither command builds implicitly.
+- Keep TypeScript specs beside their owning scope. `test:app` runs the same application specs against `LEIA_RUNTIME=source|esm|cjs` using Bun or Node 24; `test:dev` always uses Bun. Neither command builds implicitly.
 - Source CI jobs must run without `dist/`. Built jobs remove application source and the sibling artifact. Keep execution target independent from generated harness format.
 - Keep application source in the explicit ESM scope; preserve intentional CommonJS scenario fixtures and compatibility assertions.
 - Treat the full Leia, shell, module-format, and operating-system scenarios as CI-owned by default;

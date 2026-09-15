@@ -78,7 +78,7 @@ export async function checkPackage(
       await realpath(installed),
       join(await realpath(consumer), 'node_modules/@lando/leia'),
     );
-    for (const absent of ['lib', 'utils', 'tooling', 'test', 'bin', 'dist/build-receipt.json'])
+    for (const absent of ['lib', 'utils', 'dev', 'test', 'bin', 'dist/build-receipt.json'])
       await assert.rejects(lstat(join(installed, absent)), { code: 'ENOENT' });
     for (const absent of ['@types/bun', '@types/lodash', '@types/marked', 'bun-types', 'eslint'])
       await assert.rejects(lstat(join(consumer, 'node_modules', absent)), { code: 'ENOENT' });

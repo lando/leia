@@ -31,10 +31,10 @@ async function snapshot(root: string): Promise<Record<string, string>> {
 }
 
 async function checkWatch(root: string): Promise<void> {
-  const sourcePath = join(root, 'lib/app.ts');
+  const sourcePath = join(root, 'lib/run-cli.ts');
   const original = await readFile(sourcePath, 'utf8');
   const marker = 'leiaWatchRebuildProbe';
-  const watcher = Bun.spawn([process.execPath, 'run', 'tooling/scripts/build-cli.ts', '--watch'], {
+  const watcher = Bun.spawn([process.execPath, 'run', 'dev/scripts/build-cli.ts', '--watch'], {
     cwd: root,
     stdout: 'pipe',
     stderr: 'pipe',
@@ -59,9 +59,13 @@ async function checkWatch(root: string): Promise<void> {
     await waitFor(async () =>
       (
         await Promise.all(
-          ['esm/lib/app.js', 'cjs/lib/app.cjs', 'esm/lib/app.d.ts', 'cjs/lib/app.d.cts'].map(
-            async (file) =>
-              (await readFile(join(root, 'dist', file), 'utf8').catch(() => '')).includes(marker),
+          [
+            'esm/lib/run-cli.js',
+            'cjs/lib/run-cli.cjs',
+            'esm/lib/run-cli.d.ts',
+            'cjs/lib/run-cli.d.cts',
+          ].map(async (file) =>
+            (await readFile(join(root, 'dist', file), 'utf8').catch(() => '')).includes(marker),
           ),
         )
       ).every(Boolean),
@@ -121,14 +125,9 @@ async function checkCLI(root: string, name: TargetName): Promise<void> {
 
 async function copyFixtures(from: string, to: string): Promise<void> {
   await Promise.all(
-    [
-      '.bun-version',
-      'package.json',
-      'bun.lock',
-      'tsconfig.json',
-      'tsconfig.build.json',
-      'tooling',
-    ].map((file) => cp(join(from, file), join(to, file), { recursive: true })),
+    ['.bun-version', 'package.json', 'bun.lock', 'tsconfig.json', 'tsconfig.build.json', 'dev'].map(
+      (file) => cp(join(from, file), join(to, file), { recursive: true }),
+    ),
   );
   await symlink(
     join(from, 'node_modules'),

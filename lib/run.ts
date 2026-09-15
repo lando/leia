@@ -15,7 +15,7 @@ export interface RunOptions {
 const createRunner = (tests: string[], options: RunOptions = {}): Mocha => {
   const timeout = validateTimeout(options.timeout ?? 1800) * 1000;
   if (!tests.length) throw new Error('You must pass in some tests!');
-  const mocha = new Mocha({ timeout });
+  const mocha = new Mocha({ timeout, reporter: options.reporter });
   const lifecycle = new Lifecycle();
   (mocha.suite.ctx as ScenarioContext).leiaLifecycle = lifecycle;
   const signals = ['SIGINT', 'SIGTERM', 'SIGHUP'] as const;

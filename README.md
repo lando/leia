@@ -78,7 +78,7 @@ Output remains captured through pipes in both cases.
 On POSIX, `SIGINT`, `SIGTERM`, and `SIGHUP` cancel active setup/test commands, skip remaining
 setup/tests, and run cleanup. The CLI then exits with 130, 143, or 129 respectively. A second signal,
 or a signal during cleanup, cancels cleanup. Uncatchable termination cannot guarantee cleanup.
-See the [lifecycle contract](./docs/lifecycle.md) for platform details and verification.
+See the [lifecycle contract](https://github.com/lando/leia/blob/2.x/docs/lifecycle.md) for platform details and verification.
 
 ### Module
 
@@ -146,7 +146,7 @@ exports its shared representation types. TypeScript consumers should use `node16
 module resolution. Bun and Leia's development dependencies are not required to use the package.
 
 `find` discovers files; `readMarkdown` reads them; `parse` and `normalizeMarkdown` resolve shell,
-package, and dependency paths into the [compiler representation](./docs/compiler.md).
+package, and dependency paths into the [compiler representation](https://github.com/lando/leia/blob/2.x/docs/compiler.md).
 `compileHarness` validates and renders without writing; `generate` also writes harnesses and
 executable scripts. `run` creates a Mocha instance, and `runAsync` additionally loads its files;
 call the returned runner's `.run()` to execute tests. `exitCode` preserves Leia's signal exit codes.
@@ -272,8 +272,8 @@ User- and developer-visible changes are recorded in the
 
 Leia 2.x development uses the Bun version pinned in `.bun-version`, strict TypeScript ESM source,
 and `bun.lock`. Node 24 from `.node-version` remains available for compatibility tests and built JavaScript.
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, canonical validation commands, source CLI execution,
-watch mode, and migration boundaries. The [compiler contract](./docs/compiler.md) documents the typed
+See [CONTRIBUTING.md](https://github.com/lando/leia/blob/2.x/CONTRIBUTING.md) for setup, canonical validation commands, source CLI execution,
+watch mode, and migration boundaries. The [compiler contract](https://github.com/lando/leia/blob/2.x/docs/compiler.md) documents the typed
 Markdown/scenario representation and preserved command behavior. In a source checkout, run `bun run build`
 before the Node CLI or CommonJS API; Bun runs the TypeScript source directly. Installed-package commands
 above remain npm/Node commands.

@@ -4,7 +4,7 @@ import { describe, it } from 'mocha';
 
 import validateToolchain from '../utils/validate-toolchain.ts';
 
-describe('tooling/utils/validate-toolchain', () => {
+describe('dev/utils/validate-toolchain', () => {
   it('should accept matching exact version metadata and runtime', () => {
     assert.doesNotThrow(() => validateToolchain('1.2.3', 'bun@1.2.3', '1.2.3'));
   });

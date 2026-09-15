@@ -10,9 +10,9 @@ describe('utils/runtime-layout', () => {
   it('should resolve source and bundled modules to the same metadata and adjacent runtime', () => {
     const root = path.resolve('a package # with spaces');
     for (const filename of [
-      'lib/app.ts',
+      'lib/run-cli.ts',
       'lib/parse.ts',
-      'dist/esm/lib/app.js',
+      'dist/esm/lib/run-cli.js',
       'dist/esm/lib/compiler.js',
       'dist/esm/bin/leia.js',
       'dist/cjs/lib/compiler.cjs',

@@ -19,6 +19,7 @@ logs
 
 # coverage reporting
 coverage/
+.nyc_output/
 
 # Dependencies and build output
 node_modules

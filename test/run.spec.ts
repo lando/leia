@@ -44,6 +44,7 @@ describe('lib/run', () => {
 
   it('should preserve the synchronous CommonJS runner API', async () => {
     const runner = run([commonjsHarness], { reporter: 'dot' });
+    assert.equal(runner.options.reporter, 'dot');
     const failures = await runMocha(runner);
     assert.equal(failures, 0);
   });
@@ -58,6 +59,7 @@ describe('lib/run', () => {
 
   it('should load and run ESM harnesses asynchronously', async () => {
     const runner = await runAsync([esmHarness], { reporter: 'dot' });
+    assert.equal(runner.options.reporter, 'dot');
     const failures = await runMocha(runner);
     assert.equal(failures, 0);
   });
