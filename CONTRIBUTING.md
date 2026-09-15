@@ -100,11 +100,14 @@ and tarball verification remain in [#66](https://github.com/lando/leia/issues/66
 The same TypeScript application specs run on Bun for source and Node 24 for built targets;
 tooling specs run only on Bun via `bun run test:tooling`. Application and tooling unit commands never build implicitly.
 The source CI jobs assert that `dist/` does not exist. Built CI jobs remove application source and
-the sibling artifact before testing. The isolated build check repeats those checks in relocated
-temporary copies and verifies clean output, CLI parity, and watch rebuilds of both formats.
+the sibling artifact before testing. The isolated build check uses focused API/CLI and runtime
+probes in relocated temporary copies, without rerunning the unit suite. It also verifies clean
+output, CLI parity, and watch rebuilds of both formats.
 
 Execution target and generated harness format are separate axes: all three targets run across
-macOS, Ubuntu, and Windows, with both harness formats explicitly covered in the Linux matrix.
+macOS, Ubuntu, and Windows. Lifecycle probes cover both harness formats for every target;
+the Linux module-format matrix focuses on explicit overrides and package-boundary assertions
+rather than repeating the general examples.
 
 ## Open a pull request
 

@@ -6,15 +6,9 @@ import { join, sep } from 'node:path';
 
 import { executionTarget, targetNames, type TargetName } from '../utils/execution-target.ts';
 
-async function run(
-  root: string,
-  command: string[],
-  expectedCode = 0,
-  env: NodeJS.ProcessEnv = {},
-): Promise<string> {
+async function run(root: string, command: string[], expectedCode = 0): Promise<string> {
   const child = Bun.spawn(command, {
     cwd: root,
-    env: { ...process.env, ...env },
     stdout: 'pipe',
     stderr: 'pipe',
     timeout: 30000,
@@ -115,7 +109,7 @@ async function checkCLI(root: string, name: TargetName): Promise<void> {
 
 async function copyFixtures(from: string, to: string): Promise<void> {
   await Promise.all(
-    ['.bun-version', 'package.json', 'test', 'examples', 'tooling'].map((file) =>
+    ['.bun-version', 'package.json', 'tooling'].map((file) =>
       cp(join(from, file), join(to, file), { recursive: true }),
     ),
   );
@@ -137,7 +131,6 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       ),
     );
     await assert.rejects(stat(join(root, 'dist')), { code: 'ENOENT' });
-    await run(root, [process.execPath, 'run', 'test:app'], 0, { LEIA_RUNTIME: 'source' });
     await checkCLI(root, 'source');
     await assert.rejects(stat(join(root, 'dist')), { code: 'ENOENT' });
 
@@ -193,7 +186,6 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
         await cp(join(root, 'dist', name), join(isolated, 'dist', name), { recursive: true });
         for (const absent of ['bin', 'lib', 'utils', `dist/${name === 'esm' ? 'cjs' : 'esm'}`])
           await assert.rejects(stat(join(isolated, absent)), { code: 'ENOENT' });
-        await run(isolated, [process.execPath, 'run', 'test:app'], 0, { LEIA_RUNTIME: name });
         await checkCLI(isolated, name);
         const target = executionTarget(name, isolated);
         await run(isolated, [
@@ -225,7 +217,7 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       }
     }
     process.stdout.write(
-      'Build-free source, isolated ESM/CJS units and CLI, repeatable builds, and dual-target watch passed.\n',
+      'Build-free source, isolated ESM/CJS API and CLI, repeatable builds, and dual-target watch passed.\n',
     );
   } finally {
     await rm(root, { recursive: true, force: true });
