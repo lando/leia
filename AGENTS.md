@@ -23,11 +23,11 @@ rules in `examples/AGENTS.md`.
 
 ## Source Map
 
-- `app/`: TypeScript ESM application; public entrypoint in `bin/`, orchestration and adapter in `lib/`.
+- `app/`: TypeScript ESM application; public entrypoint in `bin/`, compiler and orchestration in `lib/`, focused tests in `test/`.
 - `tooling/`: build/check libraries, thin internal `scripts/`, focused `utils/`, and flat TypeScript `test/`.
 - `cli/`: the unported oclif command, flags, help, and exit behavior.
-- `lib/`: parsing, generation, runner orchestration, shell selection, and focused helpers.
-- `templates/`: generated harness dependencies and the shared scenario body.
+- `lib/`: CommonJS compiler adapters and unported runner orchestration.
+- `app/lib/render.ts`: typed harness templates; `docs/compiler.md` documents the compiler IR.
 - `test/`: focused Mocha unit tests for repository-owned JavaScript behavior.
 - `examples/`: executable Leia specifications and their scenario-owned package boundaries or
   fixtures.

@@ -80,8 +80,8 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
   const root = await mkdtemp(join(tmpdir(), 'leia-build-'));
   try {
     await Promise.all(
-      ['.bun-version', 'package.json', 'app', 'tooling', 'bin', 'cli', 'lib', 'templates'].map(
-        (path) => cp(join(repositoryRoot, path), join(root, path), { recursive: true }),
+      ['.bun-version', 'package.json', 'app', 'tooling', 'bin', 'cli', 'lib'].map((path) =>
+        cp(join(repositoryRoot, path), join(root, path), { recursive: true }),
       ),
     );
     // A Windows junction avoids requiring symlink privileges on contributor machines.
@@ -98,6 +98,8 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       'bin/leia.js.map',
       'lib/app.js',
       'lib/app.js.map',
+      'lib/compiler.js',
+      'lib/compiler.js.map',
       'package.json',
     ]);
     await writeFile(join(root, 'dist/stale.js'), 'stale output');
@@ -137,8 +139,34 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       first,
       'Watch verification must restore the original build',
     );
+    // Prove the legacy adapter and emitted compiler do not depend on TypeScript sources.
+    await rm(join(root, 'app'), { recursive: true, force: true });
+    await writeFile(
+      join(root, 'compiler-probe.md'),
+      '# Compiler probe\n\n## Test\n\n```sh\n# preserves bytes\nprintf "%s\\n" "$HOME"\n```\n',
+    );
+    await run(root, [
+      'node',
+      '--input-type=commonjs',
+      '-e',
+      `
+      const assert = require('node:assert/strict');
+      const Leia = require('./lib/leia.js');
+      const {compileHarness} = require('./dist/lib/compiler.js');
+      const leia = new Leia();
+      const files = leia.find(['compiler-probe.md']);
+      assert.equal(files.length, 1);
+      for (const moduleFormat of ['commonjs', 'esm']) {
+        const [harness] = leia.parse(files, {moduleFormat, shell: 'sh'});
+        assert.equal(harness.tests.test[0].describe[0], 'preserves bytes');
+        const output = compileHarness(harness);
+        assert.ok(output.source.includes(JSON.stringify(harness.tests.test[0].command)));
+        assert.ok(output.destination.endsWith(moduleFormat === 'esm' ? '.leia.mjs' : '.leia.cjs'));
+      }
+    `,
+    ]);
     process.stdout.write(
-      'Isolated repeatable build, source/Node CLI parity, and watch rebuild passed.\n',
+      'Isolated repeatable build, source/Node CLI parity, watch rebuild, and source-free compiler passed.\n',
     );
   } finally {
     await rm(root, { recursive: true, force: true });

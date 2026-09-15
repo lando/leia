@@ -24,7 +24,6 @@ export default defineConfig([
     '**/*.leia.cjs',
     '**/*.leia.mjs',
     'leia.readme.js',
-    'templates/**',
   ]),
   js.configs.recommended,
   {
