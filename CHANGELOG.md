@@ -1,5 +1,8 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added explicit ESM/CommonJS package exports for the Leia constructor and reusable compiler/runner libraries, with TypeScript declarations for every entrypoint. Deep implementation imports are private. [#66](https://github.com/lando/leia/issues/66)
+- Added isolated npm-tarball consumer checks and fail-closed packaging for missing, modified, or stale build output. Releases validate and publish the same prepared tarball. [#66](https://github.com/lando/leia/issues/66)
+
 - Added a pinned Bun toolchain, strict TypeScript ESM scopes, and isolated build/watch checks for 2.x development. [#63](https://github.com/lando/leia/issues/63)
 - Added focused errors for missing scenario titles and malformed generation metadata before file emission. [#64](https://github.com/lando/leia/issues/64)
 - Added independent Node ESM and CommonJS builds with generated CLI launchers, alongside build-free Bun source execution. Shared application and scenario tests cover all three targets without source or sibling-artifact fallback. [#65](https://github.com/lando/leia/issues/65)

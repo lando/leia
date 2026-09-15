@@ -35,4 +35,9 @@ jobs:
         run: bun install --frozen-lockfile --ignore-scripts
 
       - name: Verify repeatable builds, CLI parity, and isolated watch mode
-        run: bun run check:build
+        run: bun run check:build --scenarios
+
+      - name: Build and verify the installed npm tarball
+        run: |
+          bun run build
+          bun run check:package --scenarios

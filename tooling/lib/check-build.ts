@@ -6,21 +6,8 @@ import { basename, dirname, join, relative, resolve, sep } from 'node:path';
 
 import { executionTarget, targetNames, type TargetName } from '../utils/execution-target.ts';
 
-async function run(root: string, command: string[], expectedCode = 0): Promise<string> {
-  const child = Bun.spawn(command, {
-    cwd: root,
-    stdout: 'pipe',
-    stderr: 'pipe',
-    timeout: 30000,
-  });
-  const [stdout, stderr, code] = await Promise.all([
-    new Response(child.stdout).text(),
-    new Response(child.stderr).text(),
-    child.exited,
-  ]);
-  assert.equal(code, expectedCode, `${command.join(' ')}\n${stderr}\n${stdout}`);
-  return stdout;
-}
+import { checkDistribution } from './distribution.ts';
+import { runCommand as run } from '../utils/run-command.ts';
 
 async function snapshot(root: string): Promise<Record<string, string>> {
   const outdir = join(root, 'dist');
@@ -72,8 +59,9 @@ async function checkWatch(root: string): Promise<void> {
     await waitFor(async () =>
       (
         await Promise.all(
-          ['esm/lib/app.js', 'cjs/lib/app.cjs'].map(async (file) =>
-            (await readFile(join(root, 'dist', file), 'utf8').catch(() => '')).includes(marker),
+          ['esm/lib/app.js', 'cjs/lib/app.cjs', 'esm/lib/app.d.ts', 'cjs/lib/app.d.cts'].map(
+            async (file) =>
+              (await readFile(join(root, 'dist', file), 'utf8').catch(() => '')).includes(marker),
           ),
         )
       ).every(Boolean),
@@ -133,9 +121,14 @@ async function checkCLI(root: string, name: TargetName): Promise<void> {
 
 async function copyFixtures(from: string, to: string): Promise<void> {
   await Promise.all(
-    ['.bun-version', 'package.json', 'tooling'].map((file) =>
-      cp(join(from, file), join(to, file), { recursive: true }),
-    ),
+    [
+      '.bun-version',
+      'package.json',
+      'bun.lock',
+      'tsconfig.json',
+      'tsconfig.build.json',
+      'tooling',
+    ].map((file) => cp(join(from, file), join(to, file), { recursive: true })),
   );
   await symlink(
     join(from, 'node_modules'),
@@ -145,7 +138,7 @@ async function copyFixtures(from: string, to: string): Promise<void> {
 }
 
 /** Prove build-free source and independently relocatable Node artifacts in disposable copies. */
-export async function checkBuild(repositoryRoot: string): Promise<void> {
+export async function checkBuild(repositoryRoot: string, scenarios = false): Promise<void> {
   const root = await mkdtemp(join(tmpdir(), 'leia-build-'));
   try {
     await copyFixtures(repositoryRoot, root);
@@ -155,12 +148,42 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       ),
     );
     await assert.rejects(stat(join(root, 'dist')), { code: 'ENOENT' });
-    await checkCLI(root, 'source');
+    if (scenarios) await checkCLI(root, 'source');
     await assert.rejects(stat(join(root, 'dist')), { code: 'ENOENT' });
 
     await run(root, [process.execPath, 'run', 'build']);
     const first = await snapshot(root);
     await checkSourceMaps(root, Object.keys(first));
+    await checkDistribution(root);
+    for (const file of ['dist/esm/lib/parse.js', 'dist/cjs/lib/parse.d.cts']) {
+      const original = await readFile(join(root, file));
+      await rm(join(root, file));
+      await assert.rejects(checkDistribution(root));
+      await writeFile(join(root, file), original);
+    }
+    const source = await readFile(join(root, 'lib/find.ts'), 'utf8');
+    await writeFile(join(root, 'lib/find.ts'), source + '\n// changed input\n');
+    await assert.rejects(checkDistribution(root));
+    await writeFile(join(root, 'lib/find.ts'), source);
+    const declaration = join(root, 'dist/esm/lib/parse.d.ts');
+    const originalDeclaration = await readFile(declaration, 'utf8');
+    await writeFile(declaration, originalDeclaration + '\n// modified artifact\n');
+    await assert.rejects(checkDistribution(root));
+    await writeFile(declaration, originalDeclaration);
+    await checkDistribution(root);
+    await writeFile(
+      join(root, 'lib/find.ts'),
+      source + '\nexport const brokenDeclaration: string = 42;\n',
+    );
+    await run(root, [process.execPath, 'run', 'build'], 1);
+    await assert.rejects(stat(join(root, 'dist/build-receipt.json')), { code: 'ENOENT' });
+    await writeFile(join(root, 'lib/find.ts'), source);
+    await run(root, [process.execPath, 'run', 'build']);
+    assert.deepEqual(
+      await snapshot(root),
+      first,
+      'A repaired build must restore the exact artifact',
+    );
     const throwLine =
       (await readFile(join(root, 'utils/parse-non-negative-integer.ts'), 'utf8'))
         .split('\n')
@@ -172,17 +195,21 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
         assert.ok(first[`${format}/${module}.${extension}`]);
     }
     assert.ok(
-      Object.keys(first).every((file) => /^(esm|cjs)\//.test(file)),
+      Object.keys(first).every(
+        (file) => file === 'build-receipt.json' || /^(esm|cjs)\//.test(file),
+      ),
       'Build must emit only the two target scopes',
     );
     await writeFile(join(root, 'dist/stale.js'), 'stale output');
+    await assert.rejects(checkDistribution(root));
+    await run(root, ['npm', 'pack', '--dry-run', '--json'], 1);
     await run(root, [process.execPath, 'run', 'build']);
     assert.deepEqual(
       await snapshot(root),
       first,
       'Builds must clean stale files and emit identical bytes',
     );
-    for (const flag of ['--help', '--version']) {
+    for (const flag of scenarios ? ['--help', '--version'] : []) {
       const outputs = await Promise.all(
         targetNames.map((name) => {
           const target = executionTarget(name, root);
@@ -216,7 +243,7 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
         await cp(join(root, 'dist', name), join(isolated, 'dist', name), { recursive: true });
         for (const absent of ['bin', 'lib', 'utils', `dist/${name === 'esm' ? 'cjs' : 'esm'}`])
           await assert.rejects(stat(join(isolated, absent)), { code: 'ENOENT' });
-        await checkCLI(isolated, name);
+        if (scenarios) await checkCLI(isolated, name);
         const target = executionTarget(name, isolated);
         await run(isolated, [
           'node',
@@ -239,14 +266,14 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
           const Leia = require(${JSON.stringify(join(target.directory, `lib/leia.${target.extension}`))});
           assert.equal(typeof Leia, 'function');
           assert.equal(typeof new Leia().parse, 'function');
-          ${name === 'esm' ? "assert.equal(require('./'), Leia);" : ''}
+          ${name === 'cjs' ? "assert.equal(require('./'), Leia);" : ''}
         `,
         ]);
         await writeFile(
           join(isolated, 'runtime-probe.md'),
           '# Runtime probe\n\n## Test\n\n```sh\n# should run without source or sibling artifacts\nnode -e "process.exit(0)"\n```\n',
         );
-        for (const format of ['commonjs', 'esm'])
+        for (const format of scenarios ? ['commonjs', 'esm'] : [])
           await run(isolated, [
             'node',
             target.cli,
@@ -259,7 +286,7 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       }
     }
     process.stdout.write(
-      'Build-free source, isolated ESM/CJS API and CLI, repeatable builds, and dual-target watch passed.\n',
+      `Repeatable ESM/CJS builds, declarations, freshness gates, and watch passed${scenarios ? ' with CLI scenarios' : ''}.\n`,
     );
   } finally {
     await rm(root, { recursive: true, force: true });

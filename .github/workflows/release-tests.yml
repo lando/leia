@@ -47,9 +47,11 @@ jobs:
         run: bun run build
       - name: Check prepared package formatting
         run: bun run format:check
+      - name: Verify the prepared tarball in isolated consumers
+        run: bun run check:package --scenarios --pack-destination=.temp/package
       - name: Validate the release channel without publishing
         env:
           NPM_DIST_TAG: ${{ matrix.dist_tag }}
         run: |
           npm install --global "npm@^11.5.1"
-          npm publish --access public --tag "$NPM_DIST_TAG" --dry-run
+          npm publish .temp/package/*.tgz --access public --tag "$NPM_DIST_TAG" --dry-run

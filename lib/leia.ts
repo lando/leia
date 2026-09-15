@@ -10,8 +10,8 @@ export class Leia {
   generate = generate;
   parse = parse;
   resolveModuleFormat = resolveModuleFormat;
-  run = run;
-  runAsync = runAsync;
+  run: typeof run = run;
+  runAsync: typeof runAsync = runAsync;
 }
 
 // Preserve the constructor returned by Node 24 require() without a CommonJS adapter.

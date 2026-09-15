@@ -1,0 +1,8 @@
+# Installed package
+
+## Test
+
+```sh
+# should execute from the npm tarball
+node -e "process.stdout.write('packed Leia works\n')"
+```

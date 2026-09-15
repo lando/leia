@@ -23,6 +23,7 @@ coverage/
 # Dependencies and build output
 node_modules
 dist/
+.temp/
 
 # Tests
 *.leia.js

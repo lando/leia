@@ -197,3 +197,11 @@ export const parse = (files: string[], options: ParseOptions = {}): Harness[] =>
   };
   return normalizeMarkdown(readMarkdown(files), resolvedOptions);
 };
+
+export type {
+  ParseOptions,
+  Harness,
+  Scenario,
+  MarkdownDocument,
+  MarkdownElement,
+} from './compiler-types.ts';
