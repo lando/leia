@@ -42,44 +42,26 @@ You can invoke `leia` as a command line tool or directly `require` it in a modul
 ### CLI
 
 ```bash
-npx leia
+# Run every Leia scenario in the README.
+npx leia README.md
 
-Cleverly converts markdown files into mocha cli tests
+# Scan documentation while excluding an archived subtree.
+npx leia "docs/**/*.md" --ignore "docs/archive/**"
 
-USAGE
-  $ leia <files> <patterns> [--cleanup-header=<cleanup-headers>] [--debug] [--help] [--ignore=<patterns>]
-  [--module-format=<auto|commonjs|esm>] [--retry=<count>] [--setup-header=<setup-headers>]
-  [--test-header=<test-headers>] [--shell=<bash|cmd|powershell|pwsh|sh|zsh>] [--stdin] [--timeout=<seconds>]
-  [--version]
-
-ARGUMENTS
-  TESTS  files or patterns to scan for test
-
-OPTIONS
-  -c, --cleanup-header=cleanup-header      [default: Clean,Tear,Burn] considers these h2 sections as cleanup commands
-  -i, --ignore=ignore                      files or patterns to ignore
-  --module-format=auto|commonjs|esm        [default: auto] generates CommonJS or ESM harnesses, autodetected by default
-  -r, --retry=retry                        [default: 1] non-negative number of times to retry each test
-  -s, --setup-header=setup-header          [default: Start,Setup,This is the dawning] considers these h2 sections as setup commands
-  -t, --test-header=test-header            [default: Test,Validat,Verif] considers these h2 sections as tests
-  -v, --version                            shows version info
-  --debug                                  shows debug output
-  --help                                   shows help
-  --shell=bash|cmd|powershell|pwsh|sh|zsh  [default: /opt/homebrew/bin/zsh] runs tests with given shell, autodetected by default
-  --stdin                                  attachs stdin when the test is run
-  --timeout=timeout                        [default: 1800] non-negative whole seconds before tests time out (max 2147483)
-
-EXAMPLES
-  leia README.md
-  leia README.md "examples/**/*.md" --retry 6 --test-header Tizzestin
-  leia "examples/*.md" --ignore BUTNOTYOU.md test --stdin --timeout 5
-  leia README.md --shell cmd
-  leia README.md --module-format esm
+# Select explicit retry, timeout, and generated-module behavior.
+npx leia README.md --retry 2 --timeout 60 --module-format esm
 ```
+
+Run `npx leia --help` for the complete option reference and current defaults. Leia writes run and
+completion status to stdout and warnings and actionable errors to stderr. Color is disabled for
+non-TTY and CI output, honors `NO_COLOR`, and can be explicitly controlled with `FORCE_COLOR`.
 
 `--retry` and `--timeout` accept non-negative integers. Retry counts may not exceed JavaScript's safe-integer limit;
 timeouts may not exceed `2147483` seconds so their millisecond conversion remains within Node's timer range. Leia rejects
 invalid, fractional, or out-of-range values before generating or loading a harness.
+
+The legacy `--spawn` and `--split-file` flags remain accepted as no-ops for 1.x command compatibility.
+Leia 2.0 warns when either is supplied; remove them after every environment uses Leia 2.0.
 
 ### Execution lifecycle
 

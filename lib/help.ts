@@ -1,61 +1,78 @@
 import { getShell } from './shell.ts';
+import { createStyles, type Styles } from './presentation.ts';
 
-const help = [
-  'Cleverly converts markdown files into mocha cli tests',
-  '',
-  'USAGE',
-  '  $ leia <files> <patterns> [--cleanup-header=<cleanup-headers>] [--debug] ',
-  '  [--help] [--ignore=<patterns>] [--module-format=<auto|commonjs|esm>] ',
-  '  [--retry=<count>] [--setup-header=<setup-headers>] ',
-  '  [--test-header=<test-headers>] [--shell=<bash|cmd|powershell|pwsh|sh|zsh>] ',
-  '  [--stdin] [--timeout=<seconds>] [--version]',
-  '',
-  'ARGUMENTS',
-  '  TESTS  files or patterns to scan for test',
-  '',
-  'OPTIONS',
-  '  -c, --cleanup-header=cleanup-header      [default: Clean,Tear,Burn] considers',
-  '                                           these h2 sections as cleanup commands',
-  '',
-  '  -i, --ignore=ignore                      files or patterns to ignore',
-  '',
-  '  -r, --retry=retry                        [default: 1] non-negative number of',
-  '                                           times to retry each test',
-  '',
-  '  -s, --setup-header=setup-header          [default: Start,Setup,This is the',
-  '                                           dawning] considers these h2 sections',
-  '                                           as setup commands',
-  '',
-  '  -t, --test-header=test-header            [default: Test,Validat,Verif]',
-  '                                           considers these h2 sections as tests',
-  '',
-  '  -v, --version                            shows version info',
-  '',
-  '  --debug                                  shows debug output',
-  '',
-  '  --help                                   shows help',
-  '',
-  '  --module-format=auto|commonjs|esm        [default: auto] generates CommonJS or',
-  '                                           ESM harnesses, autodetected by',
-  '                                           default',
-  '',
-  '  --shell=bash|cmd|powershell|pwsh|sh|zsh  [default: {shell}] runs tests with',
-  '                                           given shell, autodetected by default',
-  '',
-  '  --stdin                                  attachs stdin when the test is run',
-  '',
-  '  --timeout=timeout                        [default: 1800] non-negative whole',
-  '                                           seconds before tests time out (max',
-  '                                           2147483)',
-  '',
-  'EXAMPLES',
-  '  leia README.md',
-  '  leia README.md "examples/**/*.md" --retry 6 --test-header Tizzestin',
-  '  leia "examples/*.md" --ignore BUTNOTYOU.md test --stdin --timeout 5',
-  '  leia README.md --shell cmd',
-  '  leia README.md --module-format esm',
-  '',
-  '',
-].join('\n');
+const option = (
+  styles: Styles,
+  signature: string,
+  description: string,
+  fallback?: string,
+): string => {
+  const line = `  ${signature.padEnd(42)} ${description}`;
+  if (fallback === undefined) return line;
+  return line.length + fallback.length + 1 <= 100
+    ? `${line} ${styles.dim(fallback)}`
+    : `${line}\n${' '.repeat(45)}${styles.dim(fallback)}`;
+};
 
-export const helpText = (): string => help.replace('{shell}', getShell().binary);
+export const helpText = (styles: Styles = createStyles(process.stdout, process.env)): string => {
+  const section = styles.accent;
+  const optional = styles.dim('[options]');
+  return [
+    styles.bold('Leia'),
+    'Run fenced Markdown examples as Mocha tests.',
+    '',
+    section('Usage'),
+    `  leia <files...> ${optional}`,
+    '',
+    section('Options'),
+    option(
+      styles,
+      '-c, --cleanup-header <names...>',
+      'match cleanup section headings',
+      '[default: Clean,Tear,Burn]',
+    ),
+    option(styles, '-i, --ignore <patterns...>', 'ignore matching files'),
+    option(styles, '-r, --retry <count>', 'retry each failed test', '[default: 1]'),
+    option(
+      styles,
+      '-s, --setup-header <names...>',
+      'match setup section headings',
+      '[default: Start,Setup,This is the dawning]',
+    ),
+    option(
+      styles,
+      '-t, --test-header <names...>',
+      'match test section headings',
+      '[default: Test,Validat,Verif]',
+    ),
+    option(styles, '-v, --version', 'report the current Leia version'),
+    option(styles, '--debug[=<namespace>]', 'enable debug output'),
+    option(styles, '--help', 'show help'),
+    option(
+      styles,
+      '--module-format <auto|commonjs|esm>',
+      'select generated module format',
+      '[default: auto]',
+    ),
+    option(
+      styles,
+      '--shell <bash|cmd|powershell|pwsh|sh|zsh>',
+      'run tests with a shell',
+      `[default: ${getShell().binary}]`,
+    ),
+    option(styles, '--stdin', 'attach the invoking input stream'),
+    option(
+      styles,
+      '--timeout <seconds>',
+      'set the per-test deadline; 0 disables it',
+      '[default: 1800]',
+    ),
+    '',
+    section('Examples'),
+    '  leia README.md',
+    '  leia "docs/**/*.md" --ignore "docs/archive/**"',
+    '  leia README.md --retry 2 --timeout 60',
+    '  leia README.md --module-format esm',
+    '',
+  ].join('\n');
+};

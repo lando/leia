@@ -18,6 +18,7 @@ synchronous; `runAsync()` loads either format. Final package wiring is separate 
 | Flags           | Existing names, short aliases, hidden `--spawn`/`--split-file` no-ops, defaults, greedy repeated strings, single-value comma-separated headers, and non-strict positional patterns remain.                                   |
 | Numeric options | Retry is a non-negative safe integer; timeout is whole seconds up to 2147483. Zero timeout disables deadlines.                                                                                                               |
 | Reporting       | Mocha retains test names, stage order, skipped tests, per-test retries, and ordinary success/failure output. Failed process diagnostics retain code/stdout/stderr.                                                           |
+| Presentation    | Human help, run status, warnings, errors, next actions, and completion summaries use Lando's primary accent plus semantic status colors. Meaning remains explicit in text with color disabled.                               |
 | Exit            | CLI success/help/version: 0; test, validation, loading, or spawn failure: 1; caught SIGHUP/SIGINT/SIGTERM: 129/130/143.                                                                                                      |
 | Environment/cwd | Commands run from the Markdown directory and inherit the invocation environment plus existing Leia metadata. Each retry gets its attempt number.                                                                             |
 | stdin/TTY       | Default stdin is a closed pipe (EOF). `--stdin` inherits fd 0 without manufacturing a terminal. stdout and stderr stay piped, even when stdin is a terminal.                                                                 |
@@ -26,6 +27,15 @@ synchronous; `runAsync()` loads either format. Final package wiring is separate 
 
 Setup and cleanup remain ordinary ordered tests, including their own retry budgets. They are not
 converted to hooks. Ordinary setup/test failures and timeouts do not prevent later tests or cleanup.
+
+Normal status and completion output goes to stdout. Warnings, errors, and next actions go to stderr;
+Mocha retains its existing reporter streams. Color is automatic only for interactive terminals,
+disabled for non-TTY and CI output, suppressed by `NO_COLOR`, and explicitly controlled by
+`FORCE_COLOR`. No mode emits cursor movement or other interactive-only control sequences.
+
+The hidden `--spawn` and `--split-file` compatibility flags remain accepted and remain no-ops. Leia
+2.0 now warns when either is supplied. Remove them after all callers have moved to Leia 2.0; their
+presence does not change execution or exit status.
 
 Noninteractive POSIX execution uses a separate process group. Interactive commands stay in the
 terminal session; cancellation snapshots their descendants with `ps` and signals only those PIDs,
@@ -55,8 +65,10 @@ termination with retries. Mocha signal handlers are scoped to each run and remov
 
 ## Verification
 
-`test/cli.spec.ts` covers every flag and alias, numeric rejection, debug precedence, and parser
-edge cases. `execute.spec.ts` covers stream draining, EOF, cwd/environment, spawn/nonzero failures,
+`test/cli.spec.ts` covers every flag and alias, numeric rejection, debug precedence, parser edge
+cases, and help, validation-error, runtime-failure, success, no-color, forced-color, and non-TTY
+presentation across source, ESM, and CommonJS targets. `test/presentation.spec.ts` isolates terminal
+capability, semantic style, stream, and multiline-diagnostic behavior. `execute.spec.ts` covers stream draining, EOF, cwd/environment, spawn/nonzero failures,
 timeouts, and cancellation state. Focused `test/process-tree.spec.ts`, `test/process-error.spec.ts`, and
 `test/runtime-layout.spec.ts` cover descendant selection, error precedence, and source/build paths. Existing compiler and runner assertions now run from TypeScript under `test/`;
 renderer snapshots explicitly reflect the new runtime call.
