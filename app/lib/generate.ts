@@ -74,7 +74,7 @@ export const compileHarness = (
     throw new TypeError('Generated harness metadata "stdin" must be "inherit" or "pipe".');
   const data: RenderHarness = {
     chaiPath: sourceLiteral(string(test.chaiPath, 'chaiPath')),
-    cltPath: sourceLiteral(string(test.cltPath, 'cltPath')),
+    runtimePath: sourceLiteral(string(test.runtimePath, 'runtimePath')),
     cwd: sourceLiteral(string(test.cwd, 'cwd')),
     debugPath: sourceLiteral(string(test.debugPath, 'debugPath')),
     id: sourceLiteral(string(test.id, 'id')),

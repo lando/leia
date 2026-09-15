@@ -35,7 +35,7 @@ export interface Harness {
   file: string;
   id: string;
   chaiPath: string;
-  cltPath: string;
+  runtimePath: string;
   debugPath: string;
   destination: string;
   moduleFormat: ModuleFormat;

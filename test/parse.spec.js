@@ -20,7 +20,7 @@ describe('parse', () => {
     const keys = [
       'cwd',
       'chaiPath',
-      'cltPath',
+      'runtimePath',
       'debugPath',
       'destination',
       'file',

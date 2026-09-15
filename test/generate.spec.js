@@ -35,7 +35,7 @@ const getTests = (moduleFormat = 'commonjs') => [
     retry: 3,
     cwd: normalizePath(tempDir),
     chaiPath: normalizePath(require.resolve('@lando/chai')),
-    cltPath: normalizePath(require.resolve('command-line-test')),
+    runtimePath: normalizePath(require.resolve('../dist/lib/runtime.js')),
     debugPath: normalizePath(require.resolve('debug')),
     stdin: 'pipe',
     text: 'Mock',
@@ -106,7 +106,7 @@ describe('generate', () => {
       tests[0].id = `mock-${special}`;
       tests[0].cwd = `C:\\Leia's "tests"\\cwd`;
       tests[0].chaiPath = `C:\\Leia's "modules"\\chai`;
-      tests[0].cltPath = `C:\\Leia's "modules"\\command-line-test`;
+      tests[0].runtimePath = `C:\\Leia's "modules"\\runtime`;
       tests[0].debugPath = `C:\\Leia's "modules"\\debug`;
       tests[0].stdin = 'inherit';
       tests[0].version = `v1-${special}`;
@@ -127,7 +127,7 @@ describe('generate', () => {
         tests[0].id,
         tests[0].cwd,
         tests[0].chaiPath,
-        tests[0].cltPath,
+        tests[0].runtimePath,
         tests[0].debugPath,
         tests[0].version,
         tests[0].tests.test[0].describe[0],
@@ -140,14 +140,13 @@ describe('generate', () => {
       if (moduleFormat === 'commonjs') {
         const captured = { chdir: [], debug: [], descriptions: [], requires: [], spawns: [] };
         const runtimeProcess = { env: {}, chdir: (cwd) => captured.chdir.push(cwd) };
-        class CliTest {
-          spawn(shell, args, options) {
-            captured.spawns.push({ shell, args, options, env: { ...runtimeProcess.env } });
-            return { then: (resolve) => resolve({ error: null }) };
-          }
-        }
+        const runScenario = (context, request) => {
+          captured.spawns.push({ ...request, env: { ...runtimeProcess.env } });
+          return Promise.resolve();
+        };
         const suite = {
-          ctx: { test: { _currentRetry: 0, skip: () => {} } },
+          test: { currentRetry: () => 0 },
+          skip: () => {},
           retries: (retry) => (captured.retry = retry),
         };
         const context = {
@@ -157,13 +156,13 @@ describe('generate', () => {
           },
           it: (description, callback) => {
             captured.descriptions.push(description);
-            callback(() => {});
+            callback.call(suite);
           },
           process: runtimeProcess,
           require: (dependency) => {
             captured.requires.push(dependency);
             if (dependency === tests[0].chaiPath) return { should: () => {} };
-            if (dependency === tests[0].cltPath) return CliTest;
+            if (dependency === tests[0].runtimePath) return { runScenario };
             if (dependency === tests[0].debugPath) {
               return (namespace) => {
                 captured.namespace = namespace;
@@ -182,7 +181,7 @@ describe('generate', () => {
         captured.namespace.should.equal(`leia:test:${tests[0].id}`);
         captured.requires.should.deep.equal([
           tests[0].chaiPath,
-          tests[0].cltPath,
+          tests[0].runtimePath,
           tests[0].debugPath,
           'path',
         ]);
@@ -190,11 +189,8 @@ describe('generate', () => {
         captured.chdir.should.deep.equal([tests[0].cwd]);
         captured.spawns[0].shell.should.equal(tests[0].tests.test[0].shell);
         fromVm(captured.spawns[0].args).should.deep.equal(tests[0].tests.test[0].args);
-        fromVm(captured.spawns[0].options.stdio).should.deep.equal([
-          tests[0].stdin,
-          'pipe',
-          'pipe',
-        ]);
+        captured.spawns[0].stdin.should.equal(tests[0].stdin);
+        captured.spawns[0].cwd.should.equal(tests[0].cwd);
         captured.spawns[0].env.LEIA_TEST_ID.should.equal(tests[0].tests.test[0].id);
         captured.spawns[0].env.LEIA_TEST_NUMBER.should.equal(tests[0].tests.test[0].number);
         captured.spawns[0].env.LEIA_TEST_STAGE.should.equal(tests[0].tests.test[0].section);

@@ -25,8 +25,7 @@ rules in `examples/AGENTS.md`.
 
 - `app/`: TypeScript ESM application; public entrypoint in `bin/`, compiler and orchestration in `lib/`, focused tests in `test/`.
 - `tooling/`: build/check libraries, thin internal `scripts/`, focused `utils/`, and flat TypeScript `test/`.
-- `cli/`: the unported oclif command, flags, help, and exit behavior.
-- `lib/`: CommonJS compiler adapters and unported runner orchestration.
+- `lib/`: thin CommonJS adapters to the typed compiler and runtime APIs.
 - `app/lib/render.ts`: typed harness templates; `docs/compiler.md` documents the compiler IR.
 - `test/`: focused Mocha unit tests for repository-owned JavaScript behavior.
 - `examples/`: executable Leia specifications and their scenario-owned package boundaries or

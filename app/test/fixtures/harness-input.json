@@ -6,7 +6,7 @@
   "retry": 3,
   "cwd": "/fixture",
   "chaiPath": "/deps/chai",
-  "cltPath": "/deps/clt",
+  "runtimePath": "/deps/runtime",
   "debugPath": "/deps/debug",
   "stdin": "pipe",
   "text": "Fixture",

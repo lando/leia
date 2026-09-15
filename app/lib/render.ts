@@ -14,7 +14,7 @@ export interface RenderScenario {
 
 export interface RenderHarness {
   chaiPath: string;
-  cltPath: string;
+  runtimePath: string;
   cwd: string;
   debugPath: string;
   id: string;
@@ -45,27 +45,19 @@ const renderScenario = (
   it: RenderHarness,
   test: RenderScenario,
   text: Text,
-): string => text`  it(${test.describe}, done => {
+): string => text`  it(${test.describe}, function() {
     process.chdir(${it.cwd});
     process.env.LEIA_TEST_ID = ${test.id};
     process.env.LEIA_TEST_NUMBER = ${test.number};
-    process.env.LEIA_TEST_RETRY = this.ctx.test._currentRetry;
+    process.env.LEIA_TEST_RETRY = this.test.currentRetry();
     process.env.LEIA_TEST_STAGE = ${test.section};
     ${
       test.skip
-        ? text`this.ctx.test.skip();`
+        ? text`this.skip();`
         : text`
-    const cli = new CliTest();
     const data = {shell: ${test.shell}, args: ${test.args}, commands: ${test.command}, stdin: ${it.stdin}};
     debug('running test %s from %s using %o', ${it.id}, ${it.cwd}, data);
-    cli.spawn(${test.shell}, ${test.args}, {stdio: [${it.stdin}, 'pipe', 'pipe']}).then(res => {
-      if (res.error === null) {
-        done();
-      } else {
-        const error = [\`CODE: \${res.error.code}\`, \`STDOUT: \${res.stdout}\`, \`STDERR: \${res.stderr}\`].join('\\n');
-        done(new Error(error));
-      }
-    });`
+    return runScenario(this, {shell: ${test.shell}, args: ${test.args}, cwd: ${it.cwd}, stdin: ${it.stdin}}, ${test.section});`
     }
   });
 `;
@@ -98,10 +90,10 @@ process.env.LEIA_PARSER_RETRY = ${it.retry};
       ? text`
 import {createRequire} from 'node:module';
 
-// Leia's dependencies remain CommonJS, so resolve them with Node's cross-platform CommonJS loader.
+// Load absolute dependency paths through Node's cross-platform module loader.
 const require = createRequire(import.meta.url);
 const chai = require(${it.chaiPath});
-const CliTest = require(${it.cltPath});
+const {runScenario} = require(${it.runtimePath});
 const debug = require(${it.debugPath})('leia:test:' + ${it.id});
 const path = require('path');
 chai.should();
@@ -111,7 +103,7 @@ chai.should();
       : text`
 // We need these deps to run our tezts
 const chai = require(${it.chaiPath});
-const CliTest = require(${it.cltPath});
+const {runScenario} = require(${it.runtimePath});
 const debug = require(${it.debugPath})('leia:test:' + ${it.id});
 const path = require('path');
 chai.should();

@@ -81,6 +81,22 @@ EXAMPLES
 timeouts may not exceed `2147483` seconds so their millisecond conversion remains within Node's timer range. Leia rejects
 invalid, fractional, or out-of-range values before generating or loading a harness.
 
+### Execution lifecycle
+
+The 2.x development CLI runs directly with `bun run leia`; `bun run build` produces the equivalent
+Node CLI at `dist/bin/leia.js`. Flags, aliases, header matching, Mocha reporting, and per-test retries
+retain their 1.x behavior. Setup and cleanup remain ordered tests, not per-test hooks.
+
+A nonzero exit, spawn error, or timeout fails an attempt. Leia terminates the command's process tree
+before retrying or continuing to cleanup. `--timeout=0` disables deadlines. Without `--stdin`, commands
+receive EOF; with it, they inherit the invoking input stream, including a terminal when one exists.
+Output remains captured through pipes in both cases.
+
+On POSIX, `SIGINT`, `SIGTERM`, and `SIGHUP` cancel active setup/test commands, skip remaining
+setup/tests, and run cleanup. The CLI then exits with 130, 143, or 129 respectively. A second signal,
+or a signal during cleanup, cancels cleanup. Uncatchable termination cannot guarantee cleanup.
+See the [lifecycle contract](./docs/lifecycle.md) for platform details and verification.
+
 ### Module
 
 ```js

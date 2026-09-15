@@ -48,6 +48,7 @@ for this Bun bootstrap and npm distribution operations, not repository dependenc
 | `bun run build`           | Clean and build Node-compatible ESM JavaScript and source maps into `dist/`                 |
 | `bun run watch`           | Build once, then rebuild when files under `app/` change                                     |
 | `bun run check:build`     | Verify repeatability, source/Node CLI parity, and bounded watch rebuild in a temporary copy |
+| `bun run test:lifecycle`  | Check source/build lifecycle parity, including timeout, signals, retries, and stdin         |
 | `bun run test:leia`       | Run the portable Markdown scenarios; normally CI-owned                                      |
 | `bun run test:leia:stdin` | Run the stdin scenario in an interactive terminal                                           |
 
@@ -71,22 +72,19 @@ are excluded with Prettier range markers. Preserve those behavior-bearing inputs
 
 ## Migration boundaries
 
-`app/` owns the TypeScript ESM application and the [Markdown compiler](./docs/compiler.md): the thin public entrypoint lives in `app/bin/`, with
-orchestration and the typed CommonJS adapter in `app/lib/`. `tooling/` owns build and validation
-libraries, thin internal commands, and focused tests. Keep future ports in their nearest purpose-owned
-scope, using `bin/`, `lib/`, `utils/`, `scripts/`, and flat `test/` directories where needed.
+`app/` owns the strict TypeScript ESM application, [compiler](./docs/compiler.md), and
+[execution lifecycle](./docs/lifecycle.md). The public entrypoint lives in `app/bin/`; parsing,
+orchestration, process execution, and APIs live in `app/lib/`. `tooling/` owns build and validation.
 
-The root package stays explicitly CommonJS for `bin/`, `cli/`, `lib/`, legacy tests, and existing root-level
-`auto` harness detection. `app/package.json` and `tooling/package.json` define the ESM scopes. Bun loads the compiler source through a narrow CommonJS bridge; Node loads the built ESM compiler.
-Run `bun run build` before invoking the legacy Node CLI or programmatic API in a source checkout. The compiler supports gradual JavaScript adoption through
-`allowJs`, with scoped inclusion and strict TypeScript checks rather than a wholesale legacy conversion.
+The root remains CommonJS for `bin/`, `lib/`, legacy tests, and root-level `auto` harness detection.
+The adapters contain no CLI or runner behavior: Bun loads typed source; Node loads built ESM.
+Run `bun run build` before using the Node CLI or CommonJS API in a source checkout.
 
-`dist/bin/leia.js` runs with Node 24; `dist/lib/app.js` exports the application entrypoint, and
-`dist/lib/compiler.js` exports the compiler. The build
-preserves the relative CommonJS bridge and keeps dependencies external. It is an incremental development
-build, not a standalone npm artifact: final exports, declarations, dual-format packaging, and installed-runtime
-policy belong to [#66](https://github.com/lando/leia/issues/66). The compiler and CLI/runner ports belong to
-[#64](https://github.com/lando/leia/issues/64) and [#65](https://github.com/lando/leia/issues/65).
+`dist/bin/leia.js` runs with Node 24. `dist/lib/app.js` exports the CLI entrypoint;
+`dist/lib/api.js` exports orchestration and runner APIs; `dist/lib/compiler.js` exports the compiler;
+`dist/lib/runtime.js` serves generated harnesses. Dependencies stay external. Final npm exports,
+declarations, artifact wiring, and installed-runtime policy remain in
+[#66](https://github.com/lando/leia/issues/66).
 
 ## Open a pull request
 

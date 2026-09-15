@@ -4,7 +4,11 @@ set -euo pipefail
 
 module_format="${1:-auto}"
 root="$(cd "$(dirname "$0")" && pwd)"
-leia="$root/../../app/bin/leia.ts"
+if [[ "${LEIA_RUNTIME:-source}" == built ]]; then
+  leia=(node "$root/../../dist/bin/leia.js")
+else
+  leia=(bun "$root/../../app/bin/leia.ts")
+fi
 
 for scenario in commonjs esm untyped nested/commonjs; do
   expected=cjs
@@ -26,7 +30,7 @@ for scenario in commonjs esm untyped nested/commonjs; do
       args+=(--module-format "$module_format")
     fi
 
-    bun "$leia" "${args[@]}"
+    "${leia[@]}" "${args[@]}"
     harnesses="$(find .tmp -type f -name "*.leia.$expected" -print)"
     harness_count="$(printf '%s\n' "$harnesses" | sed '/^$/d' | wc -l | tr -d ' ')"
     if [[ "$harness_count" != 1 ]]; then

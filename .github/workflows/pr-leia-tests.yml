@@ -11,6 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       TERM: xterm
+      LEIA_RUNTIME: ${{ matrix.runtime }}
     strategy:
       fail-fast: false
       matrix:
@@ -18,6 +19,12 @@ jobs:
           - macos-26
           - ubuntu-24.04
           - windows-2025
+        runtime: [source, built]
+        include:
+          - runtime: source
+            cli: bun app/bin/leia.ts
+          - runtime: built
+            cli: node dist/bin/leia.js
 
     steps:
       - name: Checkout code
@@ -34,23 +41,25 @@ jobs:
         run: bun run check:toolchain
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
+      - name: Build Node entrypoints
+        run: bun run build
 
       # Run a few iterations of leia tests
       - name: Run Leia tests
         shell: bash
         run: |
           # Try a basic example
-          bun run leia examples/basic-example.md --debug
+          ${{ matrix.cli }} examples/basic-example.md --debug
           # Try globs and ignores
-          bun run leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md" -i "examples/basic-pwsh-example.md"
+          ${{ matrix.cli }} "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md" -i "examples/basic-pwsh-example.md"
           # Try custom headers
-          bun run leia examples/custom-headers.md -s Hello -t Sup -c Goodbye
+          ${{ matrix.cli }} examples/custom-headers.md -s Hello -t Sup -c Goodbye
           # Try all other options, including legacy ones
-          bun run leia examples/basic-example.md --retry 2 --split-file --stdin --spawn
+          ${{ matrix.cli }} examples/basic-example.md --retry 2 --split-file --stdin --spawn
           # Try a comma separated list of headers
-          bun run leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye
+          ${{ matrix.cli }} examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye
           # Assess envvars
-          bun run leia examples/environment.md examples/basic-example.md --retry 4 --timeout 5 --debug
+          ${{ matrix.cli }} examples/environment.md examples/basic-example.md --retry 4 --timeout 5 --debug
 
       # Run auto detection from each package scope with a repository-local temporary directory
       - name: Test automatic module format detection

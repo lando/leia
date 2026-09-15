@@ -1,0 +1,25 @@
+# Lifecycle contract
+
+## Setup
+
+```sh
+# Should run setup in order
+node step.cjs setup
+```
+
+## Test
+
+```sh
+# Should preserve process lifecycle and retry metadata
+node step.cjs test
+
+# Should run the next test unless interrupted
+node step.cjs next
+```
+
+## Cleanup
+
+```sh
+# Should clean up after the test lifecycle
+node step.cjs cleanup
+```

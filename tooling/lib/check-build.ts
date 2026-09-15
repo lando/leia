@@ -4,14 +4,14 @@ import { cp, mkdtemp, readFile, readdir, rm, stat, symlink, writeFile } from 'no
 import { join, sep } from 'node:path';
 import { tmpdir } from 'node:os';
 
-async function run(root: string, command: string[]): Promise<string> {
+async function run(root: string, command: string[], expectedCode = 0): Promise<string> {
   const child = Bun.spawn(command, { cwd: root, stdout: 'pipe', stderr: 'pipe', timeout: 20000 });
   const [stdout, stderr, code] = await Promise.all([
     new Response(child.stdout).text(),
     new Response(child.stderr).text(),
     child.exited,
   ]);
-  assert.equal(code, 0, `${command.join(' ')}\n${stderr}\n${stdout}`);
+  assert.equal(code, expectedCode, `${command.join(' ')}\n${stderr}\n${stdout}`);
   return stdout;
 }
 
@@ -80,7 +80,7 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
   const root = await mkdtemp(join(tmpdir(), 'leia-build-'));
   try {
     await Promise.all(
-      ['.bun-version', 'package.json', 'app', 'tooling', 'bin', 'cli', 'lib'].map((path) =>
+      ['.bun-version', 'package.json', 'app', 'tooling', 'bin', 'lib'].map((path) =>
         cp(join(repositoryRoot, path), join(root, path), { recursive: true }),
       ),
     );
@@ -96,10 +96,14 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
     assert.deepEqual(Object.keys(first), [
       'bin/leia.js',
       'bin/leia.js.map',
+      'lib/api.js',
+      'lib/api.js.map',
       'lib/app.js',
       'lib/app.js.map',
       'lib/compiler.js',
       'lib/compiler.js.map',
+      'lib/runtime.js',
+      'lib/runtime.js.map',
       'package.json',
     ]);
     await writeFile(join(root, 'dist/stale.js'), 'stale output');
@@ -114,7 +118,7 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       const source = await run(root, [process.execPath, 'run', 'app/bin/leia.ts', flag]);
       const built = await run(root, ['node', 'dist/bin/leia.js', flag]);
       const legacy = await run(root, ['node', 'bin/leia', flag]);
-      // oclif reports Bun's Node-compatibility version in source-mode version output.
+      // Version output includes the runtime's Node-compatibility version.
       const stableOutput = (value: string): string =>
         flag === '--version' ? value.replace(/ node-v\d+\.\d+\.\d+\s*$/, '') : value;
       assert.equal(
@@ -124,6 +128,22 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       );
       assert.equal(built, legacy, `Built and legacy Node CLI disagree on ${flag}`);
       assert.ok(source.includes(flag === '--help' ? '--module-format' : '@lando/leia'));
+    }
+    for (const entry of [
+      [process.execPath, 'run', 'app/bin/leia.ts'],
+      ['node', 'dist/bin/leia.js'],
+    ]) {
+      const help = await run(root, [...entry, '--help']);
+      assert.equal(await run(root, entry), help);
+      assert.ok(!help.includes('--spawn') && !help.includes('--split-file'));
+      assert.equal(await run(root, [...entry, '-v']), await run(root, [...entry, '--version']));
+      for (const args of [
+        ['missing-scenario.md'],
+        ['--retry=-1'],
+        ['--timeout=2147484'],
+        ['--module-format=amd'],
+      ])
+        await run(root, [...entry, ...args], 1);
     }
     await run(root, [
       'node',
@@ -165,8 +185,21 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       }
     `,
     ]);
+    await writeFile(
+      join(root, 'runtime-probe.md'),
+      '# Runtime probe\n\n## Test\n\n```sh\n# should run without TypeScript sources\nnode -e "process.exit(0)"\n```\n',
+    );
+    for (const format of ['commonjs', 'esm']) {
+      await run(root, [
+        'node',
+        'dist/bin/leia.js',
+        'runtime-probe.md',
+        `--module-format=${format}`,
+        `--shell=${process.platform === 'win32' ? 'cmd' : 'sh'}`,
+      ]);
+    }
     process.stdout.write(
-      'Isolated repeatable build, source/Node CLI parity, watch rebuild, and source-free compiler passed.\n',
+      'Isolated repeatable build, source/Node CLI parity, watch rebuild, and source-free compiler/runtime passed.\n',
     );
   } finally {
     await rm(root, { recursive: true, force: true });

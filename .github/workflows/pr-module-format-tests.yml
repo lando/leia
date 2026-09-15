@@ -8,16 +8,23 @@ permissions:
 
 jobs:
   module-format-tests:
-    name: module-format-tests (${{ matrix.format }})
+    name: module-format-tests (${{ matrix.format }}, ${{ matrix.runtime }})
     runs-on: ubuntu-24.04
     env:
       TERM: xterm
+      LEIA_RUNTIME: ${{ matrix.runtime }}
     strategy:
       fail-fast: false
       matrix:
         format:
           - commonjs
           - esm
+        runtime: [source, built]
+        include:
+          - runtime: source
+            cli: bun app/bin/leia.ts
+          - runtime: built
+            cli: node dist/bin/leia.js
 
     steps:
       - name: Checkout code
@@ -34,12 +41,14 @@ jobs:
         run: bun run check:toolchain
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
+      - name: Build Node entrypoints
+        run: bun run build
 
       - name: Test module format CLI contract
         shell: bash
         run: |
-          bun run leia --help | grep -- '--module-format=auto|commonjs|esm'
-          if bun run leia examples/basic-example.md --module-format amd; then
+          ${{ matrix.cli }} --help | grep -- '--module-format=auto|commonjs|esm'
+          if ${{ matrix.cli }} examples/basic-example.md --module-format amd; then
             echo 'Leia accepted an unsupported module format'
             exit 1
           fi
@@ -49,14 +58,14 @@ jobs:
         env:
           MODULE_FORMAT: ${{ matrix.format }}
         run: |
-          bun run leia examples/basic-example.md --module-format "$MODULE_FORMAT"
-          bun run leia "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md" -i "examples/basic-pwsh-example.md" --module-format "$MODULE_FORMAT"
-          bun run leia examples/custom-headers.md -s Hello -t Sup -c Goodbye --module-format "$MODULE_FORMAT"
-          bun run leia examples/basic-example.md --retry 2 --split-file --stdin --spawn --module-format "$MODULE_FORMAT"
-          bun run leia examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye --module-format "$MODULE_FORMAT"
-          bun run leia examples/environment.md examples/basic-example.md --retry 4 --timeout 5 --module-format "$MODULE_FORMAT"
-          bun run leia examples/basic-example.md --module-format "$MODULE_FORMAT" --shell bash
-          bun run leia examples/basic-example.md --module-format "$MODULE_FORMAT" --shell sh
+          ${{ matrix.cli }} examples/basic-example.md --module-format "$MODULE_FORMAT"
+          ${{ matrix.cli }} "examples/**/*.md" -i "examples/basic-cmd-example.md" -i "examples/exclude-example/**/*.md" -i "examples/stdin-example.md" -i "examples/custom-headers.md" -i "examples/environment.md" -i "examples/basic-pwsh-example.md" --module-format "$MODULE_FORMAT"
+          ${{ matrix.cli }} examples/custom-headers.md -s Hello -t Sup -c Goodbye --module-format "$MODULE_FORMAT"
+          ${{ matrix.cli }} examples/basic-example.md --retry 2 --split-file --stdin --spawn --module-format "$MODULE_FORMAT"
+          ${{ matrix.cli }} examples/custom-headers.md -s Blue,No,Yellow,Hello -t Sup -c Goodbye --module-format "$MODULE_FORMAT"
+          ${{ matrix.cli }} examples/environment.md examples/basic-example.md --retry 4 --timeout 5 --module-format "$MODULE_FORMAT"
+          ${{ matrix.cli }} examples/basic-example.md --module-format "$MODULE_FORMAT" --shell bash
+          ${{ matrix.cli }} examples/basic-example.md --module-format "$MODULE_FORMAT" --shell sh
 
       - name: Test explicit package-scope overrides
         shell: bash

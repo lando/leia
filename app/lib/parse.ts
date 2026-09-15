@@ -175,7 +175,16 @@ export const normalizeMarkdown = (
       file,
       id,
       chaiPath: findClosestModule('@lando/chai'),
-      cltPath: findClosestModule('command-line-test'),
+      runtimePath: normalizePath(
+        fileURLToPath(
+          new URL(
+            import.meta.url.endsWith('.ts')
+              ? '../../app/lib/runtime.ts'
+              : '../../dist/lib/runtime.js',
+            import.meta.url,
+          ),
+        ),
+      ),
       debugPath: findClosestModule('debug'),
       destination: path.resolve(
         os.tmpdir(),

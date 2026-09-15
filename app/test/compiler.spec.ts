@@ -63,7 +63,7 @@ describe('TypeScript compiler', () => {
   });
 
   for (const moduleFormat of ['commonjs', 'esm'] as const) {
-    it(`matches the complete legacy ${moduleFormat} harness byte-for-byte`, () => {
+    it(`matches the typed ${moduleFormat} runtime harness byte-for-byte`, () => {
       const harness = { ...input(), moduleFormat };
       assert.equal(
         compileHarness(harness).source,
