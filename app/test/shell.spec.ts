@@ -1,31 +1,21 @@
-/**
- * Tests for shell selection.
- * @file shell.spec.js
- */
+import assert from 'node:assert/strict';
+import os from 'node:os';
 
-'use strict';
-
-const os = require('os');
-
-const chai = require('@lando/chai');
-
-const getShell = require('./../lib/shell');
-
-chai.should();
+import { getShell } from '../lib/shell.ts';
 
 describe('lib/shell', () => {
   const envKeys = ['COMSPEC', 'MSYSTEM', 'SHELL'];
-  let originalEnv;
-  let originalPlatform;
-  let originalUserInfo;
+  let originalEnv: NodeJS.ProcessEnv;
+  let originalPlatform: PropertyDescriptor;
+  let originalUserInfo: typeof os.userInfo;
 
-  const setPlatform = (platform) => {
+  const setPlatform = (platform: NodeJS.Platform) => {
     Object.defineProperty(process, 'platform', { ...originalPlatform, value: platform });
   };
 
   beforeEach(() => {
     originalEnv = Object.fromEntries(envKeys.map((key) => [key, process.env[key]]));
-    originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform');
+    originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform')!;
     originalUserInfo = os.userInfo;
     envKeys.forEach((key) => delete process.env[key]);
   });
@@ -42,9 +32,9 @@ describe('lib/shell', () => {
   it('should prefer the account shell on Unix', () => {
     setPlatform('linux');
     process.env.SHELL = '/bin/zsh';
-    os.userInfo = () => ({ shell: '/bin/bash' });
+    os.userInfo = (() => ({ ...originalUserInfo(), shell: '/bin/bash' })) as typeof os.userInfo;
 
-    getShell().binary.should.equal('/bin/bash');
+    assert.equal(getShell().binary, '/bin/bash');
   });
 
   it('should prefer SHELL on Windows', () => {
@@ -53,7 +43,7 @@ describe('lib/shell', () => {
     process.env.MSYSTEM = 'MINGW64';
     process.env.COMSPEC = 'powershell.exe';
 
-    getShell().binary.should.equal('zsh');
+    assert.equal(getShell().binary, 'zsh');
   });
 
   it('should use bash for MINGW64 on Windows without SHELL', () => {
@@ -61,42 +51,42 @@ describe('lib/shell', () => {
     process.env.MSYSTEM = 'MINGW64';
     process.env.COMSPEC = 'powershell.exe';
 
-    getShell().binary.should.equal('bash.exe');
+    assert.equal(getShell().binary, 'bash.exe');
   });
 
   it('should use COMSPEC on Windows without SHELL or MINGW64', () => {
     setPlatform('win32');
     process.env.COMSPEC = 'powershell.exe';
 
-    getShell().binary.should.equal('powershell.exe');
+    assert.equal(getShell().binary, 'powershell.exe');
   });
 
   it('should default to cmd on Windows', () => {
     setPlatform('win32');
 
-    getShell().binary.should.equal('cmd.exe');
+    assert.equal(getShell().binary, 'cmd.exe');
   });
 
   it('should use SHELL on Unix without an account shell', () => {
     setPlatform('linux');
     process.env.SHELL = '/bin/bash';
-    os.userInfo = () => ({ shell: '' });
+    os.userInfo = (() => ({ ...originalUserInfo(), shell: '' })) as typeof os.userInfo;
 
-    getShell().binary.should.equal('/bin/bash');
+    assert.equal(getShell().binary, '/bin/bash');
   });
 
   it('should default to zsh on macOS', () => {
     setPlatform('darwin');
-    os.userInfo = () => ({ shell: '' });
+    os.userInfo = (() => ({ ...originalUserInfo(), shell: '' })) as typeof os.userInfo;
 
-    getShell().binary.should.equal('/bin/zsh');
+    assert.equal(getShell().binary, '/bin/zsh');
   });
 
   it('should default to sh on other Unix platforms', () => {
     setPlatform('freebsd');
-    os.userInfo = () => ({ shell: '' });
+    os.userInfo = (() => ({ ...originalUserInfo(), shell: '' })) as typeof os.userInfo;
 
-    getShell().binary.should.equal('/bin/sh');
+    assert.equal(getShell().binary, '/bin/sh');
   });
 
   it('should surface account lookup errors on Unix', () => {
@@ -105,6 +95,9 @@ describe('lib/shell', () => {
       throw new Error('account lookup failed');
     };
 
-    (() => getShell()).should.throw('account lookup failed');
+    assert.throws(
+      () => getShell(),
+      (error: Error) => error.message.includes('account lookup failed'),
+    );
   });
 });

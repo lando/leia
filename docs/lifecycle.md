@@ -40,23 +40,24 @@ stdin open, did not terminate timed-out children, and could treat signal-only ex
 new execution boundary closes stdin, drains streams, treats signal exits as failure, and serializes
 termination with retries. Mocha signal handlers are scoped to each run and removed afterward.
 
-## Dependencies and adapters
+## Dependencies and entrypoints
 
 - Removed oclif's command/config/error/help and development/test packages, `@lando/argv`, and
   `command-line-test`.
 - Retained Mocha for compatible harness loading, reporting, and retry semantics; `debug` and `chalk`
   retain diagnostics and presentation. These dependencies work through ESM interoperability.
 - Compiler dependencies (`glob`, `marked`, `lodash`, `detect-newline`, and `object-hash`) remain from
-  the compiler port. `@lando/chai` remains for generated-harness compatibility. `fs-extra` is now
-  test-only.
-- `bin/leia` and `lib/*.js` are thin CommonJS package adapters, not parallel implementations. Generated
-  harnesses retain `createRequire` in their ESM dependency prelude for cross-platform path loading.
+  the compiler port. `@lando/chai` remains for generated-harness compatibility. Adapter-only `nyc`
+  coverage and the former test dependencies `mock-fs` and `fs-extra` are removed.
+- Source and tests load typed ESM directly; the Node CLI and package entrypoint load generated ESM
+  from `dist/` without root adapters. Generated harnesses retain `createRequire` in their ESM
+  dependency prelude for cross-platform path loading.
 
 ## Verification
 
 `app/test/cli.spec.ts` covers every flag and alias, numeric rejection, debug precedence, and parser
 edge cases. `execute.spec.ts` covers stream draining, EOF, cwd/environment, spawn/nonzero failures,
-timeouts, and cancellation state. Existing compiler and Node API assertions remain in the test suite;
+timeouts, and cancellation state. Existing compiler and runner assertions now run from TypeScript under `app/test/`;
 renderer snapshots explicitly reflect the new runtime call.
 
 `bun run test:lifecycle` executes the same checked-in scenario through Bun source and Node build,

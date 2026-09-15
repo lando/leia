@@ -1,25 +1,15 @@
-/**
- * Tests for the Mocha runner.
- * @file run.spec.js
- */
+import assert from 'node:assert/strict';
+import type Mocha from 'mocha';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
-'use strict';
-
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-
-const chai = require('@lando/chai');
-const fsExtra = require('fs-extra');
-
-const run = require('../lib/run');
-
-chai.should();
+import { run, runAsync } from '../lib/run.ts';
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-run-'));
 const commonjsHarness = path.join(tempDir, 'passing.leia.cjs');
 const esmHarness = path.join(tempDir, 'passing.leia.mjs');
-const runMocha = (mocha) => new Promise((resolve) => mocha.run(resolve));
+const runMocha = (mocha: Mocha): Promise<number> => new Promise((resolve) => mocha.run(resolve));
 
 describe('lib/run', () => {
   before(() => {
@@ -30,30 +20,34 @@ describe('lib/run', () => {
     );
   });
 
-  after(() => fsExtra.removeSync(tempDir));
+  after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
 
   it('should preserve the synchronous CommonJS runner API', async () => {
     const runner = run([commonjsHarness], { reporter: 'dot' });
     const failures = await runMocha(runner);
-    failures.should.equal(0);
+    assert.equal(failures, 0);
   });
 
   it('should direct ESM harnesses to the asynchronous API', () => {
-    (() => run([esmHarness], { reporter: 'dot' })).should.throw(
-      'ESM harnesses require the asynchronous runAsync() API.',
+    assert.throws(
+      () => run([esmHarness], { reporter: 'dot' }),
+      (error: Error) =>
+        error.message.includes('ESM harnesses require the asynchronous runAsync() API.'),
     );
   });
 
   it('should load and run ESM harnesses asynchronously', async () => {
-    const runner = await run.async([esmHarness], { reporter: 'dot' });
+    const runner = await runAsync([esmHarness], { reporter: 'dot' });
     const failures = await runMocha(runner);
-    failures.should.equal(0);
+    assert.equal(failures, 0);
   });
 
   it('should reject invalid timeout values before loading harnesses', () => {
     ['nope', '-1', '1.5', '5seconds', '2147484'].forEach((timeout) => {
-      (() => run([commonjsHarness], { timeout })).should.throw(
-        '--timeout must be an integer between 0 and 2147483',
+      assert.throws(
+        () => run([commonjsHarness], { timeout }),
+        (error: Error) =>
+          error.message.includes('--timeout must be an integer between 0 and 2147483'),
       );
     });
   });

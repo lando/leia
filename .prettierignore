@@ -1,7 +1,6 @@
 node_modules
 dist
 coverage
-.nyc_output
 temp
 .temp
 cache
@@ -12,4 +11,4 @@ bun.lock
 leia.readme.js
 examples/**/.tmp/
 # Parser and generated-output fixtures retain their literal whitespace.
-test/*.md
+app/test/*.md

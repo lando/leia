@@ -25,9 +25,7 @@ rules in `examples/AGENTS.md`.
 
 - `app/`: TypeScript ESM application; public entrypoint in `bin/`, compiler and orchestration in `lib/`, focused tests in `test/`.
 - `tooling/`: build/check libraries, thin internal `scripts/`, focused `utils/`, and flat TypeScript `test/`.
-- `lib/`: thin CommonJS adapters to the typed compiler and runtime APIs.
 - `app/lib/render.ts`: typed harness templates; `docs/compiler.md` documents the compiler IR.
-- `test/`: focused Mocha unit tests for repository-owned JavaScript behavior.
 - `examples/`: executable Leia specifications and their scenario-owned package boundaries or
   fixtures.
 - `.github/workflows/`: lint, unit, cross-platform scenario, shell, module-format, and release
@@ -36,7 +34,7 @@ rules in `examples/AGENTS.md`.
 ## Test Ownership
 
 - Keep pure resolution, parsing, generation, and runner decisions in focused unit tests under
-  `test/`.
+  `app/test/`.
 - Put observable CLI, shell, package-scope, file-layout, setup, cleanup, retry, and stdin behavior
   in Leia examples rather than JavaScript subprocess integration fixtures.
 - Keep scenario-owned static inputs beside the Markdown file that consumes them. Hoist a fixture
@@ -60,11 +58,11 @@ rules in `examples/AGENTS.md`.
 - Run `bun run check:toolchain` and `bun install --frozen-lockfile --ignore-scripts`.
 - Keep flat ESLint and standalone Prettier separate; `lint` composes lint and format checks.
 - Use explicit ESM `.mjs` tool configs while the package root remains CommonJS.
-- Retain Node from `.node-version` for Mocha/nyc, Node-specific assertions, and built-output checks.
+- Retain Node from `.node-version` for generated-harness syntax, Node-specific assertions, and built-output checks.
 - Run `bun run lint`, `bun run typecheck`, and `bun run test` for source changes.
 - Run `bun run check:build` for build or entrypoint changes; it validates clean output and watch rebuild in a temporary copy.
-- Keep TypeScript specs beside their owning scope; the combined test command includes legacy Node and Bun Mocha suites.
-- Keep new source in the explicit ESM scopes; do not reclassify unported CommonJS or weaken assertions.
+- Keep TypeScript specs beside their owning scope; the unit command runs application and tooling specs through Bun Mocha without a build.
+- Keep application source in the explicit ESM scope; preserve intentional CommonJS scenario fixtures and compatibility assertions.
 - Treat the full Leia, shell, module-format, and operating-system scenarios as CI-owned by default;
   do not run them locally unless operational validation is explicitly requested.
 - Run `git diff --check` for text or workflow changes and validate changed JSON and workflow YAML

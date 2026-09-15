@@ -53,8 +53,8 @@ describe('TypeScript compiler', () => {
     const files = [
       'examples/basic-example.md',
       'examples/setup-cleanup-example.md',
-      'test/parse-sections.md',
-      'test/parse-code-blocks.md',
+      'app/test/parse-sections.md',
+      'app/test/parse-code-blocks.md',
     ];
     assert.deepEqual(
       normalizePaths(parse(files, { shell: 'bash', moduleFormat: 'commonjs' })),

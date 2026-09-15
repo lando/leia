@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { debugNamespace, parseCLI } from '../lib/cli.ts';
 import { getShell } from '../lib/shell.ts';
+
+const dirname = fileURLToPath(new URL('.', import.meta.url));
 
 describe('CLI compatibility', () => {
   it('retains defaults and no-argument help dispatch inputs', () => {
@@ -104,5 +111,37 @@ describe('CLI compatibility', () => {
     assert.equal(debugNamespace(['--debug=leia:*'], { DEBUG: '' }), 'leia:*');
     assert.equal(debugNamespace(['--debug'], { DEBUG: 'existing' }), undefined);
     assert.equal(debugNamespace([], {}), undefined);
+  });
+  it('should fail the CLI and run cleanup after a failing test', () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-lifecycle-'));
+    const trace = path.join(tempDir, 'trace');
+    const result = spawnSync(
+      'bun',
+      [
+        path.resolve(dirname, '..', 'bin', 'leia.ts'),
+        path.resolve(dirname, 'lifecycle-failure.md'),
+        '--retry',
+        '0',
+        '--shell',
+        'bash',
+      ],
+      {
+        cwd: path.resolve(dirname, '../..'),
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          LEIA_LIFECYCLE_TRACE: trace.split(path.sep).join('/'),
+          TERM: 'xterm',
+        },
+      },
+    );
+
+    try {
+      assert.equal(result.error, undefined);
+      assert.equal(result.status, 1, result.stderr || result.stdout);
+      assert.equal(fs.readFileSync(trace, 'utf8'), 'setup\ntest\ncleanup\n');
+    } finally {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
   });
 });

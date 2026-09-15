@@ -80,7 +80,7 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
   const root = await mkdtemp(join(tmpdir(), 'leia-build-'));
   try {
     await Promise.all(
-      ['.bun-version', 'package.json', 'app', 'tooling', 'bin', 'lib'].map((path) =>
+      ['.bun-version', 'package.json', 'app', 'tooling'].map((path) =>
         cp(join(repositoryRoot, path), join(root, path), { recursive: true }),
       ),
     );
@@ -102,6 +102,8 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       'lib/app.js.map',
       'lib/compiler.js',
       'lib/compiler.js.map',
+      'lib/leia.js',
+      'lib/leia.js.map',
       'lib/runtime.js',
       'lib/runtime.js.map',
       'package.json',
@@ -117,7 +119,6 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
     for (const flag of ['--help', '--version']) {
       const source = await run(root, [process.execPath, 'run', 'app/bin/leia.ts', flag]);
       const built = await run(root, ['node', 'dist/bin/leia.js', flag]);
-      const legacy = await run(root, ['node', 'bin/leia', flag]);
       // Version output includes the runtime's Node-compatibility version.
       const stableOutput = (value: string): string =>
         flag === '--version' ? value.replace(/ node-v\d+\.\d+\.\d+\s*$/, '') : value;
@@ -126,7 +127,6 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
         stableOutput(built),
         `Source and Node-built CLI disagree on ${flag}`,
       );
-      assert.equal(built, legacy, `Built and legacy Node CLI disagree on ${flag}`);
       assert.ok(source.includes(flag === '--help' ? '--module-format' : '@lando/leia'));
     }
     for (const entry of [
@@ -159,7 +159,7 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       first,
       'Watch verification must restore the original build',
     );
-    // Prove the legacy adapter and emitted compiler do not depend on TypeScript sources.
+    // Prove the package entrypoint and emitted compiler do not depend on TypeScript sources.
     await rm(join(root, 'app'), { recursive: true, force: true });
     await writeFile(
       join(root, 'compiler-probe.md'),
@@ -171,7 +171,7 @@ export async function checkBuild(repositoryRoot: string): Promise<void> {
       '-e',
       `
       const assert = require('node:assert/strict');
-      const Leia = require('./lib/leia.js');
+      const Leia = require('./');
       const {compileHarness} = require('./dist/lib/compiler.js');
       const leia = new Leia();
       const files = leia.find(['compiler-probe.md']);

@@ -15,7 +15,6 @@ export default defineConfig([
     '**/node_modules/**',
     '**/dist/**',
     '**/coverage/**',
-    '**/.nyc_output/**',
     '**/.temp/**',
     '**/temp/**',
     '**/cache/**',
@@ -27,7 +26,7 @@ export default defineConfig([
   ]),
   js.configs.recommended,
   {
-    files: ['**/*.{js,mjs,cjs,ts,tsx}', 'bin/leia'],
+    files: ['**/*.{js,mjs,cjs,ts,tsx}'],
     languageOptions: { globals: globals.node },
     rules: { 'no-console': 'warn', 'no-debugger': 'error', 'no-duplicate-imports': 'error' },
   },
@@ -53,16 +52,9 @@ export default defineConfig([
       ],
     },
   },
-  // Legacy scopes and the intentionally invalid ESM harness fixture stay CommonJS-shaped.
+  // Scenario helpers and the intentionally invalid ESM harness fixture remain CommonJS-shaped.
   {
-    files: [
-      'bin/leia',
-      'cli/**/*.js',
-      'lib/**/*.js',
-      'test/**/*.js',
-      'examples/**/*.js',
-      '**/*.cjs',
-    ],
+    files: ['examples/**/*.js', '**/*.cjs'],
     languageOptions: { sourceType: 'commonjs' },
   },
   ...tseslint.configs.recommended.map((config) => ({ ...config, files: ['**/*.{ts,tsx}'] })),

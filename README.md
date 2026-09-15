@@ -85,7 +85,8 @@ invalid, fractional, or out-of-range values before generating or loading a harne
 
 The 2.x development CLI runs directly with `bun run leia`; `bun run build` produces the equivalent
 Node CLI at `dist/bin/leia.js`. Flags, aliases, header matching, Mocha reporting, and per-test retries
-retain their 1.x behavior. Setup and cleanup remain ordered tests, not per-test hooks.
+retain their 1.x behavior. Setup and cleanup remain ordered tests, not per-test hooks. The old root
+`bin/leia` launcher and `lib/` adapters are removed; package entrypoints now target `dist/` directly.
 
 A nonzero exit, spawn error, or timeout fails an attempt. Leia terminates the command's process tree
 before retrying or continuing to cleanup. `--timeout=0` disables deadlines. Without `--stdin`, commands
@@ -100,7 +101,7 @@ See the [lifecycle contract](./docs/lifecycle.md) for platform details and verif
 ### Module
 
 ```js
-// Instantiate Leia, which remains a CommonJS package.
+// Instantiate Leia; Node 24 can require the built ESM constructor.
 const Leia = require('@lando/leia');
 const leia = new Leia();
 
@@ -134,12 +135,12 @@ runner.run((failures) => process.exitCode = failures ? 1 : 0);
 
 For more details on specific options check out the code docs
 
-- [leia.find](https://github.com/lando/leia/blob/main/lib/leia.js)
-- [leia.generate](https://github.com/lando/leia/blob/main/lib/leia.js)
-- [leia.parse](https://github.com/lando/leia/blob/main/lib/leia.js)
-- [leia.resolveModuleFormat](https://github.com/lando/leia/blob/main/lib/leia.js)
-- [leia.run](https://github.com/lando/leia/blob/main/lib/leia.js)
-- [leia.runAsync](https://github.com/lando/leia/blob/main/lib/leia.js)
+- [leia.find](https://github.com/lando/leia/blob/2.x/app/lib/leia.ts)
+- [leia.generate](https://github.com/lando/leia/blob/2.x/app/lib/leia.ts)
+- [leia.parse](https://github.com/lando/leia/blob/2.x/app/lib/leia.ts)
+- [leia.resolveModuleFormat](https://github.com/lando/leia/blob/2.x/app/lib/leia.ts)
+- [leia.run](https://github.com/lando/leia/blob/2.x/app/lib/leia.ts)
+- [leia.runAsync](https://github.com/lando/leia/blob/2.x/app/lib/leia.ts)
 
 ### Module formats
 
@@ -151,7 +152,7 @@ package detection, and one resolved format applies to every Markdown source in a
 
 CommonJS harnesses use `.leia.cjs`; ESM harnesses use `.leia.mjs`. These extensions make the generated format independent
 of the temporary directory's enclosing package scope. ESM harnesses load Leia's CommonJS dependencies through Node's
-`createRequire`, so Leia's own package and source remain CommonJS. Projects that added a nested `package.json` containing
+`createRequire`; Leia's implementation is TypeScript ESM, independent of the generated format. Projects that added a nested `package.json` containing
 `{"type":"commonjs"}` only to protect Leia's old `.leia.js` output may remove that workaround after upgrading.
 
 Use `leia.run()` for explicitly CommonJS harnesses. Use `await leia.runAsync()` for `auto` or ESM workflows; it supports

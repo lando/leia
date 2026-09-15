@@ -13,6 +13,7 @@ export async function build(root: string): Promise<void> {
       join(root, 'app/lib/compiler.ts'),
       join(root, 'app/lib/runtime.ts'),
       join(root, 'app/lib/api.ts'),
+      join(root, 'app/lib/leia.ts'),
     ],
     root: join(root, 'app'),
     outdir,
