@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { processTree } from '../utils/process-tree.ts';
+import { loadSubject } from './subject.ts';
+
+const { processTree } = await loadSubject('utils/process-tree');
 
 describe('utils/process-tree', () => {
   it('should terminate descendants before parents without selecting the caller or siblings', () => {

@@ -61,7 +61,8 @@ rules in `examples/AGENTS.md`.
 - Retain Node from `.node-version` for generated-harness syntax, Node-specific assertions, and built-output checks.
 - Run `bun run lint`, `bun run typecheck`, and `bun run test` for source changes.
 - Run `bun run check:build` for build or entrypoint changes; it validates clean output and watch rebuild in a temporary copy.
-- Keep TypeScript specs beside their owning scope; the unit command runs application and tooling specs through Bun Mocha without a build.
+- Keep TypeScript specs beside their owning scope. `test:app` runs the same application specs against `LEIA_RUNTIME=source|esm|cjs` using Bun or Node 24; `test:tooling` always uses Bun. Neither command builds implicitly.
+- Source CI jobs must run without `dist/`. Built jobs remove application source and the sibling artifact. Keep execution target independent from generated harness format.
 - Keep application source in the explicit ESM scope; preserve intentional CommonJS scenario fixtures and compatibility assertions.
 - Treat the full Leia, shell, module-format, and operating-system scenarios as CI-owned by default;
   do not run them locally unless operational validation is explicitly requested.

@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 
-import * as numericOption from '../lib/numeric-option.ts';
+import { loadSubject } from './subject.ts';
+
+const numericOption = await loadSubject('lib/numeric-option');
 
 describe('lib/numeric-option', () => {
   it('should parse retry and timeout as non-negative integers', () => {

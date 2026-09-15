@@ -84,7 +84,7 @@ invalid, fractional, or out-of-range values before generating or loading a harne
 ### Execution lifecycle
 
 The 2.x development CLI runs directly with `bun run leia`; `bun run build` produces the equivalent
-Node CLI at `dist/bin/leia.js`. Flags, aliases, header matching, Mocha reporting, and per-test retries
+Node ESM CLI at `dist/esm/bin/leia.js` and CommonJS CLI at `dist/cjs/bin/leia.cjs`. Flags, aliases, header matching, Mocha reporting, and per-test retries
 retain their 1.x behavior. Setup and cleanup remain ordered tests, not per-test hooks. The old root
 `bin/leia` launcher and `lib/` adapters are removed; package entrypoints now target `dist/` directly.
 

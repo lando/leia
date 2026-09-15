@@ -4,16 +4,11 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import {
-  compileHarness,
-  find,
-  generate,
-  normalizeCommand,
-  parse,
-  readMarkdown,
-  type Harness,
-  type ModuleFormat,
-} from '../lib/compiler.ts';
+import type { Harness, ModuleFormat } from '../lib/compiler.ts';
+import { loadSubject, subjectPath } from './subject.ts';
+
+const { compileHarness, find, generate, normalizeCommand, parse, readMarkdown } =
+  await loadSubject('lib/compiler');
 
 const fixtures = fileURLToPath(new URL('./', import.meta.url));
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -28,7 +23,11 @@ const normalizePaths = (value: unknown, field = ''): unknown => {
       Object.entries(value).map(([key, item]) => [key, normalizePaths(item, key)]),
     );
   if (typeof value !== 'string') return value;
-  const normalized = value
+  const normalized = (
+    field === 'runtimePath'
+      ? value.replace(subjectPath('lib/runtime').split(path.sep).join('/'), '<root>/lib/runtime.ts')
+      : value
+  )
     .replaceAll(path.resolve(root), '<root>')
     .replaceAll(path.resolve(root).split(path.sep).join('/'), '<root>')
     .replaceAll(os.tmpdir(), '<tmp>')

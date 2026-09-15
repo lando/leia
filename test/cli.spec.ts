@@ -5,8 +5,10 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-import { debugNamespace, parseCLI } from '../lib/cli.ts';
-import { getShell } from '../lib/shell.ts';
+import { loadSubject, target } from './subject.ts';
+
+const { debugNamespace, parseCLI } = await loadSubject('lib/cli');
+const { getShell } = await loadSubject('lib/shell');
 
 const dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -117,9 +119,9 @@ describe('lib/cli', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-lifecycle-'));
     const trace = path.join(tempDir, 'trace');
     const result = spawnSync(
-      'bun',
+      target.executable,
       [
-        path.resolve(dirname, '..', 'bin', 'leia.ts'),
+        target.cli,
         path.resolve(dirname, 'lifecycle-failure.md'),
         '--retry',
         '0',

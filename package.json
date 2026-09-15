@@ -19,9 +19,9 @@
   "engines": {
     "node": ">=24.0.0"
   },
-  "main": "dist/lib/leia.js",
+  "main": "dist/esm/lib/leia.js",
   "bin": {
-    "leia": "dist/bin/leia.js"
+    "leia": "dist/esm/bin/leia.js"
   },
   "files": [
     "/dist"
@@ -33,7 +33,7 @@
     "lint": "bun run lint:eslint && bun run format:check",
     "typecheck": "tsc --noEmit",
     "test": "bun run test:unit",
-    "test:unit": "bun --bun node_modules/mocha/bin/mocha.js --timeout 5000 \"test/*.spec.ts\" \"tooling/test/*.spec.ts\"",
+    "test:unit": "bun run test:app && bun run test:tooling",
     "build": "bun run tooling/scripts/build-cli.ts",
     "watch": "bun run tooling/scripts/build-cli.ts --watch",
     "check:build": "bun run tooling/scripts/check-build-task.ts",
@@ -42,7 +42,9 @@
     "lint:eslint": "eslint --config eslint.config.mjs .",
     "format:check": "prettier . --check --ignore-unknown",
     "format:write": "prettier . --write --ignore-unknown",
-    "test:lifecycle": "bun run build && node examples/lifecycle/verify.cjs"
+    "test:lifecycle": "bun run build && node examples/lifecycle/verify.cjs",
+    "test:app": "bun run tooling/scripts/test-app-task.ts",
+    "test:tooling": "bun --bun node_modules/mocha/bin/mocha.js --timeout 5000 \"tooling/test/*.spec.ts\""
   },
   "dependencies": {
     "@lando/chai": "npm:chai@^4.4.1",

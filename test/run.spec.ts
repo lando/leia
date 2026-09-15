@@ -5,7 +5,9 @@ import path from 'node:path';
 
 import type Mocha from 'mocha';
 
-import { run, runAsync } from '../lib/run.ts';
+import { loadSubject } from './subject.ts';
+
+const { run, runAsync } = await loadSubject('lib/run');
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-run-'));
 const commonjsHarness = path.join(tempDir, 'passing.leia.cjs');

@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import os from 'node:os';
 
-import { getShell } from '../lib/shell.ts';
+import { loadSubject } from './subject.ts';
+
+const { getShell } = await loadSubject('lib/shell');
 
 describe('lib/shell', () => {
   const envKeys = ['COMSPEC', 'MSYSTEM', 'SHELL'];

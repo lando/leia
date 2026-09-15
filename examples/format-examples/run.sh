@@ -4,11 +4,12 @@ set -euo pipefail
 
 module_format="${1:-auto}"
 root="$(cd "$(dirname "$0")" && pwd)"
-if [[ "${LEIA_RUNTIME:-source}" == built ]]; then
-  leia=(node "$root/../../dist/bin/leia.js")
-else
-  leia=(bun "$root/../../bin/leia.ts")
-fi
+case "${LEIA_RUNTIME:-source}" in
+  source) leia=(bun "$root/../../bin/leia.ts") ;;
+  esm) leia=(node "$root/../../dist/esm/bin/leia.js") ;;
+  cjs) leia=(node "$root/../../dist/cjs/bin/leia.cjs") ;;
+  *) echo "Unknown Leia execution target: $LEIA_RUNTIME" >&2; exit 1 ;;
+esac
 
 for scenario in commonjs esm untyped nested/commonjs; do
   expected=cjs

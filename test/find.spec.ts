@@ -3,7 +3,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { find } from '../lib/find.ts';
+import { loadSubject } from './subject.ts';
+
+const { find } = await loadSubject('lib/find');
 
 describe('lib/find', () => {
   let tempDir: string;

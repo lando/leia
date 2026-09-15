@@ -19,12 +19,14 @@ jobs:
           - macos-26
           - ubuntu-24.04
           - windows-2025
-        runtime: [source, built]
+        runtime: [source, esm, cjs]
         include:
           - runtime: source
             cli: bun bin/leia.ts
-          - runtime: built
-            cli: node dist/bin/leia.js
+          - runtime: esm
+            cli: node dist/esm/bin/leia.js
+          - runtime: cjs
+            cli: node dist/cjs/bin/leia.cjs
 
     steps:
       - name: Checkout code
@@ -42,7 +44,16 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
       - name: Build Node entrypoints
+        if: matrix.runtime != 'source'
         run: bun run build
+      - name: Enforce execution target isolation
+        shell: bash
+        run: |
+          if [[ "$LEIA_RUNTIME" == source ]]; then
+            test ! -e dist
+          else
+            node -e "const fs = require('node:fs'); for (const directory of ['bin', 'lib', 'utils', 'dist/' + (process.env.LEIA_RUNTIME === 'esm' ? 'cjs' : 'esm')]) fs.rmSync(directory, {recursive: true, force: true})"
+          fi
 
       # Run a few iterations of leia tests
       - name: Test macOS shells from

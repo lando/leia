@@ -7,7 +7,7 @@ orchestration and dispatches help, version, discovery, parsing, generation, and 
 provides the shared programmatic API. `run.ts` owns Mocha loading and invocation-scoped signals.
 `runtime.ts` connects generated tests to `execute.ts`, which owns child processes and stream closure.
 
-The source CLI runs on pinned Bun. The built CLI runs on Node 24. Both use the same strict TypeScript
+The source CLI runs on pinned Bun. Both built CLI formats run on Node 24. All three targets use the same strict TypeScript
 implementation and produce explicit `.leia.cjs` or `.leia.mjs` harnesses. CommonJS `run()` remains
 synchronous; `runAsync()` loads either format. Final package wiring is separate from this port.
 
@@ -49,8 +49,8 @@ termination with retries. Mocha signal handlers are scoped to each run and remov
 - Compiler dependencies (`glob`, `marked`, `lodash`, `detect-newline`, and `object-hash`) remain from
   the compiler port. `@lando/chai` remains for generated-harness compatibility. Adapter-only `nyc`
   coverage and the former test dependencies `mock-fs` and `fs-extra` are removed.
-- Source and tests load typed ESM directly; the Node CLI and package entrypoint load generated ESM
-  from `dist/` without root adapters. Generated harnesses retain `createRequire` in their ESM
+- Source and tests load typed ESM directly; the Node CLIs load generated ESM or CommonJS
+  from their isolated `dist/esm/` or `dist/cjs/` scopes without root adapters. Generated harnesses retain `createRequire` in their ESM
   dependency prelude for cross-platform path loading.
 
 ## Verification
@@ -61,8 +61,9 @@ timeouts, and cancellation state. Focused `test/process-tree.spec.ts`, `test/pro
 `test/runtime-layout.spec.ts` cover descendant selection, error precedence, and source/build paths. Existing compiler and runner assertions now run from TypeScript under `test/`;
 renderer snapshots explicitly reflect the new runtime call.
 
-`bun run test:lifecycle` executes the same checked-in scenario through Bun source and Node build,
+`bun run test:lifecycle` executes the same checked-in scenario through Bun source, Node ESM, and Node CommonJS,
 in both harness formats. It covers success; failure, retry, and timeout in setup/test/cleanup;
 environment/cwd; stdin/EOF; descendant termination; catchable POSIX signals; and real POSIX PTYs (using the test-only Python 3 standard library).
-The Leia, shell, and module-format CI matrices exercise both entrypoints on their existing platforms.
+The Leia, shell, and module-format CI matrices exercise all three targets on their existing platforms, independently from generated harness format.
+`LEIA_RUNTIME` selects one target per CI job; no job silently falls back to another artifact.
 Local validation proves only the current host; other operating-system results belong to CI.

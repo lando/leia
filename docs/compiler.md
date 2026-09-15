@@ -55,10 +55,10 @@ and replacement definition directories are not compiler extension points.
 
 ## Development entrypoints and verification
 
-Bun loads `lib/compiler.ts` directly. Node loads `dist/lib/compiler.js`, so run `bun run build`
-before using `node dist/bin/leia.js` or the package API in a source checkout. `bun run test`
+Bun loads `lib/compiler.ts` directly. Node loads `dist/esm/lib/compiler.js` or `dist/cjs/lib/compiler.cjs`, so run `bun run build`
+before using `node dist/esm/bin/leia.js` or the package API in a source checkout. `bun run test`
 loads the source directly without a build. Compiler APIs remain synchronous. Generated harnesses load the typed runtime via `runtimePath`
-(source on Bun, built ESM on Node), replacing the former `cltPath` dependency field.
+(source on Bun, matching ESM or CommonJS artifact on Node), replacing the former `cltPath` dependency field.
 
 `test/parse-baseline.json` and the two harness `*-baseline.json` files were captured from the
 approved `2.x` implementation at `19a4a18`. The optimizer updates fixture paths and generated comments; command bytes and lifecycle assertions remain locked. The lifecycle port deliberately updates the runtime

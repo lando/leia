@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added independent Node ESM and CommonJS builds with generated CLI launchers, alongside build-free Bun source execution. Shared application and scenario tests cover all three targets without source or sibling-artifact fallback. [#65](https://github.com/lando/leia/issues/65)
 - Simplified 2.x source layout to root `bin/`, `lib/`, `utils/`, and `test/`; run source with `bun bin/leia.ts`. The root package is ESM, so repository-root `auto` harness detection now selects ESM. [#65](https://github.com/lando/leia/issues/65)
 - Removed root CommonJS migration adapters and launcher, moved application compatibility tests to TypeScript, and pointed package entrypoints at the ESM build. Removed obsolete adapter coverage and test dependencies. [#65](https://github.com/lando/leia/issues/65)
 - Ported CLI parsing, orchestration, Mocha runner ownership, and shell execution to strict TypeScript ESM; removed oclif, `@lando/argv`, and `command-line-test`. [#65](https://github.com/lando/leia/issues/65)

@@ -3,7 +3,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { resolveModuleFormat } from '../lib/module-format.ts';
+import { loadSubject } from './subject.ts';
+
+const { resolveModuleFormat } = await loadSubject('lib/module-format');
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-module-format-'));
 

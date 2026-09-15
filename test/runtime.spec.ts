@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { Lifecycle } from '../lib/runtime.ts';
+import { loadSubject } from './subject.ts';
+
+const { Lifecycle } = await loadSubject('lib/runtime');
 
 describe('lib/runtime', () => {
   it('should cancel cleanup when the first signal arrives during cleanup', () => {

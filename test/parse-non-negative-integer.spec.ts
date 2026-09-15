@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { parseNonNegativeInteger } from '../utils/parse-non-negative-integer.ts';
+import { loadSubject } from './subject.ts';
+
+const { parseNonNegativeInteger } = await loadSubject('utils/parse-non-negative-integer');
 
 describe('utils/parse-non-negative-integer', () => {
   it('should accept exact inclusive bounds and decimal digit strings', () => {

@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import os from 'node:os';
 
-import { normalizeCommand } from '../utils/normalize-command.ts';
+import { loadSubject } from './subject.ts';
+
+const { normalizeCommand } = await loadSubject('utils/normalize-command');
 
 describe('utils/normalize-command', () => {
   it('should remove labels and fold continuations without interpreting shell expressions', () => {

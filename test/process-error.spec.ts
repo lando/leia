@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 
-import { processError } from '../utils/process-error.ts';
+import { loadSubject } from './subject.ts';
 import type { ProcessResult } from '../lib/execute.ts';
+
+const { processError } = await loadSubject('utils/process-error');
 
 const success: ProcessResult = {
   code: 0,

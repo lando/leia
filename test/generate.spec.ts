@@ -6,8 +6,10 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import vm from 'node:vm';
 
-import { generate } from '../lib/generate.ts';
+import { loadSubject, subjectPath } from './subject.ts';
 import type { ProcessRequest } from '../lib/execute.ts';
+
+const { generate } = await loadSubject('lib/generate');
 
 const require = createRequire(import.meta.url);
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-generate-'));
@@ -32,7 +34,7 @@ const getTests = (moduleFormat = 'commonjs') =>
       retry: 3,
       cwd: normalizePath(tempDir),
       chaiPath: normalizePath(require.resolve('@lando/chai')),
-      runtimePath: normalizePath(require.resolve('../lib/runtime.ts')),
+      runtimePath: normalizePath(subjectPath('lib/runtime')),
       debugPath: normalizePath(require.resolve('debug')),
       stdin: 'pipe',
       text: 'Mock',

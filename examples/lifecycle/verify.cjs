@@ -6,10 +6,6 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '../..');
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const entries = [
-  ['bun', path.join(root, 'bin/leia.ts')],
-  ['node', path.join(root, 'dist/bin/leia.js')],
-];
 
 async function verify(entry, format, mode, signal) {
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-lifecycle-'));
@@ -102,6 +98,12 @@ async function verify(entry, format, mode, signal) {
 }
 
 (async () => {
+  const { executionTarget, targetNames } = await import('../../tooling/utils/execution-target.ts');
+  const selected = process.env.LEIA_RUNTIME ? [process.env.LEIA_RUNTIME] : targetNames;
+  const entries = selected.map((name) => {
+    const target = executionTarget(name, root);
+    return [target.executable, target.cli];
+  });
   for (const entry of entries) {
     for (const format of ['commonjs', 'esm']) {
       for (const mode of [
@@ -127,7 +129,9 @@ async function verify(entry, format, mode, signal) {
             await verify(entry, format, mode, signal);
     }
   }
-  process.stdout.write('Source/build lifecycle parity passed in both module formats.\n');
+  process.stdout.write(
+    'Selected execution targets passed lifecycle checks in both harness formats.\n',
+  );
 })().catch((error) => {
   process.stderr.write(`${error.stack}\n`);
   process.exitCode = 1;

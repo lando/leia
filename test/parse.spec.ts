@@ -3,7 +3,9 @@ import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
 
-import { parse } from '../lib/parse.ts';
+import { loadSubject } from './subject.ts';
+
+const { parse } = await loadSubject('lib/parse');
 
 const dirname = fileURLToPath(new URL('.', import.meta.url));
 

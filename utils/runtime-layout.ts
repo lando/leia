@@ -8,13 +8,16 @@ export const runtimeLayout = (
   packageFile: string;
   runtimePath: string;
 } => {
-  const source = new URL(moduleURL).pathname.endsWith('.ts');
-  const root = new URL(source ? '../' : '../../', moduleURL);
+  const extension = new URL(moduleURL).pathname.endsWith('.ts')
+    ? 'ts'
+    : new URL(moduleURL).pathname.endsWith('.cjs')
+      ? 'cjs'
+      : 'js';
+  const source = extension === 'ts';
+  const root = new URL(source ? '../' : '../../../', moduleURL);
   return {
     root: fileURLToPath(root),
     packageFile: fileURLToPath(new URL('package.json', root)),
-    runtimePath: fileURLToPath(
-      new URL(source ? '../lib/runtime.ts' : '../lib/runtime.js', moduleURL),
-    ),
+    runtimePath: fileURLToPath(new URL(`../lib/runtime.${extension}`, moduleURL)),
   };
 };

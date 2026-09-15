@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { Leia } from '../lib/leia.ts';
+import { loadSubject } from './subject.ts';
+
+const { Leia } = await loadSubject('lib/leia');
 
 describe('lib/leia', () => {
   describe('#Leia', () => {

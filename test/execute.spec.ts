@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 
-import { execute } from '../lib/execute.ts';
-import { processError } from '../utils/process-error.ts';
+import { loadSubject } from './subject.ts';
+
+const { execute } = await loadSubject('lib/execute');
+const { processError } = await loadSubject('utils/process-error');
 
 describe('lib/execute', () => {
   it('should drain both output streams, propagate cwd/environment, and close unattached stdin', async () => {
