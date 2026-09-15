@@ -3,7 +3,6 @@ export { parse, readMarkdown, normalizeMarkdown, normalizeCommand } from './pars
 export { generate, compileHarness } from './generate.ts';
 export { getShell } from './shell.ts';
 export { resolveModuleFormat, formats } from './module-format.ts';
-export * as numericOption from './numeric-option.ts';
 export type {
   Harness,
   Scenario,

@@ -4,4 +4,4 @@ import { checkBuild } from '../lib/check-build.ts';
 import { checkToolchain, repositoryRoot } from '../lib/toolchain.ts';
 
 await checkToolchain(repositoryRoot);
-await checkBuild(repositoryRoot);
+await checkBuild(repositoryRoot, process.argv.includes('--scenarios'));

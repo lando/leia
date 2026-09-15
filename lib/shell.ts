@@ -61,3 +61,5 @@ export const getShell = (shell: string = userShell()): Shell => {
       return { binary: 'sh', name: 'sh', args: ['-e', '{0}'], extension: '.sh' };
   }
 };
+
+export type { Shell } from './compiler-types.ts';

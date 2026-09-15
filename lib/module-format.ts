@@ -68,3 +68,5 @@ export const resolveModuleFormat = (
     directory = parent;
   }
 };
+
+export type { ModuleFormat } from './compiler-types.ts';

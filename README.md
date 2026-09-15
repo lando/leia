@@ -101,7 +101,7 @@ See the [lifecycle contract](./docs/lifecycle.md) for platform details and verif
 ### Module
 
 ```js
-// Instantiate Leia; Node 24 can require the built ESM constructor.
+// require() selects the CommonJS build and returns the Leia constructor.
 const Leia = require('@lando/leia');
 const leia = new Leia();
 
@@ -133,14 +133,44 @@ const runner = leia.run(tests);
 runner.run((failures) => process.exitCode = failures ? 1 : 0);
 ```
 
-For more details on specific options check out the code docs
+The root supports both `import Leia from '@lando/leia'` and `const Leia = require('@lando/leia')`.
+Use explicit subpaths to compose the library without constructing Leia:
 
-- [leia.find](https://github.com/lando/leia/blob/2.x/lib/leia.ts)
-- [leia.generate](https://github.com/lando/leia/blob/2.x/lib/leia.ts)
-- [leia.parse](https://github.com/lando/leia/blob/2.x/lib/leia.ts)
-- [leia.resolveModuleFormat](https://github.com/lando/leia/blob/2.x/lib/leia.ts)
-- [leia.run](https://github.com/lando/leia/blob/2.x/lib/leia.ts)
-- [leia.runAsync](https://github.com/lando/leia/blob/2.x/lib/leia.ts)
+```js
+import {find} from '@lando/leia/find';
+import {parse} from '@lando/leia/parse';
+import {generate} from '@lando/leia/generate';
+
+const tests = generate(parse(find(['docs/**/*.md']), {moduleFormat: 'esm'}));
+```
+
+| Entry point                 | Public exports                                                             |
+| --------------------------- | -------------------------------------------------------------------------- |
+| `@lando/leia`               | Default/named `Leia` constructor and existing instance methods             |
+| `@lando/leia/find`          | `find`                                                                     |
+| `@lando/leia/parse`         | `parse`, `readMarkdown`, `normalizeMarkdown`, `normalizeCommand`           |
+| `@lando/leia/generate`      | `generate`, `compileHarness`                                               |
+| `@lando/leia/run`           | `run`, `runAsync`, `exitCode`                                              |
+| `@lando/leia/shell`         | `getShell`                                                                 |
+| `@lando/leia/module-format` | `resolveModuleFormat`, `formats`                                           |
+| `@lando/leia/compiler`      | The discovery, parsing, generation, shell, and module-format exports above |
+| `@lando/leia/package.json`  | Package metadata                                                           |
+
+Every JavaScript entry point has separate ESM and CommonJS artifacts and TypeScript declarations.
+CommonJS subpaths use named properties, such as `const {find} = require('@lando/leia/find')`.
+Types such as `ParseOptions`, `Harness`, `GenerateOptions`, `GeneratedHarness`, `RunOptions`,
+`Shell`, and `ModuleFormat` are exported beside their functions; the compiler entry point also
+exports its shared representation types. TypeScript consumers should use `node16` or `nodenext`
+module resolution. Bun and Leia's development dependencies are not required to use the package.
+
+`find` discovers files; `readMarkdown` reads them; `parse` and `normalizeMarkdown` resolve shell,
+package, and dependency paths into the [compiler representation](./docs/compiler.md).
+`compileHarness` validates and renders without writing; `generate` also writes harnesses and
+executable scripts. `run` creates a Mocha instance, and `runAsync` additionally loads its files;
+call the returned runner's `.run()` to execute tests. `exitCode` preserves Leia's signal exit codes.
+
+Only the listed package paths are supported. Deep imports through `lib/`, `utils/`, or `dist/`
+and CLI implementation imports are private. The `leia` binary remains the supported CLI surface.
 
 ### Module formats
 

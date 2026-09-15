@@ -2,6 +2,9 @@ import { watch } from 'node:fs';
 import { chmod, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 
+import { declarations } from './declarations.ts';
+import { checkDistribution, recordDistribution } from './distribution.ts';
+
 export async function build(root: string): Promise<void> {
   const outdir = join(root, 'dist');
   const sources = [...new Bun.Glob('{lib,utils}/**/*.ts').scanSync(root)].sort();
@@ -61,7 +64,10 @@ export async function build(root: string): Promise<void> {
       );
     }
   }
-  process.stdout.write('Built dist/esm/ and dist/cjs/\n');
+  await declarations(root);
+  await recordDistribution(root);
+  await checkDistribution(root);
+  process.stdout.write('Built dist/esm/ and dist/cjs/ with declarations.\n');
 }
 
 export async function watchBuild(root: string): Promise<void> {

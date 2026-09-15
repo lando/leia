@@ -105,3 +105,5 @@ export const generate = (
   }
   return outputs.map((output) => output.destination);
 };
+
+export type { GenerateOptions, Harness, Scenario } from './compiler-types.ts';

@@ -40,7 +40,7 @@ jobs:
           bun run lint
           bun run typecheck
           bun run test
-          bun run check:build
+          bun run check:build --scenarios
       - name: Export formatted release date
         shell: bash
         env:
@@ -68,18 +68,20 @@ jobs:
         run: bun run build
       - name: Check prepared package formatting
         run: bun run format:check
+      - name: Verify the prepared tarball in isolated consumers
+        run: bun run check:package --scenarios --pack-destination=.temp/package
       - name: Upgrade npm for trusted publishing
         run: npm install --global "npm@^11.5.1"
       - name: Publish stable package with trusted publishing
         if: github.event.release.prerelease == false
         run: |
-          npm publish --access public --tag latest --dry-run
-          npm publish --access public --tag latest
+          npm publish .temp/package/*.tgz --access public --tag latest --dry-run
+          npm publish .temp/package/*.tgz --access public --tag latest
       - name: Publish prerelease package with trusted publishing
         if: github.event.release.prerelease == true
         run: |
-          npm publish --access public --tag edge --dry-run
-          npm publish --access public --tag edge
+          npm publish .temp/package/*.tgz --access public --tag edge --dry-run
+          npm publish .temp/package/*.tgz --access public --tag edge
       - name: Synchronize edge to the stable release
         if: github.event.release.prerelease == false
         env:
