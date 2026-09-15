@@ -60,10 +60,16 @@ edge cases. `execute.spec.ts` covers stream draining, EOF, cwd/environment, spaw
 timeouts, and cancellation state. Focused `test/process-tree.spec.ts`, `test/process-error.spec.ts`, and
 `test/runtime-layout.spec.ts` cover descendant selection, error precedence, and source/build paths. Existing compiler and runner assertions now run from TypeScript under `test/`;
 renderer snapshots explicitly reflect the new runtime call.
+`test/run.spec.ts` checks that both harness loaders leave existing signal handlers intact and
+that handlers attached during a run are removed after success or failure.
 
 `bun run test:lifecycle` executes the same checked-in scenario through Bun source, Node ESM, and Node CommonJS,
 in both harness formats. It covers success; failure, retry, and timeout in setup/test/cleanup;
-environment/cwd; stdin/EOF; descendant termination; catchable POSIX signals; and real POSIX PTYs (using the test-only Python 3 standard library).
+environment/cwd; stdin/EOF; descendant termination before retries and later stages; catchable POSIX signals;
+and real POSIX PTYs (using the test-only Python 3 standard library). It also asserts zero retries,
+disabled timeouts, failure diagnostics, skipped later stages, and a second signal cancelling cleanup
+while preserving the first signal's exit code. Signal probes disable process deadlines and wait for
+the descendant's termination handler to be ready, so a timeout cannot masquerade as cancellation.
 The Leia, shell, and module-format CI matrices exercise all three targets on their existing platforms, independently from generated harness format.
 `LEIA_RUNTIME` selects one target per CI job; no job silently falls back to another artifact.
 Local validation proves only the current host; other operating-system results belong to CI.

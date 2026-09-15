@@ -4,10 +4,12 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
+const assertStopped = require('./assert-stopped.cjs');
+
 const root = path.resolve(__dirname, '../..');
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function verify(entry, format, mode, signal) {
+async function verify(entry, format, mode, { signal, secondSignal, retry = 1, timeout = 1 } = {}) {
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-lifecycle-'));
   const trace = path.join(scratch, 'trace');
   const [executable, cli] = entry;
@@ -16,8 +18,8 @@ async function verify(entry, format, mode, signal) {
     'lifecycle.scenario',
     '--shell=bash',
     `--module-format=${format}`,
-    '--retry=1',
-    '--timeout=1',
+    `--retry=${retry}`,
+    `--timeout=${signal ? 0 : timeout}`,
   ];
   if (mode === 'stdin' || mode.startsWith('tty')) args.push('--stdin');
   const command = !mode.startsWith('tty')
@@ -26,7 +28,12 @@ async function verify(entry, format, mode, signal) {
   const child = spawn(command[0], command.slice(1), {
     cwd: __dirname,
     stdio: ['pipe', 'pipe', 'pipe'],
-    env: { ...process.env, LEIA_PROBE_TRACE: trace, LEIA_PROBE_MODE: mode },
+    env: {
+      ...process.env,
+      LEIA_PROBE_TRACE: trace,
+      LEIA_PROBE_MODE: mode,
+      LEIA_PROBE_RETRY: String(retry),
+    },
   });
   let output = '';
   child.stdout.on('data', (data) => {
@@ -41,16 +48,24 @@ async function verify(entry, format, mode, signal) {
     child.once('close', (code) => resolve(code));
   });
   const deadline = setTimeout(() => child.kill('SIGKILL'), 15000);
-  try {
-    if (signal) {
-      const until = Date.now() + 10000;
-      while (!fs.existsSync(`${trace}.ready`)) {
-        assert.equal(child.exitCode, null, output);
-        assert.ok(Date.now() < until, `Signal readiness timeout: ${output}`);
-        await pause(10);
-      }
-      child.kill(signal);
+  const selected = mode.startsWith('setup-')
+    ? 'setup'
+    : mode.startsWith('cleanup-')
+      ? 'cleanup'
+      : 'test';
+  const interrupt = async (stage, nextSignal) => {
+    const until = Date.now() + 10000;
+    while (!fs.existsSync(`${trace}.${stage}.ready`)) {
+      assert.equal(child.exitCode, null, output);
+      assert.equal(child.signalCode, null, output);
+      assert.ok(Date.now() < until, `Signal readiness timeout: ${output}`);
+      await pause(10);
     }
+    assert.equal(child.kill(nextSignal), true, `Could not send ${nextSignal}`);
+  };
+  try {
+    if (signal) await interrupt(selected, signal);
+    if (secondSignal) await interrupt('cleanup', secondSignal);
     const code = await completion;
     const expectedCode = signal
       ? { SIGINT: 130, SIGTERM: 143, SIGHUP: 129 }[signal]
@@ -58,37 +73,26 @@ async function verify(entry, format, mode, signal) {
         ? 1
         : 0;
     assert.equal(code, expectedCode, `${entry.join(' ')} ${format} ${mode}: ${output}`);
-    if (mode === 'tty') assert.match(output, /4 passing/);
-    const selected = mode.startsWith('setup-')
-      ? 'setup'
-      : mode.startsWith('cleanup-')
-        ? 'cleanup'
-        : 'test';
-    const expected = ['setup', 'test', 'next', 'cleanup']
+    if (mode === 'tty') assert.match(output, /6 passing/);
+    if (mode === 'no-deadline')
+      assert.equal(fs.readFileSync(`${trace}.deadline`, 'utf8'), 'completed');
+    if (mode.endsWith('failure')) {
+      assert.match(output, /CODE: 7/);
+      assert.match(output, /STDOUT: lifecycle stdout marker/);
+      assert.match(output, /STDERR: lifecycle stderr marker/);
+    }
+    const expected = ['setup', 'setup-next', 'test', 'next', 'cleanup', 'cleanup-next']
       .flatMap((stage) => {
         if (signal && selected !== 'cleanup' && stage === 'next') return [];
-        if (signal && selected === 'setup' && stage === 'test') return [];
-        const attempts = stage === selected && /failure|retry|timeout/.test(mode) ? 2 : 1;
-        return Array.from({ length: attempts }, (_, retry) => `${stage}:${retry}\n`);
+        if (signal && selected === 'setup' && ['setup-next', 'test'].includes(stage)) return [];
+        if ((secondSignal || (selected === 'cleanup' && signal)) && stage === 'cleanup-next')
+          return [];
+        const attempts = stage === selected && /failure|retry|timeout/.test(mode) ? retry + 1 : 1;
+        return Array.from({ length: attempts }, (_, attempt) => `${stage}:${attempt}\n`);
       })
       .join('');
     assert.equal(fs.readFileSync(trace, 'utf8'), expected, output);
-    if (fs.existsSync(`${trace}.pids`)) {
-      for (const pid of fs.readFileSync(`${trace}.pids`, 'utf8').trim().split('\n').map(Number)) {
-        // Linux may retain an orphan zombie briefly; it must not be executing.
-        let alive = true;
-        try {
-          process.kill(pid, 0);
-        } catch {
-          alive = false;
-        }
-        if (alive && process.platform === 'linux') {
-          const stat = fs.readFileSync(`/proc/${pid}/stat`, 'utf8');
-          alive = !stat.slice(stat.lastIndexOf(')') + 2).startsWith('Z');
-        }
-        assert.equal(alive, false, `Child ${pid} survived ${mode}`);
-      }
-    }
+    assertStopped(trace);
   } finally {
     clearTimeout(deadline);
     if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL');
@@ -121,16 +125,23 @@ async function verify(entry, format, mode, signal) {
         'eof',
       ])
         await verify(entry, format, mode);
+      await verify(entry, format, 'failure', { retry: 0 });
+      await verify(entry, format, 'no-deadline', { timeout: 0 });
       if (process.platform !== 'win32')
         for (const mode of ['tty', 'tty-timeout']) await verify(entry, format, mode);
       if (process.platform !== 'win32')
         for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP'])
           for (const mode of ['signal', 'setup-signal', 'cleanup-signal'])
-            await verify(entry, format, mode, signal);
+            await verify(entry, format, mode, { signal });
+      if (process.platform !== 'win32')
+        await verify(entry, format, 'double-signal', { signal: 'SIGINT', secondSignal: 'SIGTERM' });
     }
   }
   process.stdout.write(
-    'Selected execution targets passed lifecycle checks in both harness formats.\n',
+    'Selected execution targets passed lifecycle checks in both harness formats.\n' +
+      (process.platform === 'win32'
+        ? 'POSIX signals and PTYs are not supported on Windows; those cases were excluded.\n'
+        : ''),
   );
 })().catch((error) => {
   process.stderr.write(`${error.stack}\n`);

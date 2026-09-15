@@ -13,6 +13,8 @@ const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-run-'));
 const commonjsHarness = path.join(tempDir, 'passing.leia.cjs');
 const esmHarness = path.join(tempDir, 'passing.leia.mjs');
 const runMocha = (mocha: Mocha): Promise<number> => new Promise((resolve) => mocha.run(resolve));
+const signals = ['SIGINT', 'SIGTERM', 'SIGHUP'] as const;
+const signalListeners = () => signals.map((signal) => process.listeners(signal));
 
 describe('lib/run', () => {
   before(() => {
@@ -57,4 +59,39 @@ describe('lib/run', () => {
       );
     });
   });
+
+  for (const format of ['cjs', 'mjs']) {
+    it(`should scope signal handlers to a ${format} run on success and failure`, async () => {
+      for (const fail of [false, true]) {
+        const harness = path.join(tempDir, `listeners-${fail}.leia.${format}`);
+        fs.writeFileSync(
+          harness,
+          `describe('signal scope', () => { it('should complete', () => { ${fail ? "throw new Error('expected failure');" : ''} }); });\n`,
+        );
+        const before = signalListeners();
+        const runner = await runAsync([harness]);
+        assert.deepEqual(signalListeners(), before, 'Loading must not attach handlers');
+        let attached = false;
+        runner.suite.beforeAll('check active handlers', () => {
+          signals.forEach((signal, index) => {
+            const listeners = process.listeners(signal);
+            assert.equal(listeners.length, before[index]!.length + 1);
+            assert.ok(before[index]!.every((listener) => listeners.includes(listener)));
+          });
+          attached = true;
+        });
+        assert.equal(await runMocha(runner), fail ? 1 : 0);
+        assert.equal(attached, true);
+        assert.deepEqual(signalListeners(), before, 'Completion must restore existing handlers');
+      }
+    });
+
+    it(`should leave signal handlers untouched when a ${format} harness fails to load`, async () => {
+      const harness = path.join(tempDir, `broken.leia.${format}`);
+      fs.writeFileSync(harness, "throw new Error('harness loading failed');\n");
+      const before = signalListeners();
+      await assert.rejects(runAsync([harness]), /harness loading failed/);
+      assert.deepEqual(signalListeners(), before);
+    });
+  }
 });

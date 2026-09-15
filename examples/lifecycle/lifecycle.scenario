@@ -5,6 +5,9 @@
 ```sh
 # Should run setup in order
 node step.cjs setup
+
+# Should run the next setup unless interrupted
+node step.cjs setup-next
 ```
 
 ## Test
@@ -22,4 +25,7 @@ node step.cjs next
 ```sh
 # Should clean up after the test lifecycle
 node step.cjs cleanup
+
+# Should run the next cleanup unless cleanup is interrupted
+node step.cjs cleanup-next
 ```
