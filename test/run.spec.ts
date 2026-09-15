@@ -26,6 +26,18 @@ describe('lib/run', () => {
       esmHarness,
       "describe('esm', () => { it('should pass', () => {}); });\nexport {};\n",
     );
+    // Prepare all fixtures before imports so tests do not depend on loader directory-cache refresh.
+    for (const format of ['cjs', 'mjs']) {
+      for (const fail of [false, true])
+        fs.writeFileSync(
+          path.join(tempDir, `listeners-${fail}.leia.${format}`),
+          `describe('signal scope', () => { it('should complete', () => { ${fail ? "throw new Error('expected failure');" : ''} }); });\n`,
+        );
+      fs.writeFileSync(
+        path.join(tempDir, `broken.leia.${format}`),
+        "throw new Error('harness loading failed');\n",
+      );
+    }
   });
 
   after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
@@ -64,10 +76,6 @@ describe('lib/run', () => {
     it(`should scope signal handlers to a ${format} run on success and failure`, async () => {
       for (const fail of [false, true]) {
         const harness = path.join(tempDir, `listeners-${fail}.leia.${format}`);
-        fs.writeFileSync(
-          harness,
-          `describe('signal scope', () => { it('should complete', () => { ${fail ? "throw new Error('expected failure');" : ''} }); });\n`,
-        );
         const before = signalListeners();
         const runner = await runAsync([harness]);
         assert.deepEqual(signalListeners(), before, 'Loading must not attach handlers');
@@ -88,7 +96,6 @@ describe('lib/run', () => {
 
     it(`should leave signal handlers untouched when a ${format} harness fails to load`, async () => {
       const harness = path.join(tempDir, `broken.leia.${format}`);
-      fs.writeFileSync(harness, "throw new Error('harness loading failed');\n");
       const before = signalListeners();
       await assert.rejects(runAsync([harness]), /harness loading failed/);
       assert.deepEqual(signalListeners(), before);
