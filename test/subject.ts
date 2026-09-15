@@ -12,6 +12,7 @@ import type * as LibLeiaModule from '../lib/leia.ts';
 import type * as LibModuleFormatModule from '../lib/module-format.ts';
 import type * as LibNumericOptionModule from '../lib/numeric-option.ts';
 import type * as LibParseModule from '../lib/parse.ts';
+import type * as LibPresentationModule from '../lib/presentation.ts';
 import type * as LibRunModule from '../lib/run.ts';
 import type * as LibRuntimeModule from '../lib/runtime.ts';
 import type * as LibShellModule from '../lib/shell.ts';
@@ -31,6 +32,7 @@ interface Subjects {
   'lib/module-format': typeof LibModuleFormatModule;
   'lib/numeric-option': typeof LibNumericOptionModule;
   'lib/parse': typeof LibParseModule;
+  'lib/presentation': typeof LibPresentationModule;
   'lib/run': typeof LibRunModule;
   'lib/runtime': typeof LibRuntimeModule;
   'lib/shell': typeof LibShellModule;

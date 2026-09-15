@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Modernized CLI help, status, warnings, actionable errors, and completion summaries with accessible Lando styling and stable no-color, non-TTY, and CI output. Legacy `--spawn` and `--split-file` no-ops remain accepted and now warn so callers can remove them during the 2.0 migration. [#67](https://github.com/lando/leia/issues/67)
 - Added explicit ESM/CommonJS package exports for the Leia constructor and reusable compiler/runner libraries, with TypeScript declarations for every entrypoint. Deep implementation imports are private. [#66](https://github.com/lando/leia/issues/66)
 - Added isolated npm-tarball consumer checks and fail-closed packaging for missing, modified, or stale build output. Releases validate and publish the same prepared tarball. [#66](https://github.com/lando/leia/issues/66)
 

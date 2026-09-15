@@ -11,6 +11,20 @@ const { debugNamespace, parseCLI } = await loadSubject('lib/cli');
 const { getShell } = await loadSubject('lib/shell');
 
 const dirname = fileURLToPath(new URL('.', import.meta.url));
+const root = path.resolve(dirname, '..');
+
+const invokeCLI = (args: string[], overrides: Record<string, string | undefined> = {}) => {
+  const environment: NodeJS.ProcessEnv = { ...process.env };
+  for (const [name, value] of Object.entries(overrides)) {
+    if (value === undefined) delete environment[name];
+    else environment[name] = value;
+  }
+  return spawnSync(target.executable, [target.cli, ...args], {
+    cwd: root,
+    encoding: 'utf8',
+    env: environment,
+  });
+};
 
 describe('lib/cli', () => {
   it('should retain defaults and no-argument help dispatch inputs', () => {
@@ -115,6 +129,74 @@ describe('lib/cli', () => {
     assert.equal(debugNamespace(['--debug'], { DEBUG: 'existing' }), undefined);
     assert.equal(debugNamespace([], {}), undefined);
   });
+  it('should render stable plain help for non-TTY and no-color output', () => {
+    for (const environment of [
+      { CI: undefined, FORCE_COLOR: undefined, NO_COLOR: undefined },
+      { CI: undefined, FORCE_COLOR: undefined, NO_COLOR: '1' },
+    ]) {
+      const result = invokeCLI(['--help'], environment);
+      assert.equal(result.error, undefined);
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(result.stderr, '');
+      assert.match(result.stdout, /^Leia\nRun fenced Markdown examples as Mocha tests\.\n/m);
+      assert.match(result.stdout, /^Usage$/m);
+      assert.match(result.stdout, /^Options$/m);
+      assert.match(result.stdout, /^Examples$/m);
+      assert.match(result.stdout, /leia <files\.\.\.> \[options\]/);
+      assert.equal(
+        result.stdout.split('\n').every((line) => line.length <= 100),
+        true,
+      );
+      assert.equal(result.stdout.includes('\u001b['), false);
+      assert.equal(result.stdout.includes('\r'), false);
+    }
+  });
+  it('should render color when explicitly forced through a non-TTY stream', () => {
+    const result = invokeCLI(['--help'], {
+      CI: undefined,
+      FORCE_COLOR: '1',
+      NO_COLOR: undefined,
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stdout.includes('\u001b['), true);
+    assert.match(result.stdout, /Usage/);
+  });
+  it('should render actionable validation errors without a stack', () => {
+    const result = invokeCLI(['README.md', '--timeout', 'nope'], {
+      FORCE_COLOR: '0',
+      NO_COLOR: undefined,
+    });
+    assert.equal(result.status, 1, result.stderr);
+    assert.equal(result.stdout, '');
+    assert.match(result.stderr, /^error {2} Could not parse command options:/m);
+    assert.match(result.stderr, /--timeout must be an integer/);
+    assert.match(result.stderr, /^next {3} Run leia --help/m);
+    assert.doesNotMatch(result.stderr, /\n\s+at /);
+    assert.equal(result.stderr.includes('\u001b['), false);
+  });
+  it('should report successful execution and warn about retained no-op flags', () => {
+    const result = invokeCLI(
+      [
+        path.resolve(dirname, 'cli-success.md'),
+        '--retry',
+        '0',
+        '--shell',
+        'bash',
+        '--spawn',
+        '--split-file',
+      ],
+      { FORCE_COLOR: '0', NO_COLOR: '1' },
+    );
+    assert.equal(result.error, undefined);
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(result.stdout, /^run {4} 1 generated test file from 1 Markdown source$/m);
+    assert.match(result.stdout, /1 passing/);
+    assert.match(result.stdout, /^done {3} 1 generated test file; 0 failures$/m);
+    assert.match(result.stderr, /^warn {3} --spawn is retained for compatibility/m);
+    assert.match(result.stderr, /^warn {3} --split-file is retained for compatibility/m);
+    assert.match(result.stderr, /^next {3} Remove the flag/m);
+    assert.equal(`${result.stdout}${result.stderr}`.includes('\u001b['), false);
+  });
   it('should fail the CLI and run cleanup after a failing test', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'leia-lifecycle-'));
     const trace = path.join(tempDir, 'trace');
@@ -129,7 +211,7 @@ describe('lib/cli', () => {
         'bash',
       ],
       {
-        cwd: path.resolve(dirname, '..'),
+        cwd: root,
         encoding: 'utf8',
         env: {
           ...process.env,
@@ -143,6 +225,13 @@ describe('lib/cli', () => {
       assert.equal(result.error, undefined);
       assert.equal(result.status, 1, result.stderr || result.stdout);
       assert.equal(fs.readFileSync(trace, 'utf8'), 'setup\ntest\ncleanup\n');
+      assert.match(result.stdout, /^run {4} 1 generated test file from 1 Markdown source$/m);
+      assert.match(result.stdout, /^failed {2}1 generated test file; 1 failure$/m);
+      assert.match(result.stdout, /CODE: 17/);
+      assert.match(result.stdout, /STDOUT:/);
+      assert.match(result.stdout, /STDERR:/);
+      assert.match(result.stderr, /^next {3} Review the failing test output/m);
+      assert.doesNotMatch(`${result.stdout}${result.stderr}`, /\n\s+at .*lib\/app/);
     } finally {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }
