@@ -7,7 +7,11 @@ export async function build(root: string): Promise<void> {
   await rm(outdir, { recursive: true, force: true });
   await mkdir(outdir, { recursive: true });
   const result = await Bun.build({
-    entrypoints: [join(root, 'app/bin/leia.ts'), join(root, 'app/lib/app.ts')],
+    entrypoints: [
+      join(root, 'app/bin/leia.ts'),
+      join(root, 'app/lib/app.ts'),
+      join(root, 'app/lib/compiler.ts'),
+    ],
     root: join(root, 'app'),
     outdir,
     naming: '[dir]/[name].[ext]',

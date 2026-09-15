@@ -11,6 +11,5 @@ bun.lock
 *.leia.mjs
 leia.readme.js
 examples/**/.tmp/
-# Parser fixtures and generator templates retain their literal whitespace.
+# Parser and generated-output fixtures retain their literal whitespace.
 test/*.md
-templates/

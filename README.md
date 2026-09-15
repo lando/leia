@@ -244,7 +244,10 @@ User- and developer-visible changes are recorded in the
 Leia 2.x development uses the Bun version pinned in `.bun-version`, strict TypeScript ESM source,
 and `bun.lock`. Node 24 from `.node-version` remains available for compatibility tests and built JavaScript.
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, canonical validation commands, source CLI execution,
-watch mode, and migration boundaries. Installed-package commands above remain npm/Node commands.
+watch mode, and migration boundaries. The [compiler contract](./docs/compiler.md) documents the typed
+Markdown/scenario representation and preserved command behavior. In a source checkout, run `bun run build`
+before the Node CLI or CommonJS API; Bun runs the TypeScript source directly. Installed-package commands
+above remain npm/Node commands.
 
 ## Releasing
 

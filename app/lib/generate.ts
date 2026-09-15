@@ -1,0 +1,106 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import createDebug from 'debug';
+
+import type { GenerateOptions, Scenario } from './compiler-types.ts';
+import { boolean, integer, record, sourceLiteral, string, strings } from './compiler-validation.ts';
+import { retry } from './numeric-option.ts';
+import { renderHarness, type RenderHarness, type RenderScenario } from './render.ts';
+
+const debug = createDebug('leia:generate');
+
+const prepareScenario = (value: unknown, section: string, index: number): Scenario => {
+  const scenario = record(value, `tests.${section}[${index}]`);
+  const field = (name: string): string => `tests.${section}[${index}].${name}`;
+  const script = string(scenario.script, field('script'));
+  if (!Array.isArray(scenario.describe) || typeof scenario.describe[0] !== 'string') {
+    throw new TypeError(`Generated harness metadata "${field('describe')}" must contain a string.`);
+  }
+  return {
+    script,
+    describe: strings(scenario.describe, field('describe')),
+    skip: boolean(scenario.skip, field('skip')),
+    args: strings(scenario.args, field('args')),
+    command: string(scenario.command, field('command')),
+    id: string(scenario.id, field('id')),
+    number: integer(scenario.number, field('number')),
+    section: string(scenario.section, field('section')),
+    shell: string(scenario.shell, field('shell')),
+  };
+};
+
+const prepareRenderScenario = (scenario: Scenario): RenderScenario => ({
+  args: sourceLiteral(scenario.args),
+  command: sourceLiteral(scenario.command),
+  describe: sourceLiteral(scenario.describe[0]!),
+  id: sourceLiteral(scenario.id),
+  number: sourceLiteral(scenario.number),
+  section: sourceLiteral(scenario.section),
+  shell: sourceLiteral(scenario.shell),
+  skip: scenario.skip,
+});
+
+export interface GeneratedHarness {
+  destination: string;
+  source: string;
+  scenarios: Scenario[];
+}
+
+/** Validate and render in memory before any output is written. Accept unknown at the JS boundary. */
+export const compileHarness = (
+  value: unknown,
+  options: GenerateOptions = { strip: false },
+): GeneratedHarness => {
+  const test = record(value, 'harness');
+  const format = test.moduleFormat || options.moduleFormat || 'commonjs';
+  if (format !== 'commonjs' && format !== 'esm')
+    throw new Error(`Cannot generate unsupported module format "${String(format)}".`);
+  const destination = string(test.destination, 'destination');
+  const sections = record(test.tests, 'tests');
+  const scenarios: Scenario[] = [];
+  const tests: RenderHarness['tests'] = Object.create(null) as RenderHarness['tests'];
+  for (const [section, values] of Object.entries(sections)) {
+    if (section === 'invalid') continue;
+    if (!Array.isArray(values))
+      throw new TypeError(`Generated harness metadata "tests.${section}" must be an array.`);
+    const prepared = values.map((scenario: unknown, index: number) =>
+      prepareScenario(scenario, section, index),
+    );
+    scenarios.push(...prepared);
+    tests[section] = prepared.map(prepareRenderScenario);
+  }
+  const stdin = string(test.stdin, 'stdin');
+  if (stdin !== 'inherit' && stdin !== 'pipe')
+    throw new TypeError('Generated harness metadata "stdin" must be "inherit" or "pipe".');
+  const data: RenderHarness = {
+    chaiPath: sourceLiteral(string(test.chaiPath, 'chaiPath')),
+    cltPath: sourceLiteral(string(test.cltPath, 'cltPath')),
+    cwd: sourceLiteral(string(test.cwd, 'cwd')),
+    debugPath: sourceLiteral(string(test.debugPath, 'debugPath')),
+    id: sourceLiteral(string(test.id, 'id')),
+    retry: sourceLiteral(retry(test.retry)),
+    stdin: sourceLiteral(stdin),
+    tests,
+    version: sourceLiteral(string(test.version, 'version')),
+  };
+  const strip = options.strip === undefined ? true : boolean(options.strip, 'strip');
+  return { destination, scenarios, source: renderHarness(data, format, strip) };
+};
+
+export const generate = (
+  tests: unknown[],
+  options: GenerateOptions = { strip: false },
+): string[] => {
+  if (!Array.isArray(tests)) throw new TypeError('Compiler input "tests" must be an array.');
+  const outputs = tests.map((test) => compileHarness(test, options));
+  for (const output of outputs) {
+    fs.mkdirSync(path.dirname(output.destination), { recursive: true });
+    for (const scenario of output.scenarios) {
+      debug('generating script to %o and making it executable', scenario.script);
+      fs.writeFileSync(scenario.script, scenario.command);
+      fs.chmodSync(scenario.script, 0o755);
+    }
+    fs.writeFileSync(output.destination, output.source);
+  }
+  return outputs.map((output) => output.destination);
+};

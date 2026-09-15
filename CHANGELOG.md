@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Ported the Markdown compiler to strict TypeScript ESM with a documented scenario representation, validated rendering, and preserved CommonJS/ESM harness output. Node development entrypoints use the built compiler. [#64](https://github.com/lando/leia/issues/64)
+- Added focused errors for missing scenario titles and malformed generation metadata before file emission. [#64](https://github.com/lando/leia/issues/64)
 - Added a pinned Bun toolchain, strict TypeScript ESM scopes, and isolated build/watch checks for 2.x development. [#63](https://github.com/lando/leia/issues/63)
 - Standardized linting, formatting, TypeScript tests, and CI/release validation. [#63](https://github.com/lando/leia/issues/63)
 
