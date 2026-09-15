@@ -51,10 +51,12 @@ export async function checkPackage(
       expected,
       'The tarball must contain exactly the clean distribution and npm package documents.',
     );
-    assert.equal(
-      packed.files.find((file) => file.path === 'dist/esm/bin/leia.js')!.mode & 0o111,
-      0o111,
-    );
+    // Windows uses npm command shims; POSIX executable bits are not represented by its filesystem.
+    if (process.platform !== 'win32')
+      assert.equal(
+        packed.files.find((file) => file.path === 'dist/esm/bin/leia.js')!.mode & 0o111,
+        0o111,
+      );
 
     const consumer = join(scratch, 'consumer');
     await cp(join(root, 'examples/package'), consumer, { recursive: true });
@@ -67,6 +69,9 @@ export async function checkPackage(
       '--save-exact',
       tarball,
     ]);
+    await lstat(
+      join(consumer, 'node_modules/.bin', process.platform === 'win32' ? 'leia.cmd' : 'leia'),
+    );
     const installed = join(consumer, 'node_modules/@lando/leia');
     assert.equal((await lstat(installed)).isSymbolicLink(), false);
     assert.equal(
