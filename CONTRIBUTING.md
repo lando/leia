@@ -85,7 +85,13 @@ limited to reusable scenarios and their fixtures; internal probes remain checkou
 - Update the owning user guide or API docblock when behavior changes, and record user-visible
   changes in the unreleased changelog. Let CI pass before requesting review.
 
-Release automation builds after version stamping, validates a retained tarball with
+Release automation runs repository and npm publication as independent jobs from the event's original
+SHA. Both use [the local preparation action](./.github/actions/prepare-release/action.yml), also
+exercised by the release tests. Callers install Node, Bun, and dependencies before preparation.
+Only the repository job enables sync, temporarily targeting `2.x`; other callers default to
+`sync: false`. Either publisher can succeed while the other fails; retry the failed job separately.
+
+The npm job builds after version stamping, validates a retained tarball with
 `check:package --scenarios --pack-destination=.temp/package`, then dry-runs and publishes those same
 bytes. Prereleases use `edge`; stable releases use `latest` and also update `edge`.
 

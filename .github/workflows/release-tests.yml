@@ -38,13 +38,11 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
       - name: Prepare synthetic release
-        uses: tanaabased/prepare-release-action@v1
+        uses: ./.github/actions/prepare-release
         with:
-          commands: |
-            version-injector .codex-plugin/plugin.json --style json --version "$PREPARE_RELEASE_VERSION"
-            bun run format:write
-          sync: false
           version: ${{ matrix.release_version }}
+          published-at: '2000-01-01T00:00:00Z'
+          release-url: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ matrix.release_version }}
       - name: Build prepared package entrypoints
         run: bun run build
       - name: Check prepared package formatting

@@ -1,16 +1,28 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-- Added a shared Codex/OpenClaw skill for Leia scenario authoring, execution, and GitHub Actions setup, with packaged guides and reusable examples. [#96](https://github.com/lando/leia/pull/96)
-- Added Node ESM/CommonJS package exports, CLI launchers, TypeScript declarations, and relocatable source maps. [#65](https://github.com/lando/leia/issues/65) [#66](https://github.com/lando/leia/issues/66)
-- Added `LEIA_*` CLI defaults with flag precedence, list replacement, and negative boolean overrides. [#96](https://github.com/lando/leia/pull/96)
-- Added early validation for malformed scenarios and generated-harness metadata. [#64](https://github.com/lando/leia/issues/64)
+### Compatibility
+
 - Changed `--debug` to a value-free toggle while preserving ambient `DEBUG`. [#96](https://github.com/lando/leia/pull/96)
+- Changed `--spawn` and `--split-file` to emit compatibility warnings; both remain accepted no-ops. [#91](https://github.com/lando/leia/pull/91)
+- Restricted package imports to documented export paths; migrate `@lando/leia/lib/*` imports to public subpaths. [#92](https://github.com/lando/leia/pull/92)
+
+### New Features
+
+- Added a shared Codex/OpenClaw skill for scenario authoring, diagnosis, and CI setup, with packaged guides and examples. [#96](https://github.com/lando/leia/pull/96)
+- Added early validation for malformed scenarios and generated-harness metadata. [#90](https://github.com/lando/leia/pull/90)
+- Added native Node ESM/CommonJS entrypoints, TypeScript declarations, and relocatable source maps. [#91](https://github.com/lando/leia/pull/91) [#92](https://github.com/lando/leia/pull/92)
+- Added `LEIA_*` option defaults with flag precedence, list replacement, and negative boolean overrides. [#96](https://github.com/lando/leia/pull/96)
+- Updated CLI help and diagnostics with Lando styling and readable plain output. [#93](https://github.com/lando/leia/pull/93) [#96](https://github.com/lando/leia/pull/96)
+
+### Bug Fixes
+
 - Fixed programmatic runners ignoring the `reporter` option. [#94](https://github.com/lando/leia/pull/94)
-- Hardened process-tree timeouts, signal cancellation, cleanup, and stdin handling. [#65](https://github.com/lando/leia/issues/65)
-- Modernized CLI help, status, warnings, and errors with Lando styling and accessible plain output. [#67](https://github.com/lando/leia/issues/67) [#96](https://github.com/lando/leia/pull/96)
-- Moved development to pinned Bun and root TypeScript ESM source; removed oclif and migration adapters. [#63](https://github.com/lando/leia/issues/63) [#64](https://github.com/lando/leia/issues/64) [#65](https://github.com/lando/leia/issues/65)
-- Protected npm publication with stale-artifact checks and verification of the exact release tarball. [#66](https://github.com/lando/leia/issues/66)
-- Retained `--spawn` and `--split-file` as warning-emitting no-ops. [#67](https://github.com/lando/leia/issues/67)
+- Hardened process-tree timeouts, signal cancellation, cleanup, and stdin handling. [#91](https://github.com/lando/leia/pull/91)
+
+### Development
+
+- Moved development to pinned Bun and TypeScript ESM; installed packages continue to run on Node. [#89](https://github.com/lando/leia/pull/89) [#90](https://github.com/lando/leia/pull/90) [#91](https://github.com/lando/leia/pull/91)
+- Protected npm publication with stale-artifact checks and verification of the exact release tarball. [#92](https://github.com/lando/leia/pull/92)
 
 <!-- prettier-ignore-start -->
 
