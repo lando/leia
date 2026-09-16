@@ -88,7 +88,7 @@ describe('lib/compiler', () => {
   });
 
   it('should deduplicate symlink aliases by real path', function () {
-    // File symlinks on Windows require privileges; directory junctions do not.
+    // file symlinks on windows require privileges; directory junctions do not.
     const directory = path.join(temp, 'original');
     const alias = path.join(temp, 'alias');
     fs.mkdirSync(directory);
@@ -129,7 +129,7 @@ describe('lib/compiler', () => {
     );
     const tests = parse([markdown('# Title\n\n## Test\n\n```sh\necho one\n```')], { shell: 'sh' });
     assert.throws(() => compileHarness(tests[0]), /tests.test\[0\].describe/);
-    // The pinned lexer treats this unclosed fence as prose, leaving an empty test section.
+    // the pinned lexer treats this unclosed fence as prose, leaving an empty test section.
     assert.deepEqual(
       parse([markdown('# Title\n\n## Test\n\n```sh\n# one\necho one')], { shell: 'sh' })[0]?.tests
         .test,

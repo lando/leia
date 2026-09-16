@@ -7,7 +7,7 @@ module.exports = (trace) => {
     let alive = true;
     try {
       process.kill(pid, 0);
-      // An orphan zombie is no longer executing; Linux can retain it briefly.
+      // an orphan zombie is no longer executing; linux can retain it briefly.
       if (process.platform === 'linux') {
         const stat = fs.readFileSync(`/proc/${pid}/stat`, 'utf8');
         alive = !stat.slice(stat.lastIndexOf(')') + 2).startsWith('Z');

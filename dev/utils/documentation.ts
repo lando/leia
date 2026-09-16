@@ -7,11 +7,11 @@ export interface DocumentationExample {
   source: string;
 }
 
-/** Compare generated documentation by content across platform checkout conventions. */
+/** compare generated documentation by content across platform checkout conventions. */
 export const normalizeDocumentationLineEndings = (markdown: string): string =>
   markdown.replace(/\r\n?/g, '\n');
 
-/** Extract one explicitly named fenced block without maintaining a second fixture copy. */
+/** extract one explicitly named fenced block without maintaining a second fixture copy. */
 export const extractDocumentationExample = (markdown: string, id: string): DocumentationExample => {
   const marker = `<!-- leia-example:${id} -->`;
   const markerIndex = markdown.indexOf(marker);
@@ -53,7 +53,7 @@ const anchors = (markdown: string): Set<string> => {
   return values;
 };
 
-/** Fail when a repository-relative Markdown link or heading fragment cannot be resolved. */
+/** fail when a repository-relative markdown link or heading fragment cannot be resolved. */
 export const checkDocumentationLinks = async (root: string, documents: string[]): Promise<void> => {
   const repository = resolve(root);
   for (const document of documents) {

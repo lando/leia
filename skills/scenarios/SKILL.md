@@ -35,7 +35,14 @@ and OpenClaw without host-specific tools or a separate test runner.
 
 ## Constraints
 
-- Read repository guidance and preserve existing scenario, package-manager, and workflow conventions.
+- Before every workflow, locate and read the invoking repository's `AGENTS.md` and `agentd.md`
+  if present, inherited guidance, and narrower guidance applying to the target scenarios. Follow
+  referenced policy files and check specifically for CI-only or no-local-Leia rules.
+- Honor local-execution restrictions unless the user explicitly overrides them for this run. A
+  generic request to test, diagnose, or author a scenario is not that override. Continue with static
+  inspection, authoring, and CI configuration when local execution is prohibited; report execution
+  as deferred to CI. A temporary checkout does not bypass the policy or isolate machine-wide effects.
+- Prefer ephemeral CI runners. Preserve existing scenario, package-manager, and workflow conventions.
 - Scenario commands execute real programs. Inspect commands before running them; use disposable
   state and restrict cleanup to scenario-owned paths. Obtain authorization for destructive or
   privileged operations, external side effects, or credentials beyond the requested task.
@@ -53,9 +60,10 @@ Reuse scenario-owned fixtures and existing CI jobs before adding new files or ma
 
 ## Workflow
 
-1. Identify the project root, requested outcome, existing scenarios, package manager, and supported
-   environments. Locate Leia in the project dependency tree or an established project script.
-2. Check the installed version and help using the [CLI guide](../../CLI.md). Prefer a lockfile-backed
+1. Read the invoking repository guidance and establish where execution is allowed before any Leia
+   command, including a wrapper script. Identify the project root, requested outcome, scenarios,
+   package manager, and supported environments. Locate Leia in the project dependency tree or an established project script.
+2. When allowed by that guidance, check the installed version and help using the [CLI guide](../../CLI.md). Prefer a lockfile-backed
    local command such as `npm exec --offline -- leia --help`; adapt to the project's existing tooling.
 3. Choose the requested path: run and diagnose, author or extract, or configure CI. Read only the
    relevant [scenario reference](../../ADVANCED.md) or [CI guide](../../GITHUB_ACTIONS.md).
@@ -65,14 +73,15 @@ Reuse scenario-owned fixtures and existing CI jobs before adding new files or ma
 ## Documentation
 
 Keep executable scenarios beside the behavior they explain when practical. Link existing guidance
-instead of copying manuals. Comment names should state the behavior being asserted. Preserve the
+instead of copying manuals. Keep comment prose lowercase and omit comments that only narrate obvious commands. Preserve
+literal identifiers and command syntax. Scenario comment names should state the asserted behavior. Preserve the
 meaning of source documentation when extracting tests; do not turn every fenced block into a test.
 Use the [README](../../README.md) for onboarding and [API reference](../../API.md) only for library use.
 
 ## Testing
 
-Use Leia to validate the smallest affected scenario, then broaden only when the changed behavior
-warrants it. Keep the test command's failure status intact.
+In an environment permitted by the repository guidance, use Leia to validate the smallest affected
+scenario, then broaden only when the changed behavior warrants it. Keep the test command's failure status intact.
 
 For authoring or extraction:
 
@@ -95,6 +104,7 @@ identified cause. Report interruption or unavailable environments separately fro
 Project scenario automation belongs in `.github/workflows/leia.yml`, or the existing workflow that
 already owns these tests. Adapt the complete [single-runner example](../../README.md#run-in-github-actions)
 or [matrix example](../../GITHUB_ACTIONS.md#test-supported-platforms); do not add a duplicate job.
+Use pull-request-only triggers and block-list matrix values. Omit obvious workflow comments.
 
 Derive operating systems, Node versions, shells, install/build steps, and services from the project's
 supported behavior. Leia needs Node 24 or newer; its published CLI does not require Bun. Keep the
@@ -102,7 +112,7 @@ matrix small and separate special shell or harness-format contracts when appropr
 read-only permissions for tests and never execute untrusted PR code with privileged credentials.
 
 Parse the finished YAML, check every matrix entry's prerequisites and scenario path, and run a
-representative scenario where available. Distinguish local validation from remote workflow results;
+representative scenario only where repository guidance permits execution. Distinguish local validation from remote workflow results;
 Windows or macOS support requires evidence from those environments. Publish or dispatch workflow
 changes only within the user's authorization.
 

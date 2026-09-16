@@ -5,12 +5,12 @@ import { resolveModuleFormat } from './module-format.ts';
 import { run, runAsync } from './run.ts';
 
 /**
- * Coordinates Leia's discovery, parsing, generation, and execution stages.
+ * coordinates leia's discovery, parsing, generation, and execution stages.
  *
- * The default and named ESM exports refer to this constructor. CommonJS `require('@lando/leia')`
+ * the default and named esm exports refer to this constructor. commonjs `require('@lando/leia')`
  * returns the same constructor directly.
  *
- * @example ESM
+ * @example esm
  * <!-- leia-example:api-esm -->
  * ```js
  * import Leia from '@lando/leia';
@@ -51,5 +51,5 @@ export class Leia {
   runAsync: typeof runAsync = runAsync;
 }
 
-// Preserve the constructor returned by Node 24 require() without a CommonJS adapter.
+// preserve the constructor returned by node 24 require() without a commonjs adapter.
 export { Leia as default, Leia as 'module.exports' };

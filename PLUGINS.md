@@ -9,8 +9,8 @@ The plugin supplies instructions and reference docs. Tests use the Leia dependen
 your project, which requires Node.js 24 or newer. The agent needs file and command execution tools;
 it does not need a Leia MCP server, Codex-specific tools, or an OpenClaw runtime extension.
 
-Install the project dependency using the [README](./README.md#install). Review scenario commands
-before executing them: they run real programs with your environment and permissions.
+Install the project dependency using the [README](./README.md#install). Leia can mutate the machine running a scenario. Prefer ephemeral CI and read the invoking
+repository's `AGENTS.md` before any local execution; see [execution safety](./ADVANCED.md#execution-safety).
 
 The registry commands below require a published Leia package containing the plugin bundle. For an
 unpublished checkout or release candidate, use the local installation procedure instead.
@@ -21,13 +21,13 @@ The repository's marketplace lists stable `@lando/leia` releases in the `^2.0.0`
 npm-backed plugin:
 
 ```sh
-# Register the Leia marketplace from its release branch.
+# register the leia marketplace from its release branch.
 codex plugin marketplace add lando/leia --ref 2.x
 
-# Install its published npm bundle.
+# install its published npm bundle.
 codex plugin add leia@lando-leia
 
-# Confirm the plugin appears in the catalog.
+# confirm the plugin appears in the catalog.
 codex plugin list
 ```
 
@@ -42,10 +42,10 @@ when the plugin is added. See [Codex package sources](https://developers.openai.
 ## OpenClaw
 
 ```sh
-# Install the same published npm package as a compatible skill bundle.
+# install the same published npm package as a compatible skill bundle.
 openclaw plugins install npm:@lando/leia
 
-# Verify that OpenClaw recognizes the Codex-format bundle and its skill root.
+# verify that openclaw recognizes the codex-format bundle and its skill root.
 openclaw plugins inspect leia
 ```
 
@@ -61,7 +61,7 @@ See [OpenClaw installation](https://docs.openclaw.ai/cli/plugins/install) and
 Build and pack from a checkout using the contributor toolchain:
 
 ```sh
-# Verify package contents and write the tarball under .temp/package/.
+# verify package contents and write the tarball under .temp/package/.
 bun run build
 bun run check:package --pack-destination=.temp/package
 ```
@@ -78,7 +78,7 @@ the extracted `package/` directory as `.agents/plugins/marketplace.json`:
       "name": "leia",
       "source": { "source": "local", "path": "./package" },
       "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
-      "category": "Productivity"
+      "category": "Testing"
     }
   ]
 }
@@ -87,7 +87,7 @@ the extracted `package/` directory as `.agents/plugins/marketplace.json`:
 Run these commands from that directory:
 
 ```sh
-# Register and install the extracted artifact.
+# register and install the extracted artifact.
 codex plugin marketplace add .
 codex plugin add leia@leia-local
 ```
@@ -108,8 +108,8 @@ it. Installing the plugin does not grant permission to execute destructive scena
 
 ## Verify the installation
 
-Confirm the bundle and skill are listed, then use a new session to run the README's small scenario
-in a disposable project. Inspect the selected Leia version, command, exit status, and reported result.
+Confirm the bundle and skill are listed, then use a new session to check the invoking repository's
+execution policy. Run the README's small scenario in an allowed ephemeral environment. Inspect the selected Leia version, command, exit status, and reported result.
 For authoring, require a meaningful assertion; for CI, inspect the generated matrix and actual job
 results. Plugin detection alone does not prove an agent invoked the skill or that remote CI passed.
 

@@ -23,7 +23,7 @@ export interface ProcessResult {
   cancelled: boolean;
 }
 
-/** Settle only after stream closure and cancellation escalation, never on the exit event alone. */
+/** settle only after stream closure and cancellation escalation, never on the exit event alone. */
 export const execute = (request: ProcessRequest): Promise<ProcessResult> =>
   new Promise((resolve) => {
     const result: ProcessResult = {
@@ -44,7 +44,7 @@ export const execute = (request: ProcessRequest): Promise<ProcessResult> =>
       cwd: request.cwd,
       env: request.env ?? process.env,
       stdio: [request.stdin, 'pipe', 'pipe'],
-      // Interactive children must retain the terminal's session; other POSIX children get a group.
+      // interactive children must retain the terminal's session; other posix children get a group.
       detached: grouped,
       windowsHide: true,
     });
@@ -80,7 +80,7 @@ export const execute = (request: ProcessRequest): Promise<ProcessResult> =>
         return;
       }
       if (process.platform === 'win32') {
-        // Windows has no POSIX process groups; taskkill owns recursive termination there.
+        // windows has no posix process groups; taskkill owns recursive termination there.
         const killer = spawn('taskkill', ['/pid', String(child.pid), '/T', '/F'], {
           stdio: 'ignore',
           windowsHide: true,
@@ -96,7 +96,7 @@ export const execute = (request: ProcessRequest): Promise<ProcessResult> =>
       } else {
         if (grouped) targets = [-child.pid];
         else {
-          // Never signal the foreground group: it includes Leia and potentially its caller.
+          // never signal the foreground group: it includes leia and potentially its caller.
           const snapshot = spawnSync('ps', ['-A', '-o', 'pid=,ppid='], {
             encoding: 'utf8',
             stdio: ['ignore', 'pipe', 'pipe'],
@@ -135,7 +135,7 @@ export const execute = (request: ProcessRequest): Promise<ProcessResult> =>
       closed = true;
       finish();
     });
-    // An unattached stdin must produce EOF, not leave commands waiting on an unwritten pipe.
+    // an unattached stdin must produce eof, not leave commands waiting on an unwritten pipe.
     child.stdin?.on('error', () => {}).end();
     request.signal?.addEventListener('abort', cancel, { once: true });
     if (request.signal?.aborted) cancel();

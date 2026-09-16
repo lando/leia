@@ -26,7 +26,7 @@ describe('lib/run', () => {
       esmHarness,
       "describe('esm', () => { it('should pass', () => {}); });\nexport {};\n",
     );
-    // Prepare all fixtures before imports so tests do not depend on loader directory-cache refresh.
+    // prepare all fixtures before imports so tests do not depend on loader directory-cache refresh.
     for (const format of ['cjs', 'mjs']) {
       for (const fail of [false, true])
         fs.writeFileSync(

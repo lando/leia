@@ -7,11 +7,11 @@ const userShell = (): string => {
   const { env } = process;
 
   if (process.platform === 'win32') {
-    // If shell exists then grab that right away
+    // if shell exists then grab that right away
     if (env.SHELL) return env.SHELL;
-    // If we are on MING64 then return bash.exe
+    // if we are on `MING64` then return bash.exe
     if (env.MSYSTEM === 'MINGW64') return 'bash.exe';
-    // Finally fallback to COMSPEC
+    // finally fall back to `COMSPEC`
     return env.COMSPEC || 'cmd.exe';
   }
 
@@ -26,19 +26,19 @@ const userShell = (): string => {
 };
 
 /**
- * Resolves a shell binary into Leia's deterministic invocation shape.
+ * resolves a shell binary into leia's deterministic invocation shape.
  *
- * Known Bash, cmd, PowerShell, sh, and zsh names receive platform-specific arguments. Unknown
+ * known bash, cmd, powershell, sh, and zsh names receive platform-specific arguments. unknown
  * names fall back to `sh`.
  *
- * @param shell Shell binary or path. Defaults to Leia's platform and account-shell selection.
- * @returns The binary, normalized name, script extension, and invocation arguments.
+ * @param shell shell binary or path. defaults to leia's platform and account-shell selection.
+ * @returns the binary, normalized name, script extension, and invocation arguments.
  */
 export const getShell = (shell: string = userShell()): Shell => {
-  // Get some basic information about our thing
+  // get some basic information about our thing
   const data = { binary: shell, name: path.parse(shell).name, extension: '.sh' };
 
-  // Return helpful data about our shell
+  // return helpful data about our shell
   switch (data.name) {
     case 'bash':
       return Object.assign(data, { args: ['--noprofile', '--norc', '-eo', 'pipefail', '{0}'] });

@@ -12,8 +12,8 @@ export async function build(root: string): Promise<void> {
   for (const format of ['esm', 'cjs'] as const) {
     const destination = join(outdir, format);
     await mkdir(destination, { recursive: true });
-    // The pinned CJS bundler mislinks shared exports across multiple entrypoints.
-    // Compile each CJS entry independently instead of patching emitted JavaScript.
+    // the pinned cjs bundler mislinks shared exports across multiple entrypoints.
+    // compile each cjs entry independently instead of patching emitted javascript.
     for (const entries of format === 'cjs' ? sources.map((file) => [file]) : [sources]) {
       const result = await Bun.build({
         entrypoints: entries.map((file) => join(root, file)),
@@ -26,14 +26,14 @@ export async function build(root: string): Promise<void> {
         sourcemap: 'linked',
         ...(format === 'cjs'
           ? {
-              // Bun otherwise embeds source URLs in CJS. Resolve from the emitted file at runtime.
+              // bun otherwise embeds source urls in cjs. resolve from the emitted file at runtime.
               define: { 'import.meta.url': '__leiaModuleURL' },
               banner: 'var __leiaModuleURL = require("node:url").pathToFileURL(__filename).href;',
             }
           : {}),
       });
       if (!result.success) throw new AggregateError(result.logs, `${format} build failed`);
-      // Bun's sources are relative to outdir, not to a nested map's own directory.
+      // bun's sources are relative to outdir, not to a nested map's own directory.
       for (const artifact of result.outputs.filter((output) => output.kind === 'sourcemap')) {
         const map = JSON.parse(await artifact.text()) as { sources: string[] };
         map.sources = map.sources.map((source) =>
@@ -55,7 +55,7 @@ export async function build(root: string): Promise<void> {
     await writeFile(cli, `#!/usr/bin/env node\n${launcher}\nvoid runCLI();\n`);
     await chmod(cli, 0o755);
     if (format === 'cjs') {
-      // Match Node's ESM module.exports interop contract for direct CommonJS consumers.
+      // match node's esm module.exports interop contract for direct commonjs consumers.
       const api = join(destination, 'lib/leia.cjs');
       await writeFile(
         api,
@@ -72,7 +72,7 @@ export async function build(root: string): Promise<void> {
 
 export async function watchBuild(root: string): Promise<void> {
   await build(root);
-  // Serialize rebuilds so rapid edits cannot interleave cleanup and emission.
+  // serialize rebuilds so rapid edits cannot interleave cleanup and emission.
   let pending = Promise.resolve();
   for (const directory of ['bin', 'lib', 'utils'])
     watch(join(root, directory), { recursive: true }, () => {

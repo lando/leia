@@ -3,19 +3,23 @@
 Use this guide to run Leia from a terminal or npm script. Start with the [README](./README.md)
 for installation and a first scenario; see [advanced usage](./ADVANCED.md) for scenario behavior.
 
+> [!WARNING]
+> Leia runs real commands and can mutate your machine. Prefer ephemeral CI. Read repository
+> guidance and the [execution safety notes](./ADVANCED.md#execution-safety) before running locally.
+
 ## Invocation
 
 ```sh
-# Run the installed project dependency without fetching a package.
+# run the installed project dependency without fetching a package.
 npm exec --offline -- leia quickstart.md
 
-# Use npx when you want its normal local-package resolution.
+# use npx when you want its normal local-package resolution.
 npx leia quickstart.md
 
-# Invoke the installed JavaScript launcher directly with Node.
+# invoke the installed javascript launcher directly with node.
 node node_modules/@lando/leia/dist/esm/bin/leia.js quickstart.md
 
-# Quote patterns so Leia, rather than your shell, expands them.
+# quote patterns so leia, rather than your shell, expands them.
 npm exec --offline -- leia "docs/**/*.md" --ignore "docs/archive/**"
 ```
 
@@ -33,67 +37,158 @@ For repeatable project commands, add a script to your existing `package.json`:
 ```
 
 ```sh
-# npm scripts put local dependency binaries on PATH.
+# npm scripts put local dependency binaries on path.
 npm run test:docs
 
-# Arguments after -- are passed to Leia.
+# arguments after -- are passed to leia.
 npm run test:docs -- --timeout 60
 ```
 
 ## Options
 
-`leia <files...> [options]` accepts files and glob patterns. Unknown positional values remain file
-patterns for compatibility.
+CLI options override `LEIA_*` environment values, which override built-in defaults. Library calls
+use explicit options and do not read CLI defaults. Run `leia --help` for the installed version's
+contract. Positional arguments are files or globs; unknown values remain file patterns for compatibility.
 
-| Option                                           | Purpose                                           | Default                           |
-| ------------------------------------------------ | ------------------------------------------------- | --------------------------------- |
-| `-c, --cleanup-header <names...>`                | Match cleanup section prefixes                    | `Clean,Tear,Burn`                 |
-| `-i, --ignore <patterns...>`                     | Exclude matching files                            | none                              |
-| `-r, --retry <count>`                            | Retry each failed setup, test, or cleanup command | `1`                               |
-| `-s, --setup-header <names...>`                  | Match setup section prefixes                      | `Start,Setup,This is the dawning` |
-| `-t, --test-header <names...>`                   | Match test section prefixes                       | `Test,Validat,Verif`              |
-| `--module-format <auto\|commonjs\|esm>`          | Select the generated harness format               | `auto`                            |
-| `--shell <bash\|cmd\|powershell\|pwsh\|sh\|zsh>` | Run commands with a supported shell               | platform selection                |
-| `--stdin`                                        | Attach the invoking input stream to commands      | closed input                      |
-| `--timeout <seconds>`                            | Set each command deadline; `0` disables deadlines | `1800`                            |
-| `-v, --version`                                  | Print the installed Leia version                  |                                   |
-| `--debug`                                        | Enable all debug output                           | disabled                          |
-| `--help`                                         | Print current usage, options, and defaults        |                                   |
+### `--cleanup-header`
 
-Repeated header and ignore options greedily collect values until the next option. A single header
-value may also be comma-separated. `--retry` accepts a non-negative safe integer. `--timeout`
-accepts whole seconds from `0` through `2147483`; Leia rejects invalid values before generating a
-harness.
+| Field       | Value                                       |
+| ----------- | ------------------------------------------- |
+| Alias       | `-c`                                        |
+| Environment | `LEIA_CLEANUP_HEADER`                       |
+| Default     | `Clean,Tear,Burn`                           |
+| Values      | one or more case-sensitive section prefixes |
+| Description | Selects cleanup sections.                   |
 
-### Environment defaults
+### `--ignore`
 
-CLI options override `LEIA_*` environment values, which override the defaults above. Library calls
-keep their explicit options and do not read these CLI defaults. Empty environment values are unset.
+| Field       | Value                     |
+| ----------- | ------------------------- |
+| Alias       | `-i`                      |
+| Environment | `LEIA_IGNORE`             |
+| Default     | none                      |
+| Values      | one or more glob patterns |
+| Description | Excludes matching files.  |
 
-| Variable              | Equivalent option         |
-| --------------------- | ------------------------- |
-| `LEIA_CLEANUP_HEADER` | `-c` / `--cleanup-header` |
-| `LEIA_SETUP_HEADER`   | `-s` / `--setup-header`   |
-| `LEIA_TEST_HEADER`    | `-t` / `--test-header`    |
-| `LEIA_IGNORE`         | `--ignore`                |
-| `LEIA_RETRY`          | `--retry`                 |
-| `LEIA_TIMEOUT`        | `--timeout`               |
-| `LEIA_SHELL`          | `--shell`                 |
-| `LEIA_MODULE_FORMAT`  | `--module-format`         |
-| `LEIA_STDIN`          | `--stdin`                 |
-| `LEIA_DEBUG`          | `--debug`                 |
+Quote globs so Leia expands them. Put positional file patterns before greedy list options.
 
-Environment lists use commas; surrounding whitespace and empty entries are removed. Supplying a
-header or ignore flag replaces its environment list. Numeric and enumerated values follow the same
-constraints as CLI options. Overridden environment values are not validated.
+### `--retry`
 
-Boolean values accept `1`/`true` and `0`/`false`. Use `--no-stdin` or `--no-debug` to override an enabled
-environment default; the last explicit positive or negative flag wins. These flags take no value.
+| Field       | Value                                                |
+| ----------- | ---------------------------------------------------- |
+| Alias       | `-r`                                                 |
+| Environment | `LEIA_RETRY`                                         |
+| Default     | `1`                                                  |
+| Values      | non-negative safe integer                            |
+| Description | Retries each failed setup, test, or cleanup command. |
 
-`LEIA_DEBUG=1` and `--debug` enable every debug namespace (`*`). Otherwise ambient `DEBUG` remains
-in control, including when Leia's toggle is explicitly disabled. With neither enabled, debug output
-is off.
+The value counts retries after the initial attempt. `0` runs each command once.
 
-The hidden `--spawn` and `--split-file` compatibility flags remain accepted no-ops and emit a
-warning. Remove them from automation. Run `npm exec -- leia --help` when scripting against an
-installed version; the binary is the authority for that version's defaults.
+### `--setup-header`
+
+| Field       | Value                                       |
+| ----------- | ------------------------------------------- |
+| Alias       | `-s`                                        |
+| Environment | `LEIA_SETUP_HEADER`                         |
+| Default     | `Start,Setup,This is the dawning`           |
+| Values      | one or more case-sensitive section prefixes |
+| Description | Selects setup sections.                     |
+
+### `--test-header`
+
+| Field       | Value                                       |
+| ----------- | ------------------------------------------- |
+| Alias       | `-t`                                        |
+| Environment | `LEIA_TEST_HEADER`                          |
+| Default     | `Test,Validat,Verif`                        |
+| Values      | one or more case-sensitive section prefixes |
+| Description | Selects test sections.                      |
+
+### `--module-format`
+
+| Field       | Value                                 |
+| ----------- | ------------------------------------- |
+| Environment | `LEIA_MODULE_FORMAT`                  |
+| Default     | `auto`                                |
+| Values      | `auto`, `commonjs`, `esm`             |
+| Description | Selects the generated harness format. |
+
+`auto` uses the nearest package scope above the invocation directory. See [module formats](./ADVANCED.md#choose-a-module-format).
+
+### `--shell`
+
+| Field       | Value                                            |
+| ----------- | ------------------------------------------------ |
+| Environment | `LEIA_SHELL`                                     |
+| Default     | platform selection                               |
+| Values      | `bash`, `cmd`, `powershell`, `pwsh`, `sh`, `zsh` |
+| Description | Selects the shell that runs scenario commands.   |
+
+The shell must be installed. See [shell selection](./ADVANCED.md#select-a-shell) for platform defaults.
+
+### `--stdin`
+
+| Field       | Value                                                   |
+| ----------- | ------------------------------------------------------- |
+| Environment | `LEIA_STDIN`                                            |
+| Default     | off                                                     |
+| Values      | value-free flag; environment: `1`, `true`, `0`, `false` |
+| Description | Attaches the invoking input stream to commands.         |
+
+`--no-stdin` disables inheritance. Otherwise commands receive EOF. `CI` does not enable stdin or make commands safe to run.
+
+### `--timeout`
+
+| Field       | Value                                       |
+| ----------- | ------------------------------------------- |
+| Environment | `LEIA_TIMEOUT`                              |
+| Default     | `1800` seconds                              |
+| Values      | whole seconds from `0` through `2147483`    |
+| Description | Sets the deadline for each command attempt. |
+
+`0` disables the deadline. A timeout fails the attempt and terminates its process tree within the [documented limits](./ADVANCED.md#understand-execution).
+
+### `--version`
+
+| Field       | Value                             |
+| ----------- | --------------------------------- |
+| Alias       | `-v`                              |
+| Environment | none                              |
+| Default     | not applicable                    |
+| Values      | value-free flag                   |
+| Description | Shows the installed Leia version. |
+
+### `--debug`
+
+| Field       | Value                                                   |
+| ----------- | ------------------------------------------------------- |
+| Environment | `LEIA_DEBUG`                                            |
+| Default     | off                                                     |
+| Values      | value-free flag; environment: `1`, `true`, `0`, `false` |
+| Description | Enables every debug namespace (`*`).                    |
+
+`--no-debug` disables Leia's toggle. Ambient `DEBUG` remains independent, including when the toggle is explicitly disabled. With neither enabled, debug output is off.
+
+### `--help`
+
+| Field       | Value                                                      |
+| ----------- | ---------------------------------------------------------- |
+| Environment | none                                                       |
+| Default     | not applicable                                             |
+| Values      | value-free flag                                            |
+| Description | Shows usage, options, examples, and environment variables. |
+
+## Environment defaults
+
+Empty environment values are unset. Environment lists use commas; surrounding whitespace and
+empty entries are removed. Header and ignore flags replace their environment lists. Repeated list
+flags greedily collect values until the next option; header values may also be comma-separated.
+
+Numeric and enumerated environment values follow their option constraints. Only effective values
+are validated, so an explicit flag can override an invalid environment value. For booleans, the
+last explicit positive or negative flag wins; these flags take no value.
+
+## Compatibility flags
+
+`--spawn` and `--split-file` remain accepted no-ops and emit a warning. Remove them from automation.
+They have no environment defaults and are hidden from help.

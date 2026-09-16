@@ -2,13 +2,13 @@ import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-/** Drain both streams before checking status so failed packaging commands retain their evidence. */
+/** drain both streams before checking status so failed packaging commands retain their evidence. */
 export async function runCommand(
   root: string,
   command: string[],
   expectedCode = 0,
 ): Promise<string> {
-  // Windows npm is a command shim, not an executable accepted by Bun.spawn.
+  // windows npm is a command shim, not an executable accepted by bun.spawn.
   const invocation = [...command];
   if (process.platform === 'win32' && command[0] === 'npm') {
     const shim = Bun.which('npm.cmd');

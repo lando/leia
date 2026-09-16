@@ -3,19 +3,19 @@ import path from 'node:path';
 
 import type { ModuleFormat } from './compiler-types.ts';
 
-/** Module-format values accepted by the CLI and `resolveModuleFormat()`. */
+/** module-format values accepted by the cli and `resolveModuleFormat()`. */
 export const formats = ['auto', 'commonjs', 'esm'];
 
 /**
- * Resolves Leia's generated harness module format.
+ * resolves leia's generated harness module format.
  *
- * Auto detection walks from the invocation directory to the nearest package.json. A package is ESM only when its
- * type is explicitly "module"; all other readable package scopes and a missing package default to CommonJS.
+ * auto detection walks from the invocation directory to the nearest package.json. a package is esm only when its
+ * type is explicitly "module"; all other readable package scopes and a missing package default to commonjs.
  *
- * @param moduleFormat Requested `auto`, `commonjs`, or `esm` format.
- * @param cwd Initial invocation working directory used for auto detection.
- * @returns The resolved `commonjs` or `esm` format.
- * @throws When the format is unsupported or the nearest package.json cannot be read or parsed.
+ * @param moduleFormat requested `auto`, `commonjs`, or `esm` format.
+ * @param cwd initial invocation working directory used for auto detection.
+ * @returns the resolved `commonjs` or `esm` format.
+ * @throws when the format is unsupported or the nearest package.json cannot be read or parsed.
  */
 export const resolveModuleFormat = (
   moduleFormat: string = 'auto',

@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
-/** Resolve from source or bundled bin/lib modules; metadata belongs to the package root. */
+/** resolve from source or bundled bin/lib modules; metadata belongs to the package root. */
 export const runtimeLayout = (
   moduleURL: string,
 ): {

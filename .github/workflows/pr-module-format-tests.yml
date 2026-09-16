@@ -19,7 +19,10 @@ jobs:
         format:
           - commonjs
           - esm
-        runtime: [source, esm, cjs]
+        runtime:
+          - source
+          - esm
+          - cjs
         include:
           - runtime: source
             cli: bun bin/leia.ts

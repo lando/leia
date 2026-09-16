@@ -34,7 +34,7 @@ const booleans = new Set([
 ]);
 const singles = new Set(['retry', 'timeout', 'shell', 'module-format']);
 
-/** Preserve oclif's non-strict positional and greedy repeated-string flag behavior. */
+/** preserve oclif's non-strict positional and greedy repeated-string flag behavior. */
 export const parseCLI = (argv: string[], environment: NodeJS.ProcessEnv = {}): CLIOptions => {
   const options: CLIOptions = {
     tests: [],

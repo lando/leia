@@ -45,14 +45,14 @@ const findClosestModule = (dependency: string): string => {
 };
 
 /**
- * Reads the Markdown tokens used by Leia's scenario compiler.
+ * reads the markdown tokens used by leia's scenario compiler.
  *
- * Only level-one and level-two headings plus top-level fenced code blocks are retained. Repeated
+ * only level-one and level-two headings plus top-level fenced code blocks are retained. repeated
  * file paths are combined into one document.
  *
- * @param files Markdown files to read synchronously.
- * @returns Ordered compiler documents.
- * @throws A `TypeError` when `files` is not an array of strings.
+ * @param files markdown files to read synchronously.
+ * @returns ordered compiler documents.
+ * @throws a `TypeError` when `files` is not an array of strings.
  */
 export const readMarkdown = (files: string[]): MarkdownDocument[] => {
   strings(files, 'files');
@@ -96,15 +96,15 @@ const normalizeCode = (
 };
 
 /**
- * Converts compiler documents into generated-harness metadata.
+ * converts compiler documents into generated-harness metadata.
  *
- * Header prefixes are case-sensitive. Documents without a matching test section are omitted;
+ * header prefixes are case-sensitive. documents without a matching test section are omitted;
  * documents with tests require a level-one title.
  *
- * @param documents Documents returned by `readMarkdown()`.
- * @param options Scenario headers, shell, retry, stdin, and module-format settings.
- * @returns Normalized harness metadata ready for generation.
- * @throws When options are invalid or a test document has no level-one title.
+ * @param documents documents returned by `readMarkdown()`.
+ * @param options scenario headers, shell, retry, stdin, and module-format settings.
+ * @returns normalized harness metadata ready for generation.
+ * @throws when options are invalid or a test document has no level-one title.
  */
 export const normalizeMarkdown = (
   documents: MarkdownDocument[],
@@ -146,7 +146,7 @@ export const normalizeMarkdown = (
           tests[section] ??= [];
         }
       } else {
-        // Even orphan code blocks historically resolve the selected shell.
+        // even orphan code blocks historically resolve the selected shell.
         const scenarios = normalizeCode(element.text, file, getShell(shell));
         if (section !== undefined) {
           const bucket = (tests[section] ??= []);
@@ -209,17 +209,17 @@ export const normalizeMarkdown = (
 };
 
 /**
- * Reads and normalizes Markdown scenario files.
+ * reads and normalizes markdown scenario files.
  *
- * Module format and retry options are validated before file I/O, including when `files` is empty.
+ * module format and retry options are validated before file i/o, including when `files` is empty.
  *
- * @param files Markdown scenario paths.
- * @param options Scenario headers, shell, retry, stdin, and module-format settings.
- * @returns Normalized harness metadata ready for `generate()`.
- * @throws When options, Markdown, or files are invalid.
+ * @param files markdown scenario paths.
+ * @param options scenario headers, shell, retry, stdin, and module-format settings.
+ * @returns normalized harness metadata ready for `generate()`.
+ * @throws when options, markdown, or files are invalid.
  */
 export const parse = (files: string[], options: ParseOptions = {}): Harness[] => {
-  // Resolve invocation options before I/O, including when no files match.
+  // resolve invocation options before i/o, including when no files match.
   const resolvedOptions = {
     ...options,
     moduleFormat: resolveModuleFormat(options.moduleFormat, process.cwd()),

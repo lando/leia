@@ -39,7 +39,7 @@ if (stage === selected || (mode === 'double-signal' && stage === 'cleanup')) {
       stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
     });
     fs.appendFileSync(`${trace}.pids`, `${process.pid}\n${descendant.pid}\n`);
-    // Signal only once the descendant has installed its SIGTERM handler.
+    // signal only once the descendant has installed its sigterm handler.
     descendant.once('message', () => fs.writeFileSync(`${trace}.${stage}.ready`, 'ready'));
     setInterval(() => {}, 1000);
   } else if (mode === 'no-deadline') {

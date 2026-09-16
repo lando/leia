@@ -3,7 +3,7 @@ import { dirname, join, relative } from 'node:path';
 
 import ts from 'typescript';
 
-/** Emit one checked declaration graph with module-format-specific paths and extensions. */
+/** emit one checked declaration graph with module-format-specific paths and extensions. */
 export async function declarations(root: string): Promise<void> {
   const config = ts.readConfigFile(join(root, 'tsconfig.build.json'), ts.sys.readFile);
   if (config.error)

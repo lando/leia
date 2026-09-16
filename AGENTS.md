@@ -60,6 +60,13 @@
 - Package the skill, manifest, logo, and referenced user guides together. Plugin installation does
   not install Leia into the user's project. Keep npm and plugin identities distinct.
 
+## Comment style
+
+- Keep code-comment prose lowercase, including docblocks, generated templates, and documentation
+  examples. Preserve literal identifiers, paths, flags, directives, and case-sensitive syntax.
+- Omit comments that merely narrate obvious code. Use block lists for GitHub Actions matrices;
+  user-facing scenario workflow examples should run only on pull requests.
+
 ## Documentation
 
 - Keep README onboarding, CLI reference, ADVANCED behavior, generated API contracts, CI guidance, and CONTRIBUTING instructions

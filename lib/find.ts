@@ -6,15 +6,15 @@ import { strings } from './compiler-validation.ts';
 const debug = createDebug('leia:find');
 
 /**
- * Finds scenario files from glob patterns.
+ * finds scenario files from glob patterns.
  *
- * Results preserve pattern order, exclude directories, resolve to real paths, and remove
- * duplicates. Ignore patterns are passed to the same glob implementation.
+ * results preserve pattern order, exclude directories, resolve to real paths, and remove
+ * duplicates. ignore patterns are passed to the same glob implementation.
  *
- * @param patterns Glob patterns to scan.
- * @param ignore Glob patterns to exclude.
- * @returns Absolute paths for the discovered scenario files.
- * @throws A `TypeError` when either argument is not an array of strings.
+ * @param patterns glob patterns to scan.
+ * @param ignore glob patterns to exclude.
+ * @returns absolute paths for the discovered scenario files.
+ * @throws a `TypeError` when either argument is not an array of strings.
  */
 export const find = (patterns: string[], ignore: string[] = []): string[] => {
   strings(patterns, 'patterns');

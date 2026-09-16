@@ -21,7 +21,7 @@
     ],
     "longDescription": "Author useful markdown scenarios, run and diagnose Leia tests, and configure GitHub Actions coverage with one shared skill.",
     "developerName": "Lando",
-    "category": "Productivity",
+    "category": "Testing",
     "capabilities": ["Read", "Write"]
   },
   "version": "1.0.0-beta.9"

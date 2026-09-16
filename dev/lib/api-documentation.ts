@@ -107,7 +107,7 @@ const renderExample = (tag: ts.JSDocTagInfo): string => {
   return [`### ${title}`, '', body.join('\n').trim()].join('\n');
 };
 
-/** Generate API.md from package exports, TypeScript signatures, and their public docblocks. */
+/** generate `API.md` from package exports, typescript signatures, and their public docblocks. */
 export const generateApiDocumentation = async (root: string): Promise<string> => {
   const configFile = ts.readConfigFile(join(root, 'tsconfig.json'), ts.sys.readFile);
   if (configFile.error)

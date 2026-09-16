@@ -4,7 +4,7 @@ import { dirname, join, relative, resolve, sep } from 'node:path';
 
 import { validateCoverage } from '../utils/validate-coverage.ts';
 
-/** Maps embed the source, so validation still works after CI removes application source. */
+/** maps embed the source, so validation still works after ci removes application source. */
 export const checkCoverage = async (root: string): Promise<void> => {
   const output = join(root, 'dist/esm');
   const sources: Record<string, string> = {};

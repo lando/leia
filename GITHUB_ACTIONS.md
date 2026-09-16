@@ -12,16 +12,19 @@ runs the README's `quickstart.md` on Linux, macOS, and Windows:
 
 ```yaml
 name: Leia
-on: [push, pull_request]
+on:
+  pull_request:
 permissions:
   contents: read
 jobs:
   scenarios:
     strategy:
-      # Preserve evidence from the other platforms when one fails.
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-15, windows-2025]
+        os:
+          - ubuntu-24.04
+          - macos-15
+          - windows-2025
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7

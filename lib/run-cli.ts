@@ -37,7 +37,7 @@ export const runCLI = async (argv = process.argv.slice(2)): Promise<void> => {
     }
     if (options.spawn) presentation.warn('--spawn');
     if (options.splitFile) presentation.warn('--split-file');
-    // Load orchestration after debug initialization and the cheap help/version paths.
+    // load orchestration after debug initialization and the cheap help/version paths.
     const { Leia } = await import('./leia.ts');
     const { exitCode } = await import('./run.ts');
     const leia = new Leia();

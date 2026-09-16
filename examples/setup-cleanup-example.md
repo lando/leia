@@ -9,7 +9,7 @@ Setup
 These commands should run **before** your main testing ones and can be used to do some setup that you need beforehand. You do not need for this section to come first in the markdown file, Leia should parse it first regardless.
 
 ```bash
-# Create a file we can grep for a word
+# create a file we can grep for a word
 echo "the word is bubba" > test.txt
 ```
 
@@ -19,7 +19,7 @@ Testing
 Run some tests using stuff setup above.
 
 ```bash
-# Should return the correct word
+# should return the correct word
 cat test.txt | grep "bubba"
 ```
 
@@ -29,6 +29,6 @@ Cleanup
 These commands should run **after** your main testing ones and can be used to undo the commands you ran during setup before. You do not need for this section to come last in the markdown file, Leia should parse it last regardless.
 
 ```bash
-# Destroy our test file
+# destroy our test file
 rm -f test.txt
 ```

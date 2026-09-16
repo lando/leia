@@ -21,12 +21,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/dabb7025c82f8f626c48cf00f6bc8f398df78f88.sh"
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/81f98e0927c89fb199ef3f91ed104fca810339f6.sh"
           ],
           "shell": "bash",
           "command": "true",
           "skip": false,
-          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/dabb7025c82f8f626c48cf00f6bc8f398df78f88.sh",
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/81f98e0927c89fb199ef3f91ed104fca810339f6.sh",
           "describe": ["should return true"],
           "id": "basic-example",
           "number": 1,
@@ -38,12 +38,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/55472da8f7da7fc710fd78be2060b0f2912f1211.sh"
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/d6324071ce7e270fd31c41d69c5b78253bd8f7d3.sh"
           ],
           "shell": "bash",
           "command": "echo \"some stuff\"",
           "skip": false,
-          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/55472da8f7da7fc710fd78be2060b0f2912f1211.sh",
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/d6324071ce7e270fd31c41d69c5b78253bd8f7d3.sh",
           "describe": [
             "should echo some stuff",
             "note important note for the markdown file that doesnt need to be in the test description"
@@ -58,12 +58,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/6fba44d35898c72f2aa6a368672e5605dd199799.sh"
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/4fe20af049bbe06caa35cbd67d36d70895b250db.sh"
           ],
           "shell": "bash",
           "command": "cat filedoesnotexist || echo $? | grep 1",
           "skip": false,
-          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/6fba44d35898c72f2aa6a368672e5605dd199799.sh",
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/4fe20af049bbe06caa35cbd67d36d70895b250db.sh",
           "describe": ["should return status code 1"],
           "id": "basic-example",
           "number": 3,
@@ -75,12 +75,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/19c3764323c38a07a22d95a025dc74186dccc885.sh"
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/2a48a296749c661713e26cf55cab860184b6c099.sh"
           ],
           "shell": "bash",
           "command": "export TEST=thing\nenv | grep TEST\nunset TEST",
           "skip": false,
-          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/19c3764323c38a07a22d95a025dc74186dccc885.sh",
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/2a48a296749c661713e26cf55cab860184b6c099.sh",
           "describe": ["should concatenate three commands together"],
           "id": "basic-example",
           "number": 4,
@@ -92,12 +92,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/e24605cc5d75d7b0c9c5809fc85a79a6ad4d47f4.sh"
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/6a4738704577b14ddc9beb6fe72ba169c9468488.sh"
           ],
           "shell": "bash",
           "command": "export TEST=thing  TEST2=stuff  TEST3=morestuff\nenv | grep TEST\nenv | grep TEST2\nenv | grep TEST3\nunset TEST\nunset TEST2\nunset TEST3",
           "skip": false,
-          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/e24605cc5d75d7b0c9c5809fc85a79a6ad4d47f4.sh",
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/6a4738704577b14ddc9beb6fe72ba169c9468488.sh",
           "describe": ["should not concatenate if escape is used"],
           "id": "basic-example",
           "number": 5,
@@ -109,12 +109,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/a69c47cbf2c7c3beace41ba82da5141bbc3eae88.sh"
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/60d75d2cc50aab9379bf0de8b2446348b07bd832.sh"
           ],
           "shell": "bash",
           "command": "skip",
           "skip": true,
-          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/a69c47cbf2c7c3beace41ba82da5141bbc3eae88.sh",
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/60d75d2cc50aab9379bf0de8b2446348b07bd832.sh",
           "describe": [
             "should be a test we have right now but we dont so this is just a stub to remind us"
           ],
@@ -128,12 +128,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/8bab409d7f89c1501cc8a02513a0c0cdf4532b88.sh"
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/7c8e55ef16adaf0921c5e32de56e5162cbb52277.sh"
           ],
           "shell": "bash",
           "command": "true",
           "skip": false,
-          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/8bab409d7f89c1501cc8a02513a0c0cdf4532b88.sh",
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/7c8e55ef16adaf0921c5e32de56e5162cbb52277.sh",
           "describe": ["should also run this"],
           "id": "basic-example",
           "number": 7,
@@ -147,12 +147,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/826f3942aa25be533a3101f27c9e69a25d626aec.sh"
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/675a765cacfb875481a4d80f26df84f0eab4af8f.sh"
           ],
           "shell": "bash",
           "command": "true",
           "skip": false,
-          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/826f3942aa25be533a3101f27c9e69a25d626aec.sh",
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/675a765cacfb875481a4d80f26df84f0eab4af8f.sh",
           "describe": ["should also also run this"],
           "id": "basic-example",
           "number": 1,
@@ -183,12 +183,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/b84ac24ae10e96e3ad936d0bbd8e44a2478f4ccf.sh"
+            "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/011e94f854e22ab4fdf8b2983375cbbd5c8df11e.sh"
           ],
           "shell": "bash",
           "command": "echo \"the word is bubba\" > test.txt",
           "skip": false,
-          "script": "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/b84ac24ae10e96e3ad936d0bbd8e44a2478f4ccf.sh",
+          "script": "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/011e94f854e22ab4fdf8b2983375cbbd5c8df11e.sh",
           "describe": ["create a file we can grep for a word"],
           "id": "setup-cleanup-example",
           "number": 1,
@@ -202,12 +202,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/88a0acaac99007f3efaa4dd8f3da83a29484ee6f.sh"
+            "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/5e0cd92901dba599ab607ebf48cc23746ee34bec.sh"
           ],
           "shell": "bash",
           "command": "cat test.txt | grep \"bubba\"",
           "skip": false,
-          "script": "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/88a0acaac99007f3efaa4dd8f3da83a29484ee6f.sh",
+          "script": "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/5e0cd92901dba599ab607ebf48cc23746ee34bec.sh",
           "describe": ["should return the correct word"],
           "id": "setup-cleanup-example",
           "number": 1,
@@ -221,12 +221,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/d227b945a14281a556c753d5787b8623f3329f46.sh"
+            "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/44133fc1f9904af9577b4f1f674a41ba6fff382e.sh"
           ],
           "shell": "bash",
           "command": "rm -f test.txt",
           "skip": false,
-          "script": "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/d227b945a14281a556c753d5787b8623f3329f46.sh",
+          "script": "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/44133fc1f9904af9577b4f1f674a41ba6fff382e.sh",
           "describe": ["destroy our test file"],
           "id": "setup-cleanup-example",
           "number": 1,
@@ -257,12 +257,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/28e7f9c58993fef926f5bc6af0301ad951e3f98e.sh"
+            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/f1ddd44a21893337a7d5752cca4744b52d568476.sh"
           ],
           "shell": "bash",
           "command": "true",
           "skip": false,
-          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/28e7f9c58993fef926f5bc6af0301ad951e3f98e.sh",
+          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/f1ddd44a21893337a7d5752cca4744b52d568476.sh",
           "describe": ["should run first setup"],
           "id": "parse-sections",
           "number": 1,
@@ -274,12 +274,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/a37457f00d265452890f399fb6704e9e0f152b03.sh"
+            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/ffcfd00149ccb1fd2be4d42c4da2560451424827.sh"
           ],
           "shell": "bash",
           "command": "true",
           "skip": false,
-          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/a37457f00d265452890f399fb6704e9e0f152b03.sh",
+          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/ffcfd00149ccb1fd2be4d42c4da2560451424827.sh",
           "describe": ["should run second setup"],
           "id": "parse-sections",
           "number": 2,
@@ -293,12 +293,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/481818e6830fcbae504ec3eb576cda4009c5ca10.sh"
+            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/a43db8d4a517121cb474eab24eb8ff12dec49734.sh"
           ],
           "shell": "bash",
           "command": "true",
           "skip": false,
-          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/481818e6830fcbae504ec3eb576cda4009c5ca10.sh",
+          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/a43db8d4a517121cb474eab24eb8ff12dec49734.sh",
           "describe": ["should run first test"],
           "id": "parse-sections",
           "number": 1,
@@ -310,12 +310,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/76573daf00a9cf193aee943f3bfbd3ba62cd1abf.sh"
+            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/7ce23d8835100a7a19e3c6170136a762f2bd18aa.sh"
           ],
           "shell": "bash",
           "command": "true",
           "skip": false,
-          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/76573daf00a9cf193aee943f3bfbd3ba62cd1abf.sh",
+          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/7ce23d8835100a7a19e3c6170136a762f2bd18aa.sh",
           "describe": ["should run second test"],
           "id": "parse-sections",
           "number": 2,
@@ -329,12 +329,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/efdf126cc6e97c7ca4539294b43a7dead381b981.sh"
+            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/eb6f25c58cd6f4aff8f644e370556e600fefa3a8.sh"
           ],
           "shell": "bash",
           "command": "true",
           "skip": false,
-          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/efdf126cc6e97c7ca4539294b43a7dead381b981.sh",
+          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/eb6f25c58cd6f4aff8f644e370556e600fefa3a8.sh",
           "describe": ["should run first cleanup"],
           "id": "parse-sections",
           "number": 1,
@@ -346,12 +346,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/25e78073ba77463b551b5d277da2ae775e47db27.sh"
+            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/6da1defb3d06a648a4b485651fef363cb7b30d2a.sh"
           ],
           "shell": "bash",
           "command": "true",
           "skip": false,
-          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/25e78073ba77463b551b5d277da2ae775e47db27.sh",
+          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/6da1defb3d06a648a4b485651fef363cb7b30d2a.sh",
           "describe": ["should run second cleanup"],
           "id": "parse-sections",
           "number": 2,
@@ -382,12 +382,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/e475d3c20b7cbc5847914dbb780b1283a7c01355.sh"
+            "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/dddfa31b99a1d51991afcb42320dbd4f1a60cf14.sh"
           ],
           "shell": "bash",
           "command": "echo first",
           "skip": false,
-          "script": "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/e475d3c20b7cbc5847914dbb780b1283a7c01355.sh",
+          "script": "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/dddfa31b99a1d51991afcb42320dbd4f1a60cf14.sh",
           "describe": ["should parse the first code block"],
           "id": "parse-code-blocks",
           "number": 1,
@@ -399,12 +399,12 @@
             "--norc",
             "-eo",
             "pipefail",
-            "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/daa98b1c5781dde5e68b2dc35285d4759333b5ee.sh"
+            "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/c49a15ead9b87889dcfafe36a1074b582cab0b98.sh"
           ],
           "shell": "bash",
           "command": "echo second",
           "skip": false,
-          "script": "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/daa98b1c5781dde5e68b2dc35285d4759333b5ee.sh",
+          "script": "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/c49a15ead9b87889dcfafe36a1074b582cab0b98.sh",
           "describe": ["should parse the second code block"],
           "id": "parse-code-blocks",
           "number": 2,

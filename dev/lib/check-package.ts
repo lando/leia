@@ -30,7 +30,7 @@ interface Packed {
   files: { path: string; mode: number }[];
 }
 
-/** Verify the npm payload, not the checkout or a directory symlink with development dependencies. */
+/** verify the npm payload, not the checkout or a directory symlink with development dependencies. */
 export async function checkPackage(
   root: string,
   destination?: string,
@@ -90,7 +90,7 @@ export async function checkPackage(
       expected,
       'The tarball must contain exactly the distribution, user guides, and skill bundle.',
     );
-    // Windows uses npm command shims; POSIX executable bits are not represented by its filesystem.
+    // windows uses npm command shims; posix executable bits are not represented by its filesystem.
     if (process.platform !== 'win32')
       assert.equal(
         packed.files.find((file) => file.path === 'dist/esm/bin/leia.js')!.mode & 0o111,
@@ -213,7 +213,7 @@ export async function checkPackage(
     for (const format of ['mjs', 'cjs']) {
       await runCommand(consumer, ['node', '--enable-source-maps', `consumer.${format}`]);
     }
-    // No ambient Bun, Node, or repository @types may rescue incomplete public declarations.
+    // no ambient bun, node, or repository @types may rescue incomplete public declarations.
     for (const resolution of ['Node16', 'NodeNext']) {
       await writeFile(
         join(consumer, 'tsconfig.json'),

@@ -19,7 +19,7 @@ describe('utils/runtime-layout', () => {
       'dist/cjs/bin/leia.cjs',
     ]) {
       const extension = filename.endsWith('.ts') ? 'ts' : filename.endsWith('.cjs') ? 'cjs' : 'js';
-      // Entrypoint bundles contain the library modules; their runtime still belongs in lib/.
+      // entrypoint bundles contain the library modules; their runtime still belongs in lib/.
       const layout = runtimeLayout(pathToFileURL(path.join(root, filename)).href);
       assert.equal(path.resolve(layout.root), root);
       assert.equal(layout.packageFile, path.join(root, 'package.json'));

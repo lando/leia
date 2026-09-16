@@ -35,7 +35,7 @@ export const boolean = (value: unknown, field: string): boolean => {
   return value;
 };
 
-/** Serialize values once; never interpret shell content as JavaScript source. */
+/** serialize values once; never interpret shell content as javascript source. */
 export const sourceLiteral = (value: string | string[] | number): string =>
   JSON.stringify(value)
     .replace(/\u2028/g, '\\u2028')

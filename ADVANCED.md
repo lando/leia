@@ -3,6 +3,18 @@
 This guide covers scenario authoring, execution behavior, and diagnosing failed runs. Start with the [README](./README.md) for installation and a first
 passing scenario. Programmatic consumers should also use the generated [API reference](./API.md).
 
+## Execution safety
+
+Leia is not a sandbox. Scenario commands inherit your environment and permissions and can mutate
+files, installed software, services, or external systems. Prefer ephemeral CI runners with only the
+permissions and credentials the scenario needs. Persistent self-hosted runners are still machines
+that a test can alter.
+
+Before a local run, read the invoking repository's `AGENTS.md` and any applicable directory guidance.
+Honor CI-only restrictions. Inspect setup, tests, cleanup, and their dependencies before deciding
+whether local execution is appropriate; a temporary directory or a passing cleanup step does not
+undo arbitrary machine changes.
+
 ## Author a scenario
 
 Leia reads top-level fenced code blocks beneath matching level-two headings. A complete workflow may

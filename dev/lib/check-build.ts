@@ -136,7 +136,7 @@ async function copyFixtures(from: string, to: string): Promise<void> {
   );
 }
 
-/** Prove build-free source and independently relocatable Node artifacts in disposable copies. */
+/** prove build-free source and independently relocatable node artifacts in disposable copies. */
 export async function checkBuild(repositoryRoot: string, scenarios = false): Promise<void> {
   const root = await mkdtemp(join(tmpdir(), 'leia-build-'));
   try {

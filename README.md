@@ -9,10 +9,15 @@ they explain, then prove the documentation still tells the truth.
 
 Requires Node.js 24 or newer.
 
+> [!WARNING]
+> Leia executes real commands that can change files, install software, or alter your machine.
+> Prefer ephemeral CI runners. Before running locally, read the scenarios and repository guidance;
+> a temporary working directory does not isolate machine-wide changes.
+
 ## Install
 
 ```sh
-# Add Leia to your project's development dependencies.
+# add leia to your project's development dependencies.
 npm install --save-dev @lando/leia
 ```
 
@@ -44,7 +49,7 @@ for assertions, setup, and cleanup.
 <!-- leia-example:quickstart-command -->
 
 ```sh
-# Run the locally installed Leia without downloading another version.
+# run the locally installed leia without downloading another version.
 npm exec --offline -- leia quickstart.md
 ```
 
@@ -52,10 +57,10 @@ Leia reports one passing test. A command that exits nonzero, cannot start, or ex
 fails the scenario.
 
 ```sh
-# Equivalent when Leia is already on PATH, including inside an npm script.
+# equivalent when leia is already on path, including inside an npm script.
 leia quickstart.md
 
-# Quote globs so Leia expands them; retry failed commands twice.
+# quote globs so leia expands them; retry failed commands twice.
 leia "docs/**/*.md" --retry 2
 ```
 
@@ -72,13 +77,13 @@ Save as `test-docs.mjs` and run with `node test-docs.mjs`:
 import Leia from '@lando/leia';
 
 const leia = new Leia();
-// Compile the same markdown scenario.
+// compile the same markdown scenario.
 const files = leia.find(['quickstart.md']);
 const sources = leia.parse(files, { moduleFormat: 'esm' });
 const harnesses = leia.generate(sources);
 const runner = await leia.runAsync(harnesses);
 
-// Return a failing exit status when any test fails.
+// return a failing exit status when any test fails.
 runner.run((failures) => {
   process.exitCode = failures ? 1 : 0;
 });
@@ -96,7 +101,8 @@ Commit `quickstart.md`, `package.json`, and `package-lock.json`, then save this 
 
 ```yaml
 name: Leia
-on: [push, pull_request]
+on:
+  pull_request:
 permissions:
   contents: read
 jobs:
@@ -107,9 +113,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
-      # Install the versions recorded in your project's lockfile.
       - run: npm ci
-      # A failing scenario fails the job.
       - run: npm exec --offline -- leia quickstart.md
 ```
 
