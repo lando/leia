@@ -7,6 +7,10 @@ export interface DocumentationExample {
   source: string;
 }
 
+/** Compare generated documentation by content across platform checkout conventions. */
+export const normalizeDocumentationLineEndings = (markdown: string): string =>
+  markdown.replace(/\r\n?/g, '\n');
+
 /** Extract one explicitly named fenced block without maintaining a second fixture copy. */
 export const extractDocumentationExample = (markdown: string, id: string): DocumentationExample => {
   const marker = `<!-- leia-example:${id} -->`;

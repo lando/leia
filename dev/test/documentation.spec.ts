@@ -6,9 +6,16 @@ import { describe, it } from 'mocha';
 
 import { generateApiDocumentation } from '../lib/api-documentation.ts';
 import { repositoryRoot } from '../lib/toolchain.ts';
-import { extractDocumentationExample } from '../utils/documentation.ts';
+import {
+  extractDocumentationExample,
+  normalizeDocumentationLineEndings,
+} from '../utils/documentation.ts';
 
 describe('dev/utils/documentation', () => {
+  it('should normalize Windows and legacy line endings', () => {
+    assert.equal(normalizeDocumentationLineEndings('one\r\ntwo\rthree\n'), 'one\ntwo\nthree\n');
+  });
+
   it('should extract a named block and preserve nested fences', () => {
     const markdown = [
       '<!-- leia-example:scenario -->',
@@ -50,8 +57,8 @@ describe('dev/utils/documentation', () => {
 
   it('should keep the generated API reference current', async () => {
     assert.equal(
-      await readFile(join(repositoryRoot, 'API.md'), 'utf8'),
-      await generateApiDocumentation(repositoryRoot),
+      normalizeDocumentationLineEndings(await readFile(join(repositoryRoot, 'API.md'), 'utf8')),
+      normalizeDocumentationLineEndings(await generateApiDocumentation(repositoryRoot)),
     );
   });
 });

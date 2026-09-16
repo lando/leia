@@ -6,7 +6,11 @@ import { join, resolve } from 'node:path';
 
 import { checkDistribution, distributionFiles } from './distribution.ts';
 import { generateApiDocumentation } from './api-documentation.ts';
-import { checkDocumentationLinks, extractDocumentationExample } from '../utils/documentation.ts';
+import {
+  checkDocumentationLinks,
+  extractDocumentationExample,
+  normalizeDocumentationLineEndings,
+} from '../utils/documentation.ts';
 import { runCommand } from '../utils/run-command.ts';
 
 const publicModules = [
@@ -35,8 +39,8 @@ export async function checkPackage(
   await checkDistribution(root);
   const documentation = ['README.md', 'ADVANCED.md', 'API.md', 'CONTRIBUTING.md'];
   assert.equal(
-    await readFile(join(root, 'API.md'), 'utf8'),
-    await generateApiDocumentation(root),
+    normalizeDocumentationLineEndings(await readFile(join(root, 'API.md'), 'utf8')),
+    normalizeDocumentationLineEndings(await generateApiDocumentation(root)),
     'API.md is stale. Run `bun run docs:api` and commit the result.',
   );
   await checkDocumentationLinks(root, documentation);
