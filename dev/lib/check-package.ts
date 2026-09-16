@@ -24,6 +24,15 @@ const publicModules = [
   'compiler',
 ];
 
+const recipeFiles = [
+  'examples/basic-example.md',
+  'examples/setup-cleanup-example.md',
+  'examples/custom-headers.md',
+  'examples/subdirectory-example/subdir-example.md',
+  'examples/subdirectory-example/text1.txt',
+  'examples/subdirectory-example/text2.txt',
+];
+
 interface Packed {
   filename: string;
   shasum: string;
@@ -46,10 +55,7 @@ export async function checkPackage(
     'CONTRIBUTING.md',
     'PLUGINS.md',
     'skills/scenarios/SKILL.md',
-    'examples/basic-example.md',
-    'examples/setup-cleanup-example.md',
-    'examples/custom-headers.md',
-    'examples/subdirectory-example/subdir-example.md',
+    ...recipeFiles.filter((file) => file.endsWith('.md')),
   ];
   assert.equal(
     normalizeDocumentationLineEndings(await readFile(join(root, 'API.md'), 'utf8')),
@@ -87,12 +93,7 @@ export async function checkPackage(
       'skills/scenarios/SKILL.md',
       'skills/scenarios/agents/openai.yaml',
       'skills/scenarios/assets/lando-logo.png',
-      'examples/basic-example.md',
-      'examples/setup-cleanup-example.md',
-      'examples/custom-headers.md',
-      'examples/subdirectory-example/subdir-example.md',
-      'examples/subdirectory-example/text1.txt',
-      'examples/subdirectory-example/text2.txt',
+      ...recipeFiles,
     ].sort();
     assert.deepEqual(
       packed.files.map((file) => file.path).sort(),
@@ -161,12 +162,7 @@ export async function checkPackage(
       '/API.md',
       '/GITHUB_ACTIONS.md',
       '/PLUGINS.md',
-      '/examples/basic-example.md',
-      '/examples/setup-cleanup-example.md',
-      '/examples/custom-headers.md',
-      '/examples/subdirectory-example/subdir-example.md',
-      '/examples/subdirectory-example/text1.txt',
-      '/examples/subdirectory-example/text2.txt',
+      ...recipeFiles.map((file) => `/${file}`),
     ]);
     const plugin = JSON.parse(await readFile(join(installed, '.codex-plugin/plugin.json'), 'utf8'));
     assert.equal(plugin.name, 'leia');
@@ -310,6 +306,14 @@ export async function checkPackage(
       ]);
       await runCommand(consumer, ['node', 'readme-api.mjs']);
       await runCommand(consumer, ['node', 'documentation-api.cjs']);
+      await cp(join(installed, 'examples'), join(consumer, 'examples'), { recursive: true });
+      for (const recipe of recipeFiles.filter((file) => file.endsWith('.md'))) {
+        const headers =
+          recipe === 'examples/custom-headers.md'
+            ? ['-s', 'Hello', '-t', 'Sup', '-c', 'Goodbye']
+            : [];
+        await runCommand(consumer, ['node', cli, recipe, '--shell', 'bash', ...headers]);
+      }
     }
     assert.equal(
       createHash('sha1')
