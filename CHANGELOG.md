@@ -1,5 +1,6 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+- Added a shared Codex/OpenClaw skill for Leia scenario authoring, execution, and GitHub Actions setup, with packaged guides and installation instructions. [#96](https://github.com/lando/leia/pull/96)
 - Added Node ESM/CommonJS package exports, CLI launchers, TypeScript declarations, and relocatable source maps. [#65](https://github.com/lando/leia/issues/65) [#66](https://github.com/lando/leia/issues/66)
 - Added `LEIA_*` CLI defaults with flag precedence, list replacement, and negative boolean overrides. [#96](https://github.com/lando/leia/pull/96)
 - Added early validation for malformed scenarios and generated-harness metadata. [#64](https://github.com/lando/leia/issues/64)

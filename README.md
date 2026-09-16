@@ -1,7 +1,7 @@
 # Leia
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/lando/leia/2.x/skills/scenarios/assets/lando-logo.png" alt="Lando" width="240" />
+  <img src="./skills/scenarios/assets/lando-logo.png" alt="Lando" width="180" />
 </p>
 
 Leia turns fenced commands in markdown into mocha tests. Keep runnable examples beside the prose
@@ -36,7 +36,7 @@ echo "Hello from Leia"
 ````
 
 The title names the suite, the `Testing` heading selects the commands, and each comment names a
-test. Blank lines separate tests. See [scenario authoring](https://github.com/lando/leia/blob/2.x/ADVANCED.md#author-a-scenario)
+test. Blank lines separate tests. See [scenario authoring](./ADVANCED.md#author-a-scenario)
 for assertions, setup, and cleanup.
 
 ### Run with the CLI
@@ -59,7 +59,7 @@ leia quickstart.md
 leia "docs/**/*.md" --retry 2
 ```
 
-See the [CLI guide](https://github.com/lando/leia/blob/2.x/CLI.md) for npm scripts, all options,
+See the [CLI guide](./CLI.md) for npm scripts, all options,
 and environment defaults.
 
 ### Run programmatically
@@ -84,7 +84,7 @@ runner.run((failures) => {
 });
 ```
 
-The [API reference](https://github.com/lando/leia/blob/2.x/API.md) includes CommonJS usage,
+The [API reference](./API.md) includes CommonJS usage,
 TypeScript declarations, and every supported export.
 
 ### Run in GitHub Actions
@@ -113,7 +113,7 @@ jobs:
       - run: npm exec --offline -- leia quickstart.md
 ```
 
-See [GitHub Actions](https://github.com/lando/leia/blob/2.x/GITHUB_ACTIONS.md) for a platform
+See [GitHub Actions](./GITHUB_ACTIONS.md) for a platform
 matrix and scenario prerequisites.
 
 ### Use with an agent
@@ -123,7 +123,7 @@ Install the Leia plugin for Codex or OpenClaw, then ask:
 > Use Leia to find a useful missing scenario in this project, implement it, and run it.
 
 The skill can also run and diagnose existing tests or configure their GitHub Actions matrix.
-See [plugin installation](https://github.com/lando/leia/blob/2.x/PLUGINS.md) for both hosts,
+See [plugin installation](./PLUGINS.md) for both hosts,
 prerequisites, and example requests.
 
 ## Development

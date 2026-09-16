@@ -17,7 +17,8 @@ unpublished checkout or release candidate, use the local installation procedure 
 
 ## Codex
 
-The repository's marketplace lists `@lando/leia` as an npm-backed plugin:
+The repository's marketplace lists stable `@lando/leia` releases in the `^2.0.0` range as an
+npm-backed plugin:
 
 ```sh
 # Register the Leia marketplace from its release branch.

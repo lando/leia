@@ -74,8 +74,8 @@ ESM or CommonJS and expose only the [documented subpaths](./API.md#entry-points)
 
 Run `node dist/esm/bin/leia.js` or `node dist/cjs/bin/leia.cjs` after building. `check:dist` rejects
 missing, altered, or stale artifacts through the build receipt; `npm pack` runs it automatically.
-The package ships both artifact trees plus npm's package metadata, README, and license. Companion
-guides stay in the repository and are linked from the shipped README.
+The package ships both artifact trees, npm metadata, the README and license, and the shared skill
+bundle with its referenced user guides.
 
 ## Pull requests and releases
 
@@ -87,3 +87,8 @@ guides stay in the repository and are linked from the shipped README.
 Release automation builds after version stamping, validates a retained tarball with
 `check:package --scenarios --pack-destination=.temp/package`, then dry-runs and publishes those same
 bytes. Prereleases use `edge`; stable releases use `latest` and also update `edge`.
+
+The npm tarball also carries the shared Codex/OpenClaw skill and its referenced guides. Keep
+`.codex-plugin/plugin.json` at the package version; release preparation stamps both before packing.
+`check:package` validates the installed bundle's metadata, assets, and documentation links. See
+[local plugin installation](./PLUGINS.md#install-a-local-release-candidate) for host testing.

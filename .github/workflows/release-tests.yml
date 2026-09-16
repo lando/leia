@@ -40,7 +40,9 @@ jobs:
       - name: Prepare synthetic release
         uses: tanaabased/prepare-release-action@v1
         with:
-          commands: bun run format:write
+          commands: |
+            version-injector .codex-plugin/plugin.json --style json --version "$PREPARE_RELEASE_VERSION"
+            bun run format:write
           sync: false
           version: ${{ matrix.release_version }}
       - name: Build prepared package entrypoints

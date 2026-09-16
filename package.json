@@ -25,7 +25,14 @@
   },
   "files": [
     "/dist/esm",
-    "/dist/cjs"
+    "/dist/cjs",
+    "/.codex-plugin/plugin.json",
+    "/skills",
+    "/CLI.md",
+    "/ADVANCED.md",
+    "/API.md",
+    "/GITHUB_ACTIONS.md",
+    "/PLUGINS.md"
   ],
   "scripts": {
     "check:toolchain": "bun run dev/scripts/check-toolchain-task.ts",

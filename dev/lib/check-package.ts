@@ -44,6 +44,8 @@ export async function checkPackage(
     'API.md',
     'GITHUB_ACTIONS.md',
     'CONTRIBUTING.md',
+    'PLUGINS.md',
+    'skills/scenarios/SKILL.md',
   ];
   assert.equal(
     normalizeDocumentationLineEndings(await readFile(join(root, 'API.md'), 'utf8')),
@@ -73,11 +75,20 @@ export async function checkPackage(
       'package.json',
       'README.md',
       'LICENSE',
+      'CLI.md',
+      'ADVANCED.md',
+      'API.md',
+      'GITHUB_ACTIONS.md',
+      'PLUGINS.md',
+      '.codex-plugin/plugin.json',
+      'skills/scenarios/SKILL.md',
+      'skills/scenarios/agents/openai.yaml',
+      'skills/scenarios/assets/lando-logo.png',
     ].sort();
     assert.deepEqual(
       packed.files.map((file) => file.path).sort(),
       expected,
-      'The tarball must contain exactly the clean distribution and npm package documents.',
+      'The tarball must contain exactly the distribution, user guides, and skill bundle.',
     );
     // Windows uses npm command shims; POSIX executable bits are not represented by its filesystem.
     if (process.platform !== 'win32')
@@ -108,7 +119,10 @@ export async function checkPackage(
       join(consumer, 'node_modules/.bin', process.platform === 'win32' ? 'leia.cmd' : 'leia'),
     );
     const installed = join(consumer, 'node_modules/@lando/leia');
-    await checkDocumentationLinks(installed, ['README.md']);
+    await checkDocumentationLinks(
+      installed,
+      documentation.filter((file) => file !== 'CONTRIBUTING.md'),
+    );
     assert.equal((await lstat(installed)).isSymbolicLink(), false);
     assert.equal(
       await realpath(installed),
@@ -129,7 +143,56 @@ export async function checkPackage(
     assert.equal(metadata.name, '@lando/leia');
     assert.equal(metadata.type, 'module');
     assert.deepEqual(metadata.engines, { node: '>=24.0.0' });
-    assert.deepEqual(metadata.files, ['/dist/esm', '/dist/cjs']);
+    assert.deepEqual(metadata.files, [
+      '/dist/esm',
+      '/dist/cjs',
+      '/.codex-plugin/plugin.json',
+      '/skills',
+      '/CLI.md',
+      '/ADVANCED.md',
+      '/API.md',
+      '/GITHUB_ACTIONS.md',
+      '/PLUGINS.md',
+    ]);
+    const plugin = JSON.parse(await readFile(join(installed, '.codex-plugin/plugin.json'), 'utf8'));
+    assert.equal(plugin.name, 'leia');
+    assert.equal(plugin.version, metadata.version, 'Plugin and npm versions must agree.');
+    assert.equal(plugin.skills, './skills/');
+    for (const field of ['logo', 'composerIcon']) {
+      assert.equal(plugin.interface[field], './skills/scenarios/assets/lando-logo.png');
+      await lstat(join(installed, plugin.interface[field]));
+    }
+    const skill = await readFile(join(installed, 'skills/scenarios/SKILL.md'), 'utf8');
+    const frontmatter = Bun.YAML.parse(skill.split('---')[1]!) as {
+      name: string;
+      metadata: { openclaw: { emoji: string } };
+    };
+    assert.equal(frontmatter.name, 'leia-scenarios');
+    assert.equal(frontmatter.metadata.openclaw.emoji, '👸');
+    const agent = Bun.YAML.parse(
+      await readFile(join(installed, 'skills/scenarios/agents/openai.yaml'), 'utf8'),
+    ) as {
+      interface: { icon_small: string; icon_large: string };
+    };
+    for (const icon of [agent.interface.icon_small, agent.interface.icon_large]) {
+      assert.equal(icon, './assets/lando-logo.png');
+      await lstat(join(installed, 'skills/scenarios', icon));
+    }
+    for (const [document, id] of [
+      ['README.md', 'github-actions'],
+      ['GITHUB_ACTIONS.md', 'github-actions-matrix'],
+    ] as const) {
+      const workflow = Bun.YAML.parse(
+        extractDocumentationExample(await readFile(join(installed, document), 'utf8'), id).source,
+      ) as {
+        jobs: { scenarios: { steps: { run?: string }[] } };
+      };
+      assert.ok(
+        workflow.jobs.scenarios.steps.some(
+          (step) => step.run === 'npm exec --offline -- leia quickstart.md',
+        ),
+      );
+    }
     assert.deepEqual(metadata.bin, { leia: 'dist/esm/bin/leia.js' });
     assert.equal(metadata.main, './dist/cjs/lib/leia.cjs');
     assert.equal(metadata.module, './dist/esm/lib/leia.js');
