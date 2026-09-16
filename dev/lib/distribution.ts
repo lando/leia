@@ -48,7 +48,7 @@ export async function distributionFiles(root: string): Promise<string[]> {
     .sort();
 }
 
-/** Written last; a failed build cannot leave an apparently publishable distribution. */
+/** written last; a failed build cannot leave an apparently publishable distribution. */
 export async function recordDistribution(root: string): Promise<void> {
   const receipt: Receipt = {
     inputs: await inputs(root),
@@ -57,7 +57,7 @@ export async function recordDistribution(root: string): Promise<void> {
   await writeFile(join(root, 'dist/build-receipt.json'), JSON.stringify(receipt, null, 2) + '\n');
 }
 
-/** Packing never silently repairs stale output. Build explicitly, then pack exactly those bytes. */
+/** packing never silently repairs stale output. build explicitly, then pack exactly those bytes. */
 export async function checkDistribution(root: string): Promise<void> {
   const receipt = JSON.parse(
     await readFile(join(root, 'dist/build-receipt.json'), 'utf8'),

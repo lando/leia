@@ -7,7 +7,7 @@ import { Lifecycle, type ScenarioContext } from './runtime.ts';
 import { timeout as validateTimeout } from './numeric-option.ts';
 
 const debug = createDebug('leia:run');
-/** Options shared by the synchronous and asynchronous Mocha loaders. */
+/** options shared by the synchronous and asynchronous mocha loaders. */
 export interface RunOptions {
   timeout?: number | string;
   reporter?: string;
@@ -35,12 +35,12 @@ const createRunner = (tests: string[], options: RunOptions = {}): Mocha => {
 };
 
 /**
- * Creates a Mocha runner for CommonJS harnesses.
+ * creates a mocha runner for commonjs harnesses.
  *
- * @param tests Generated CommonJS harness paths.
- * @param options Per-test timeout in seconds and an optional Mocha reporter name.
- * @returns A configured Mocha runner. Call its `run()` method to execute the suite.
- * @throws When no harnesses are provided or an ESM harness is passed.
+ * @param tests generated commonjs harness paths.
+ * @param options per-test timeout in seconds and an optional mocha reporter name.
+ * @returns a configured mocha runner. call its `run()` method to execute the suite.
+ * @throws when no harnesses are provided or an esm harness is passed.
  */
 export const run = (tests: string[], options?: RunOptions): Mocha => {
   if (tests.some((test) => path.extname(test) === '.mjs'))
@@ -49,12 +49,12 @@ export const run = (tests: string[], options?: RunOptions): Mocha => {
 };
 
 /**
- * Creates a Mocha runner and loads CommonJS or ESM harnesses asynchronously.
+ * creates a mocha runner and loads commonjs or esm harnesses asynchronously.
  *
- * @param tests Generated harness paths.
- * @param options Per-test timeout in seconds and an optional Mocha reporter name.
- * @returns A loaded Mocha runner. Call its `run()` method to execute the suite.
- * @throws When no harnesses are provided or a harness cannot be loaded.
+ * @param tests generated harness paths.
+ * @param options per-test timeout in seconds and an optional mocha reporter name.
+ * @returns a loaded mocha runner. call its `run()` method to execute the suite.
+ * @throws when no harnesses are provided or a harness cannot be loaded.
  */
 export const runAsync = async (tests: string[], options?: RunOptions): Promise<Mocha> => {
   const mocha = createRunner(tests, options);
@@ -63,10 +63,10 @@ export const runAsync = async (tests: string[], options?: RunOptions): Promise<M
 };
 
 /**
- * Maps Mocha failures and a caught Leia lifecycle signal to a process exit code.
+ * maps mocha failures and a caught leia lifecycle signal to a process exit code.
  *
- * @param mocha The runner returned by `run()` or `runAsync()`.
- * @param failures The failure count reported by Mocha.
+ * @param mocha the runner returned by `run()` or `runAsync()`.
+ * @param failures the failure count reported by mocha.
  * @returns `0` for success, `1` for failures, or `129`, `130`, or `143` for a caught signal.
  */
 export const exitCode = (mocha: Mocha, failures: number): number => {

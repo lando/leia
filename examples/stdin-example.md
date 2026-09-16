@@ -9,6 +9,6 @@ Testing
 Run some tests using stuff setup above.
 
 ```bash
-# Should not block when stdin is piped
+# should not block when stdin is piped
 node ./blocker.cjs
 ```

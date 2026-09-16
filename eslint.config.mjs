@@ -52,7 +52,7 @@ export default defineConfig([
       ],
     },
   },
-  // Scenario helpers and the intentionally invalid ESM harness fixture remain CommonJS-shaped.
+  // scenario helpers and the intentionally invalid esm harness fixture remain commonjs-shaped.
   {
     files: ['examples/**/*.js', '**/*.cjs'],
     languageOptions: { sourceType: 'commonjs' },

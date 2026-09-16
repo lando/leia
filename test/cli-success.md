@@ -3,6 +3,6 @@
 ## Testing
 
 ```bash
-# Should complete a presentation test
+# should complete a presentation test
 true
 ```

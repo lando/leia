@@ -5,108 +5,17 @@ import { join, resolve } from 'node:path';
 import { format } from 'prettier';
 import ts from 'typescript';
 
-interface EntryPoint {
-  packagePath: string;
-  source?: string;
-  exports: string[];
-  details?: boolean;
-  purpose: string;
-}
-
-const entryPoints: EntryPoint[] = [
-  {
-    packagePath: '@lando/leia',
-    source: 'lib/leia.ts',
-    exports: ['Leia', 'default', 'module.exports'],
-    purpose: 'Constructor and orchestration methods',
-  },
-  {
-    packagePath: '@lando/leia/find',
-    source: 'lib/find.ts',
-    exports: ['find'],
-    purpose: 'Scenario-file discovery',
-  },
-  {
-    packagePath: '@lando/leia/parse',
-    source: 'lib/parse.ts',
-    exports: [
-      'parse',
-      'readMarkdown',
-      'normalizeMarkdown',
-      'normalizeCommand',
-      'ParseOptions',
-      'Harness',
-      'Scenario',
-      'MarkdownDocument',
-      'MarkdownElement',
-    ],
-    purpose: 'Markdown parsing and normalization',
-  },
-  {
-    packagePath: '@lando/leia/generate',
-    source: 'lib/generate.ts',
-    exports: [
-      'generate',
-      'compileHarness',
-      'GenerateOptions',
-      'GeneratedHarness',
-      'Harness',
-      'Scenario',
-    ],
-    purpose: 'Harness rendering and file generation',
-  },
-  {
-    packagePath: '@lando/leia/run',
-    source: 'lib/run.ts',
-    exports: ['run', 'runAsync', 'exitCode', 'RunOptions'],
-    purpose: 'Mocha loading and exit status',
-  },
-  {
-    packagePath: '@lando/leia/shell',
-    source: 'lib/shell.ts',
-    exports: ['getShell', 'Shell'],
-    purpose: 'Shell resolution',
-  },
-  {
-    packagePath: '@lando/leia/module-format',
-    source: 'lib/module-format.ts',
-    exports: ['resolveModuleFormat', 'formats', 'ModuleFormat'],
-    purpose: 'Generated-harness module format',
-  },
-  {
-    packagePath: '@lando/leia/compiler',
-    source: 'lib/compiler.ts',
-    exports: [
-      'find',
-      'parse',
-      'readMarkdown',
-      'normalizeMarkdown',
-      'normalizeCommand',
-      'generate',
-      'compileHarness',
-      'getShell',
-      'resolveModuleFormat',
-      'formats',
-      'Harness',
-      'Scenario',
-      'MarkdownDocument',
-      'MarkdownElement',
-      'ModuleFormat',
-      'SectionRole',
-      'Shell',
-      'ParseOptions',
-      'GenerateOptions',
-      'GeneratedHarness',
-    ],
-    purpose: 'Aggregate compiler exports',
-  },
-  {
-    packagePath: '@lando/leia/package.json',
-    exports: ['package metadata'],
-    details: false,
-    purpose: 'Package metadata',
-  },
-];
+const purposes: Record<string, string> = {
+  '.': 'Constructor and orchestration methods',
+  './find': 'Scenario-file discovery',
+  './parse': 'Markdown parsing and normalization',
+  './generate': 'Harness rendering and file generation',
+  './run': 'Mocha loading and exit status',
+  './shell': 'Shell resolution',
+  './module-format': 'Generated-harness module format',
+  './compiler': 'Aggregate compiler exports',
+  './package.json': 'Package metadata',
+};
 
 const display = (parts: ts.SymbolDisplayPart[] | undefined): string =>
   ts.displayPartsToString(parts).trim();
@@ -198,7 +107,7 @@ const renderExample = (tag: ts.JSDocTagInfo): string => {
   return [`### ${title}`, '', body.join('\n').trim()].join('\n');
 };
 
-/** Generate API.md from package exports, TypeScript signatures, and their public docblocks. */
+/** generate `API.md` from package exports, typescript signatures, and their public docblocks. */
 export const generateApiDocumentation = async (root: string): Promise<string> => {
   const configFile = ts.readConfigFile(join(root, 'tsconfig.json'), ts.sys.readFile);
   if (configFile.error)
@@ -206,62 +115,45 @@ export const generateApiDocumentation = async (root: string): Promise<string> =>
   const config = ts.parseJsonConfigFileContent(configFile.config, ts.sys, root);
   const program = ts.createProgram(config.fileNames, config.options);
   const checker = program.getTypeChecker();
-  const packageData: unknown = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
-  assert.ok(packageData && typeof packageData === 'object' && 'exports' in packageData);
-  const packageExports = Object.keys(packageData.exports as Record<string, unknown>);
-  assert.deepEqual(
-    packageExports,
-    entryPoints.map(({ packagePath }) =>
-      packagePath === '@lando/leia'
-        ? '.'
-        : packagePath === '@lando/leia/package.json'
-          ? './package.json'
-          : `./${packagePath.slice('@lando/leia/'.length)}`,
-    ),
-    'Document every package export in package.json order.',
-  );
-
-  const modules = entryPoints.map((entryPoint) => {
-    if (!entryPoint.source) return { entryPoint };
-    const source = program.getSourceFile(resolve(root, entryPoint.source));
-    assert.ok(source, `Missing API source ${entryPoint.source}.`);
+  const packageData = JSON.parse(await readFile(join(root, 'package.json'), 'utf8')) as {
+    name: string;
+    exports: Record<string, string | { import: { default: string } }>;
+  };
+  const modules = Object.entries(packageData.exports).map(([path, target]) => {
+    const packagePath = packageData.name + (path === '.' ? '' : path.slice(1));
+    const purpose = purposes[path];
+    assert.ok(purpose, `Describe the purpose of package export ${path}.`);
+    if (typeof target === 'string') return { packagePath, purpose, exports: [] };
+    const sourcePath = target.import.default
+      .replace(/^\.\/dist\/esm\//, '')
+      .replace(/\.js$/, '.ts');
+    const source = program.getSourceFile(resolve(root, sourcePath));
+    assert.ok(source, `Missing API source ${sourcePath}.`);
     const moduleSymbol = checker.getSymbolAtLocation(source);
-    assert.ok(moduleSymbol, `Missing module symbol for ${entryPoint.source}.`);
-    const exports = checker.getExportsOfModule(moduleSymbol);
-    assert.deepEqual(
-      exports.map(({ name }) => name).sort(),
-      [...entryPoint.exports].sort(),
-      `${entryPoint.packagePath} documentation exports must match its source.`,
-    );
-    return { entryPoint, exports };
+    assert.ok(moduleSymbol, `Missing module symbol for ${sourcePath}.`);
+    return { packagePath, purpose, exports: checker.getExportsOfModule(moduleSymbol) };
   });
 
-  const rootModule = modules[0]!;
+  const rootModule = modules.find(({ packagePath }) => packagePath === packageData.name)!;
   const leia = rootModule.exports!.find(({ name }) => name === 'Leia');
   assert.ok(leia, 'The root entrypoint must export Leia.');
   const examples = symbolTags(checker, leia)
     .filter(({ name }) => name === 'example')
     .map(renderExample);
 
-  const table = entryPoints.map(
-    ({ packagePath, purpose }) => `| \`${packagePath}\` | ${purpose} |`,
-  );
+  const table = modules.map(({ packagePath, purpose }) => `| \`${packagePath}\` | ${purpose} |`);
 
   const documented = new Set<string>();
-  const reference = modules.flatMap(({ entryPoint, exports }) => {
-    if (entryPoint.details === false || !exports) return [];
-    const unique = entryPoint.exports.filter(
-      (name) => name !== 'default' && name !== 'module.exports' && !documented.has(name),
+  const reference = modules.flatMap(({ packagePath, exports }) => {
+    const unique = exports.filter(
+      ({ name }) => name !== 'default' && name !== 'module.exports' && !documented.has(name),
     );
-    unique.forEach((name) => documented.add(name));
+    unique.forEach(({ name }) => documented.add(name));
+    if (!unique.length) return [];
     return [
-      `## \`${entryPoint.packagePath}\``,
+      `## \`${packagePath}\``,
       '',
-      ...unique.flatMap((name) => {
-        const symbol = exports.find((candidate) => candidate.name === name);
-        assert.ok(symbol, `Missing ${name} from ${entryPoint.packagePath}.`);
-        return [renderSymbol(checker, symbol), ''];
-      }),
+      ...unique.flatMap((symbol) => [renderSymbol(checker, symbol), '']),
     ];
   });
 
@@ -273,13 +165,14 @@ export const generateApiDocumentation = async (root: string): Promise<string> =>
       '',
       "This generated reference covers Leia's supported JavaScript and TypeScript package exports.",
       'Start with the [README](./README.md) for installation and CLI onboarding, or use',
-      '[ADVANCED](./ADVANCED.md) for complete scenario and CLI behavior.',
+      '[ADVANCED](./ADVANCED.md) for scenario behavior and [CLI](./CLI.md) for command options.',
       '',
       '## Usage',
       '',
+      'See the [README](./README.md#run-programmatically) for ESM usage.',
+      '',
       ...examples.flatMap((example) => [example, '']),
-      'The default and named `Leia` exports are the same constructor. CommonJS `require()` returns',
-      'that constructor directly. Use `run()` only with CommonJS harnesses; `runAsync()` loads either',
+      'Use `run()` only with CommonJS harnesses; `runAsync()` loads either',
       'generated format.',
       '',
       '## Entry points',

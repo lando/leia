@@ -24,20 +24,39 @@ const publicModules = [
   'compiler',
 ];
 
+const recipeFiles = [
+  'examples/basic-example.md',
+  'examples/setup-cleanup-example.md',
+  'examples/custom-headers.md',
+  'examples/subdirectory-example/subdir-example.md',
+  'examples/subdirectory-example/text1.txt',
+  'examples/subdirectory-example/text2.txt',
+];
+
 interface Packed {
   filename: string;
   shasum: string;
   files: { path: string; mode: number }[];
 }
 
-/** Verify the npm payload, not the checkout or a directory symlink with development dependencies. */
+/** verify the npm payload, not the checkout or a directory symlink with development dependencies. */
 export async function checkPackage(
   root: string,
   destination?: string,
   scenarios = false,
 ): Promise<void> {
   await checkDistribution(root);
-  const documentation = ['README.md', 'ADVANCED.md', 'API.md', 'CONTRIBUTING.md'];
+  const documentation = [
+    'README.md',
+    'CLI.md',
+    'ADVANCED.md',
+    'API.md',
+    'GITHUB_ACTIONS.md',
+    'CONTRIBUTING.md',
+    'PLUGINS.md',
+    'skills/scenarios/SKILL.md',
+    ...recipeFiles.filter((file) => file.endsWith('.md')),
+  ];
   assert.equal(
     normalizeDocumentationLineEndings(await readFile(join(root, 'API.md'), 'utf8')),
     normalizeDocumentationLineEndings(await generateApiDocumentation(root)),
@@ -49,7 +68,7 @@ export async function checkPackage(
   const quickstart = await readExample('README.md', 'quickstart-scenario');
   const quickstartCommand = await readExample('README.md', 'quickstart-command');
   const lifecycle = await readExample('ADVANCED.md', 'lifecycle-scenario');
-  const apiESM = await readExample('API.md', 'api-esm');
+  const readmeAPI = await readExample('README.md', 'readme-api');
   const apiCommonJS = await readExample('API.md', 'api-commonjs');
   const scratch = await mkdtemp(join(tmpdir(), 'leia-package-'));
   try {
@@ -65,13 +84,23 @@ export async function checkPackage(
       'package.json',
       'README.md',
       'LICENSE',
+      'CLI.md',
+      'ADVANCED.md',
+      'API.md',
+      'GITHUB_ACTIONS.md',
+      'PLUGINS.md',
+      '.codex-plugin/plugin.json',
+      'skills/scenarios/SKILL.md',
+      'skills/scenarios/agents/openai.yaml',
+      'skills/scenarios/assets/lando-logo.png',
+      ...recipeFiles,
     ].sort();
     assert.deepEqual(
       packed.files.map((file) => file.path).sort(),
       expected,
-      'The tarball must contain exactly the clean distribution and npm package documents.',
+      'The tarball must contain exactly the distribution, user guides, and skill bundle.',
     );
-    // Windows uses npm command shims; POSIX executable bits are not represented by its filesystem.
+    // windows uses npm command shims; posix executable bits are not represented by its filesystem.
     if (process.platform !== 'win32')
       assert.equal(
         packed.files.find((file) => file.path === 'dist/esm/bin/leia.js')!.mode & 0o111,
@@ -92,13 +121,17 @@ export async function checkPackage(
     await Promise.all([
       writeFile(join(consumer, 'quickstart.md'), quickstart),
       writeFile(join(consumer, 'lifecycle.md'), lifecycle),
-      writeFile(join(consumer, 'documentation-api.mjs'), apiESM),
+      writeFile(join(consumer, 'readme-api.mjs'), readmeAPI),
       writeFile(join(consumer, 'documentation-api.cjs'), apiCommonJS),
     ]);
     await lstat(
       join(consumer, 'node_modules/.bin', process.platform === 'win32' ? 'leia.cmd' : 'leia'),
     );
     const installed = join(consumer, 'node_modules/@lando/leia');
+    await checkDocumentationLinks(
+      installed,
+      documentation.filter((file) => file !== 'CONTRIBUTING.md'),
+    );
     assert.equal((await lstat(installed)).isSymbolicLink(), false);
     assert.equal(
       await realpath(installed),
@@ -119,7 +152,81 @@ export async function checkPackage(
     assert.equal(metadata.name, '@lando/leia');
     assert.equal(metadata.type, 'module');
     assert.deepEqual(metadata.engines, { node: '>=24.0.0' });
-    assert.deepEqual(metadata.files, ['/dist/esm', '/dist/cjs']);
+    assert.deepEqual(metadata.files, [
+      '/dist/esm',
+      '/dist/cjs',
+      '/.codex-plugin/plugin.json',
+      '/skills',
+      '/CLI.md',
+      '/ADVANCED.md',
+      '/API.md',
+      '/GITHUB_ACTIONS.md',
+      '/PLUGINS.md',
+      ...recipeFiles.map((file) => `/${file}`),
+    ]);
+    const plugin = JSON.parse(await readFile(join(installed, '.codex-plugin/plugin.json'), 'utf8'));
+    assert.equal(plugin.name, 'leia');
+    assert.equal(plugin.version, metadata.version, 'Plugin and npm versions must agree.');
+    assert.equal(plugin.skills, './skills/');
+    for (const field of ['logo', 'composerIcon']) {
+      assert.equal(plugin.interface[field], './skills/scenarios/assets/lando-logo.png');
+      await lstat(join(installed, plugin.interface[field]));
+    }
+    const skill = await readFile(join(installed, 'skills/scenarios/SKILL.md'), 'utf8');
+    const frontmatter = Bun.YAML.parse(skill.split('---')[1]!) as {
+      name: string;
+      metadata: { openclaw: { emoji: string } };
+    };
+    assert.equal(frontmatter.name, 'leia-scenarios');
+    assert.equal(frontmatter.metadata.openclaw.emoji, '👸');
+    const agent = Bun.YAML.parse(
+      await readFile(join(installed, 'skills/scenarios/agents/openai.yaml'), 'utf8'),
+    ) as {
+      interface: { icon_small: string; icon_large: string };
+    };
+    for (const icon of [agent.interface.icon_small, agent.interface.icon_large]) {
+      assert.equal(icon, './assets/lando-logo.png');
+      await lstat(join(installed, 'skills/scenarios', icon));
+    }
+    for (const [document, id] of [
+      ['README.md', 'github-actions'],
+      ['GITHUB_ACTIONS.md', 'github-actions-matrix'],
+    ] as const) {
+      const workflow = Bun.YAML.parse(
+        extractDocumentationExample(await readFile(join(installed, document), 'utf8'), id).source,
+      ) as {
+        on: Record<string, unknown>;
+        jobs: {
+          scenarios: {
+            env?: { SCENARIO: string };
+            defaults?: { run: { shell: string } };
+            strategy?: { matrix: { os: string[]; scenario: string[] } };
+            steps: { run?: string }[];
+          };
+        };
+      };
+      assert.deepEqual(Object.keys(workflow.on), ['pull_request']);
+      const job = workflow.jobs.scenarios;
+      if (document === 'GITHUB_ACTIONS.md') {
+        assert.equal(job.env?.SCENARIO, '${{ matrix.scenario }}');
+        assert.equal(job.defaults?.run.shell, 'bash');
+        assert.ok(job.strategy?.matrix.os.length);
+        assert.ok(job.strategy?.matrix.scenario.length);
+        for (const scenario of job.strategy.matrix.scenario) {
+          assert.ok(documentation.includes(scenario), `Undocumented scenario: ${scenario}`);
+          await lstat(join(installed, scenario));
+        }
+      }
+      assert.ok(
+        job.steps.some(
+          (step) =>
+            step.run ===
+            (document === 'README.md'
+              ? 'npm exec --offline -- leia quickstart.md'
+              : 'npm exec --offline -- leia "$SCENARIO" --shell bash'),
+        ),
+      );
+    }
     assert.deepEqual(metadata.bin, { leia: 'dist/esm/bin/leia.js' });
     assert.equal(metadata.main, './dist/cjs/lib/leia.cjs');
     assert.equal(metadata.module, './dist/esm/lib/leia.js');
@@ -140,7 +247,7 @@ export async function checkPackage(
     for (const format of ['mjs', 'cjs']) {
       await runCommand(consumer, ['node', '--enable-source-maps', `consumer.${format}`]);
     }
-    // No ambient Bun, Node, or repository @types may rescue incomplete public declarations.
+    // no ambient bun, node, or repository @types may rescue incomplete public declarations.
     for (const resolution of ['Node16', 'NodeNext']) {
       await writeFile(
         join(consumer, 'tsconfig.json'),
@@ -168,7 +275,12 @@ export async function checkPackage(
     }
     if (scenarios) {
       const cli = join(installed, metadata.bin.leia);
-      const documentedCommand = quickstartCommand.trim().split(/\s+/);
+      const documentedCommand = quickstartCommand
+        .split('\n')
+        .filter((line) => !line.trim().startsWith('#'))
+        .join(' ')
+        .trim()
+        .split(/\s+/);
       assert.deepEqual(documentedCommand, [
         'npm',
         'exec',
@@ -192,8 +304,16 @@ export async function checkPackage(
         '--shell',
         process.platform === 'win32' ? 'cmd' : 'sh',
       ]);
-      await runCommand(consumer, ['node', 'documentation-api.mjs']);
+      await runCommand(consumer, ['node', 'readme-api.mjs']);
       await runCommand(consumer, ['node', 'documentation-api.cjs']);
+      await cp(join(installed, 'examples'), join(consumer, 'examples'), { recursive: true });
+      for (const recipe of recipeFiles.filter((file) => file.endsWith('.md'))) {
+        const headers =
+          recipe === 'examples/custom-headers.md'
+            ? ['-s', 'Hello', '-t', 'Sup', '-c', 'Goodbye']
+            : [];
+        await runCommand(consumer, ['node', cli, recipe, '--shell', 'bash', ...headers]);
+      }
     }
     assert.equal(
       createHash('sha1')

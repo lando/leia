@@ -3,17 +3,17 @@ import os from 'node:os';
 import detectNewline from 'detect-newline';
 
 /**
- * Normalizes one fenced scenario command before generation.
+ * normalizes one fenced scenario command before generation.
  *
- * Description comments are removed, backslash continuations are folded, and PowerShell receives
- * stop-on-error behavior. Generation treats the returned bytes as opaque shell input.
+ * description comments are removed, backslash continuations are folded, and powershell receives
+ * stop-on-error behavior. generation treats the returned bytes as opaque shell input.
  *
- * @param command Fenced code-block contents.
- * @param shell Selected shell name.
- * @returns Normalized command bytes using the host newline.
+ * @param command fenced code-block contents.
+ * @param shell selected shell name.
+ * @returns normalized command bytes using the host newline.
  */
 export const normalizeCommand = (command: string, shell: string): string => {
-  // Marked normalizes line endings; the fallback also handles single-line/empty code blocks.
+  // marked normalizes line endings; the fallback also handles single-line/empty code blocks.
   const newline = detectNewline(command) ?? '\n';
   const trimmed = command
     .split(newline)

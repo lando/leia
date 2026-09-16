@@ -1,0 +1,28 @@
+{
+  "name": "leia",
+  "description": "Author, run, and diagnose executable documentation with Leia.",
+  "author": {
+    "name": "Lando"
+  },
+  "homepage": "https://github.com/lando/leia",
+  "repository": "https://github.com/lando/leia",
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Leia",
+    "shortDescription": "Turn documentation into working tests",
+    "brandColor": "#ed3f7a",
+    "composerIcon": "./skills/scenarios/assets/lando-logo.png",
+    "logo": "./skills/scenarios/assets/lando-logo.png",
+    "defaultPrompt": [
+      "Run the Leia scenarios in this project and explain any failures.",
+      "Find a useful missing Leia scenario and implement it.",
+      "Set up GitHub Actions coverage for this project\u2019s Leia scenarios."
+    ],
+    "longDescription": "Author useful markdown scenarios, run and diagnose Leia tests, and configure GitHub Actions coverage with one shared skill.",
+    "developerName": "Lando",
+    "category": "Testing",
+    "capabilities": ["Read", "Write"]
+  },
+  "version": "1.0.0-beta.9"
+}

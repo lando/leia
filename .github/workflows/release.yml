@@ -49,7 +49,9 @@ jobs:
       - name: Prepare release
         uses: tanaabased/prepare-release-action@v1
         with:
-          commands: bun run format:write
+          commands: |
+            version-injector .codex-plugin/plugin.json --style json --version "$PREPARE_RELEASE_VERSION"
+            bun run format:write
           sync: true
           version: ${{ github.event.release.tag_name }}
           sync-token: ${{ secrets.RTFM47_COAXIUM_INJECTOR }}
@@ -63,7 +65,7 @@ jobs:
             UNRELEASED_DATE=${{ env.RELEASE_DATE }}
             UNRELEASED_LINK=${{ github.event.release.html_url }}
             UNRELEASED_VERSION=${{ github.event.release.tag_name }}
-      # The action stamps files after its commands; validate those mutations too.
+      # the action stamps files after its commands; validate those mutations too.
       - name: Build prepared package entrypoints
         run: bun run build
       - name: Check prepared package formatting

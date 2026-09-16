@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 
 import { loadSubject, target } from './subject.ts';
 
-const { debugNamespace, parseCLI } = await loadSubject('lib/cli');
+const { parseCLI } = await loadSubject('lib/cli');
 const { getShell } = await loadSubject('lib/shell');
 
 const dirname = fileURLToPath(new URL('.', import.meta.url));
@@ -15,6 +15,13 @@ const root = path.resolve(dirname, '..');
 
 const invokeCLI = (args: string[], overrides: Record<string, string | undefined> = {}) => {
   const environment: NodeJS.ProcessEnv = { ...process.env };
+  for (const name of Object.keys(environment))
+    if (
+      /^LEIA_(CLEANUP_HEADER|SETUP_HEADER|TEST_HEADER|IGNORE|RETRY|TIMEOUT|SHELL|MODULE_FORMAT|STDIN|DEBUG)$/.test(
+        name,
+      )
+    )
+      delete environment[name];
   for (const [name, value] of Object.entries(overrides)) {
     if (value === undefined) delete environment[name];
     else environment[name] = value;
@@ -45,6 +52,96 @@ describe('lib/cli', () => {
       spawn: false,
       splitFile: false,
     });
+  });
+  it('should resolve Leia environment defaults without changing built-in defaults', () => {
+    const options = parseCLI(['README.md'], {
+      LEIA_CLEANUP_HEADER: 'Done, End',
+      LEIA_SETUP_HEADER: 'Before, Prepare',
+      LEIA_TEST_HEADER: 'Check, Verify',
+      LEIA_IGNORE: '*.tmp, archive/**',
+      LEIA_RETRY: '2',
+      LEIA_TIMEOUT: '30',
+      LEIA_SHELL: 'sh',
+      LEIA_MODULE_FORMAT: 'esm',
+      LEIA_STDIN: 'true',
+      LEIA_DEBUG: '1',
+    });
+    assert.deepEqual(options.cleanupHeader, ['Done', 'End']);
+    assert.deepEqual(options.setupHeader, ['Before', 'Prepare']);
+    assert.deepEqual(options.testHeader, ['Check', 'Verify']);
+    assert.deepEqual(options.ignore, ['*.tmp', 'archive/**']);
+    assert.equal(options.retry, 2);
+    assert.equal(options.timeout, 30);
+    assert.equal(options.shell, 'sh');
+    assert.equal(options.moduleFormat, 'esm');
+    assert.equal(options.stdin, true);
+    assert.equal(options.debug, true);
+    assert.deepEqual(
+      parseCLI([], { LEIA_TIMEOUT: '', LEIA_DEBUG: '', LEIA_SETUP_HEADER: '' }),
+      parseCLI([]),
+    );
+  });
+  it('should replace environment lists when either alias is supplied', () => {
+    const options = parseCLI(
+      [
+        'README.md',
+        '-c',
+        'Cleanup',
+        '--setup-header=Start',
+        '-s',
+        'Prepare',
+        '--test-header=Test',
+        '-i',
+        'one/**',
+        '--ignore=two/**',
+      ],
+      {
+        LEIA_CLEANUP_HEADER: 'Env',
+        LEIA_SETUP_HEADER: 'Env',
+        LEIA_TEST_HEADER: 'Env',
+        LEIA_IGNORE: 'env/**',
+      },
+    );
+    assert.deepEqual(options.cleanupHeader, ['Cleanup']);
+    assert.deepEqual(options.setupHeader, ['Start', 'Prepare']);
+    assert.deepEqual(options.testHeader, ['Test']);
+    assert.deepEqual(options.ignore, ['one/**', 'two/**']);
+  });
+  it('should validate only effective environment values with the flag constraints', () => {
+    for (const [flag, environment, valid] of [
+      ['retry', 'LEIA_RETRY', '2'],
+      ['timeout', 'LEIA_TIMEOUT', '30'],
+      ['shell', 'LEIA_SHELL', 'sh'],
+      ['module-format', 'LEIA_MODULE_FORMAT', 'esm'],
+    ]) {
+      assert.throws(() => parseCLI([], { [environment!]: 'invalid' }));
+      assert.deepEqual(
+        parseCLI([`--${flag}=${valid}`], { [environment!]: 'invalid' }),
+        parseCLI([`--${flag}=${valid}`]),
+      );
+    }
+    assert.throws(() => parseCLI([], { LEIA_TIMEOUT: '2147484' }), /--timeout must be/);
+    assert.throws(() => parseCLI([], { LEIA_RETRY: '-1' }), /--retry must be/);
+  });
+  it('should allow boolean flags to override enabled or disabled environment defaults', () => {
+    for (const name of ['stdin', 'debug'] as const) {
+      const key = `LEIA_${name.toUpperCase()}`;
+      for (const value of ['1', 'true']) assert.equal(parseCLI([], { [key]: value })[name], true);
+      for (const value of ['0', 'false']) assert.equal(parseCLI([], { [key]: value })[name], false);
+      assert.equal(parseCLI([`--${name}`], { [key]: 'false' })[name], true);
+      assert.equal(parseCLI([`--no-${name}`], { [key]: 'true' })[name], false);
+      assert.equal(parseCLI([`--${name}`, `--no-${name}`])[name], false);
+      assert.equal(parseCLI([`--no-${name}`, `--${name}`])[name], true);
+      assert.throws(() => parseCLI([], { [key]: 'yes' }), new RegExp(key));
+      assert.doesNotThrow(() => parseCLI([`--no-${name}`], { [key]: 'invalid' }));
+      assert.throws(() => parseCLI([`--no-${name}=false`]), /does not accept a value/);
+    }
+  });
+  it('should preserve explicit stdin inheritance independently of CI', () => {
+    assert.equal(parseCLI([], { CI: '1' }).stdin, false);
+    assert.equal(parseCLI(['--stdin'], { CI: '1' }).stdin, true);
+    assert.equal(parseCLI([], { CI: '1', LEIA_STDIN: '1' }).stdin, true);
+    assert.equal(parseCLI(['--no-stdin'], { CI: '1', LEIA_STDIN: '1' }).stdin, false);
   });
   it('should retain all short aliases, repeated values, and equals/attached spellings', () => {
     const options = parseCLI([
@@ -123,18 +220,29 @@ describe('lib/cli', () => {
     assert.throws(() => parseCLI(['--module-format=amd']), /Expected --module-format/);
     assert.throws(() => parseCLI(['--shell=fish']), /Expected --shell/);
   });
-  it('should consume inline debug namespaces without adding input patterns', () => {
-    for (const namespace of ['leia:*', '*', '']) {
-      const options = parseCLI(['README.md', `--debug=${namespace}`, 'examples/*.md']);
-      assert.equal(options.debug, true);
-      assert.deepEqual(options.tests, ['README.md', 'examples/*.md']);
-    }
+  it('should accept debug only as a value-free flag before the option terminator', () => {
+    assert.equal(parseCLI(['README.md', '--debug']).debug, true);
+    const positional = parseCLI(['--', '--debug']);
+    assert.equal(positional.debug, false);
+    assert.deepEqual(positional.tests, ['--debug']);
+    for (const value of ['leia:*', '*', '', 'true', 'false'])
+      assert.throws(() => parseCLI([`--debug=${value}`]), /--debug does not accept a value/);
   });
-  it('should initialize debug before dispatch without overriding an existing namespace', () => {
-    assert.equal(debugNamespace(['--debug'], {}), '*');
-    assert.equal(debugNamespace(['--debug=leia:*'], { DEBUG: '' }), 'leia:*');
-    assert.equal(debugNamespace(['--debug'], { DEBUG: 'existing' }), undefined);
-    assert.equal(debugNamespace([], {}), undefined);
+  it('should honor DEBUG and let the debug flag enable every namespace', () => {
+    for (const [args, DEBUG, LEIA_DEBUG] of [
+      [['--help'], 'leia:cli', undefined],
+      [['--debug', '--help'], 'another:namespace', '0'],
+      [['--help'], 'another:namespace', '1'],
+      [['--no-debug', '--help'], 'leia:cli', '1'],
+      [['--debug', '--help'], undefined, undefined],
+    ] as const) {
+      const result = invokeCLI([...args], { DEBUG, LEIA_DEBUG, FORCE_COLOR: '0' });
+      assert.equal(result.status, 0, result.stderr);
+      assert.match(result.stderr, /leia:cli starting default command execution/);
+    }
+    const disabled = invokeCLI(['--no-debug', '--help'], { DEBUG: undefined, LEIA_DEBUG: '1' });
+    assert.equal(disabled.status, 0, disabled.stderr);
+    assert.equal(disabled.stderr, '');
   });
   it('should render stable plain help for non-TTY and no-color output', () => {
     for (const environment of [
@@ -145,15 +253,22 @@ describe('lib/cli', () => {
       assert.equal(result.error, undefined);
       assert.equal(result.status, 0, result.stderr);
       assert.equal(result.stderr, '');
-      assert.match(result.stdout, /^Leia\nRun fenced Markdown examples as Mocha tests\.\n/m);
-      assert.match(result.stdout, /^Usage$/m);
-      assert.match(result.stdout, /^Options$/m);
-      assert.match(result.stdout, /^Examples$/m);
+      assert.match(result.stdout, /^usage: \[LEIA_\*\.\.\.\] leia <files\.\.\.> \[options\]\n/);
+      assert.match(result.stdout, /\nruns fenced markdown examples as mocha tests\n/);
+      assert.match(result.stdout, /^options$/m);
+      assert.match(result.stdout, /^examples$/m);
       assert.match(result.stdout, /leia <files\.\.\.> \[options\]/);
-      assert.equal(
-        result.stdout.split('\n').every((line) => line.length <= 100),
-        true,
-      );
+      const options = result.stdout.split('\noptions\n')[1]!.split('\nexamples\n')[0]!;
+      const flags = options.split('\n').filter((line) => line.trimStart().startsWith('-'));
+      assert.match(flags.slice(-3).join('\n'), /--version.*\n.*--debug.*\n.*--help/);
+      assert.doesNotMatch(options, /--(?:cleanup|setup|test)-header/);
+      for (const flag of ['c', 's', 't'])
+        assert.match(options, new RegExp(`^  -${flag} <names\\.\\.\\.>.*\\[default: .*\\]$`, 'm'));
+      assert.match(result.stdout, /\nexamples\n[\s\S]*\nenvironment variables\n/);
+      assert.doesNotMatch(result.stdout, /DEBUG=/);
+      assert.doesNotMatch(result.stdout, /^ {2}DEBUG /m);
+      assert.match(result.stdout, /LEIA_DEBUG +same as --debug/);
+      assert.match(result.stdout, /LEIA_STDIN +same as --stdin/);
       assert.equal(result.stdout.includes('\u001b['), false);
       assert.equal(result.stdout.includes('\r'), false);
     }
@@ -166,7 +281,7 @@ describe('lib/cli', () => {
     });
     assert.equal(result.status, 0, result.stderr);
     assert.equal(result.stdout.includes('\u001b['), true);
-    assert.match(result.stdout, /Usage/);
+    assert.match(result.stdout, /usage/);
   });
   it('should render actionable validation errors without a stack', () => {
     const result = invokeCLI(['README.md', '--timeout', 'nope'], {

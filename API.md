@@ -4,27 +4,11 @@
 
 This generated reference covers Leia's supported JavaScript and TypeScript package exports.
 Start with the [README](./README.md) for installation and CLI onboarding, or use
-[ADVANCED](./ADVANCED.md) for complete scenario and CLI behavior.
+[ADVANCED](./ADVANCED.md) for scenario behavior and [CLI](./CLI.md) for command options.
 
 ## Usage
 
-### ESM
-
-<!-- leia-example:api-esm -->
-
-```js
-import Leia from '@lando/leia';
-
-const leia = new Leia();
-const files = leia.find(['quickstart.md']);
-const sources = leia.parse(files, { moduleFormat: 'esm' });
-const harnesses = leia.generate(sources);
-const runner = await leia.runAsync(harnesses);
-
-runner.run((failures) => {
-  process.exitCode = failures ? 1 : 0;
-});
-```
+See the [README](./README.md#run-programmatically) for ESM usage.
 
 ### CommonJS
 
@@ -44,8 +28,7 @@ runner.run((failures) => {
 });
 ```
 
-The default and named `Leia` exports are the same constructor. CommonJS `require()` returns
-that constructor directly. Use `run()` only with CommonJS harnesses; `runAsync()` loads either
+Use `run()` only with CommonJS harnesses; `runAsync()` loads either
 generated format.
 
 ## Entry points
@@ -74,9 +57,9 @@ so package conditions select matching JavaScript and declarations.
 
 ### `Leia`
 
-Coordinates Leia's discovery, parsing, generation, and execution stages.
+coordinates leia's discovery, parsing, generation, and execution stages.
 
-The default and named ESM exports refer to this constructor. CommonJS `require('@lando/leia')`
+the default and named esm exports refer to this constructor. commonjs `require('@lando/leia')`
 returns the same constructor directly.
 
 ```ts
@@ -94,99 +77,99 @@ class Leia {
 
 ### `find`
 
-Finds scenario files from glob patterns.
+finds scenario files from glob patterns.
 
-Results preserve pattern order, exclude directories, resolve to real paths, and remove
-duplicates. Ignore patterns are passed to the same glob implementation.
+results preserve pattern order, exclude directories, resolve to real paths, and remove
+duplicates. ignore patterns are passed to the same glob implementation.
 
 ```ts
 const find: (patterns: string[], ignore?: string[]) => string[];
 ```
 
-- **patterns:** Glob patterns to scan.
+- **patterns:** glob patterns to scan.
 
-- **ignore:** Glob patterns to exclude.
+- **ignore:** glob patterns to exclude.
 
-**Returns:** Absolute paths for the discovered scenario files.
+**Returns:** absolute paths for the discovered scenario files.
 
-**Throws:** A `TypeError` when either argument is not an array of strings.
+**Throws:** a `TypeError` when either argument is not an array of strings.
 
 ## `@lando/leia/parse`
 
-### `parse`
+### `normalizeCommand`
 
-Reads and normalizes Markdown scenario files.
+normalizes one fenced scenario command before generation.
 
-Module format and retry options are validated before file I/O, including when `files` is empty.
+description comments are removed, backslash continuations are folded, and powershell receives
+stop-on-error behavior. generation treats the returned bytes as opaque shell input.
 
 ```ts
-const parse: (files: string[], options?: ParseOptions) => Harness[];
+const normalizeCommand: (command: string, shell: string) => string;
 ```
 
-- **files:** Markdown scenario paths.
+- **command:** fenced code-block contents.
 
-- **options:** Scenario headers, shell, retry, stdin, and module-format settings.
+- **shell:** selected shell name.
 
-**Returns:** Normalized harness metadata ready for `generate()`.
-
-**Throws:** When options, Markdown, or files are invalid.
+**Returns:** normalized command bytes using the host newline.
 
 ### `readMarkdown`
 
-Reads the Markdown tokens used by Leia's scenario compiler.
+reads the markdown tokens used by leia's scenario compiler.
 
-Only level-one and level-two headings plus top-level fenced code blocks are retained. Repeated
+only level-one and level-two headings plus top-level fenced code blocks are retained. repeated
 file paths are combined into one document.
 
 ```ts
 const readMarkdown: (files: string[]) => MarkdownDocument[];
 ```
 
-- **files:** Markdown files to read synchronously.
+- **files:** markdown files to read synchronously.
 
-**Returns:** Ordered compiler documents.
+**Returns:** ordered compiler documents.
 
-**Throws:** A `TypeError` when `files` is not an array of strings.
+**Throws:** a `TypeError` when `files` is not an array of strings.
 
 ### `normalizeMarkdown`
 
-Converts compiler documents into generated-harness metadata.
+converts compiler documents into generated-harness metadata.
 
-Header prefixes are case-sensitive. Documents without a matching test section are omitted;
+header prefixes are case-sensitive. documents without a matching test section are omitted;
 documents with tests require a level-one title.
 
 ```ts
 const normalizeMarkdown: (documents: MarkdownDocument[], options?: ParseOptions) => Harness[];
 ```
 
-- **documents:** Documents returned by `readMarkdown()`.
+- **documents:** documents returned by `readMarkdown()`.
 
-- **options:** Scenario headers, shell, retry, stdin, and module-format settings.
+- **options:** scenario headers, shell, retry, stdin, and module-format settings.
 
-**Returns:** Normalized harness metadata ready for generation.
+**Returns:** normalized harness metadata ready for generation.
 
-**Throws:** When options are invalid or a test document has no level-one title.
+**Throws:** when options are invalid or a test document has no level-one title.
 
-### `normalizeCommand`
+### `parse`
 
-Normalizes one fenced scenario command before generation.
+reads and normalizes markdown scenario files.
 
-Description comments are removed, backslash continuations are folded, and PowerShell receives
-stop-on-error behavior. Generation treats the returned bytes as opaque shell input.
+module format and retry options are validated before file i/o, including when `files` is empty.
 
 ```ts
-const normalizeCommand: (command: string, shell: string) => string;
+const parse: (files: string[], options?: ParseOptions) => Harness[];
 ```
 
-- **command:** Fenced code-block contents.
+- **files:** markdown scenario paths.
 
-- **shell:** Selected shell name.
+- **options:** scenario headers, shell, retry, stdin, and module-format settings.
 
-**Returns:** Normalized command bytes using the host newline.
+**Returns:** normalized harness metadata ready for `generate()`.
+
+**Throws:** when options, markdown, or files are invalid.
 
 ### `ParseOptions`
 
-Options for Markdown normalization and the `parse()` convenience function.
+options for markdown normalization and the `parse()` convenience function.
 
 ```ts
 interface ParseOptions {
@@ -202,7 +185,7 @@ interface ParseOptions {
 
 ### `Harness`
 
-The compatibility-shaped IR exchanged by parsing and generation.
+the compatibility-shaped ir exchanged by parsing and generation.
 
 ```ts
 interface Harness {
@@ -225,7 +208,7 @@ interface Harness {
 
 ### `Scenario`
 
-Normalized command bytes are opaque to rendering and script emission.
+normalized command bytes are opaque to rendering and script emission.
 
 ```ts
 interface Scenario {
@@ -243,7 +226,7 @@ interface Scenario {
 
 ### `MarkdownDocument`
 
-One Markdown file and the ordered top-level tokens retained by Leia.
+one markdown file and the ordered top-level tokens retained by leia.
 
 ```ts
 interface MarkdownDocument {
@@ -254,7 +237,7 @@ interface MarkdownDocument {
 
 ### `MarkdownElement`
 
-Markdown tokens retained by the compiler before scenario normalization.
+markdown tokens retained by the compiler before scenario normalization.
 
 ```ts
 type MarkdownElement =
@@ -263,55 +246,9 @@ type MarkdownElement =
 
 ## `@lando/leia/generate`
 
-### `generate`
-
-Validates a batch, then writes its command scripts and generated harnesses.
-
-Every harness is rendered before any output is written. Script files are executable; filesystem
-errors during emission propagate to the caller.
-
-```ts
-const generate: (tests: unknown[], options?: GenerateOptions) => string[];
-```
-
-- **tests:** Harness-shaped values, normally returned by `parse()`.
-
-- **options:** Concrete output format and optional static-template whitespace stripping.
-
-**Returns:** Paths to the generated harnesses.
-
-**Throws:** When input metadata, output format, or filesystem operations are invalid.
-
-### `compileHarness`
-
-Validates and renders one harness without writing files.
-
-```ts
-const compileHarness: (value: unknown, options?: GenerateOptions) => GeneratedHarness;
-```
-
-- **value:** Harness-shaped data from TypeScript or untyped JavaScript.
-
-- **options:** Concrete output format and optional static-template whitespace stripping.
-
-**Returns:** The destination, rendered source, and validated scenarios.
-
-**Throws:** A `TypeError` for malformed metadata or an `Error` for an unsupported module format.
-
-### `GenerateOptions`
-
-Options for rendering generated harnesses.
-
-```ts
-interface GenerateOptions {
-  moduleFormat?: ModuleFormat;
-  strip?: boolean;
-}
-```
-
 ### `GeneratedHarness`
 
-An in-memory generated harness before files are emitted.
+an in-memory generated harness before files are emitted.
 
 ```ts
 interface GeneratedHarness {
@@ -321,57 +258,57 @@ interface GeneratedHarness {
 }
 ```
 
+### `compileHarness`
+
+validates and renders one harness without writing files.
+
+```ts
+const compileHarness: (value: unknown, options?: GenerateOptions) => GeneratedHarness;
+```
+
+- **value:** harness-shaped data from typescript or untyped javascript.
+
+- **options:** concrete output format and optional static-template whitespace stripping.
+
+**Returns:** the destination, rendered source, and validated scenarios.
+
+**Throws:** a `TypeError` for malformed metadata or an `Error` for an unsupported module format.
+
+### `generate`
+
+validates a batch, then writes its command scripts and generated harnesses.
+
+every harness is rendered before any output is written. script files are executable; filesystem
+errors during emission propagate to the caller.
+
+```ts
+const generate: (tests: unknown[], options?: GenerateOptions) => string[];
+```
+
+- **tests:** harness-shaped values, normally returned by `parse()`.
+
+- **options:** concrete output format and optional static-template whitespace stripping.
+
+**Returns:** paths to the generated harnesses.
+
+**Throws:** when input metadata, output format, or filesystem operations are invalid.
+
+### `GenerateOptions`
+
+options for rendering generated harnesses.
+
+```ts
+interface GenerateOptions {
+  moduleFormat?: ModuleFormat;
+  strip?: boolean;
+}
+```
+
 ## `@lando/leia/run`
-
-### `run`
-
-Creates a Mocha runner for CommonJS harnesses.
-
-```ts
-const run: (tests: string[], options?: RunOptions) => Mocha;
-```
-
-- **tests:** Generated CommonJS harness paths.
-
-- **options:** Per-test timeout in seconds and an optional Mocha reporter name.
-
-**Returns:** A configured Mocha runner. Call its `run()` method to execute the suite.
-
-**Throws:** When no harnesses are provided or an ESM harness is passed.
-
-### `runAsync`
-
-Creates a Mocha runner and loads CommonJS or ESM harnesses asynchronously.
-
-```ts
-const runAsync: (tests: string[], options?: RunOptions) => Promise<Mocha>;
-```
-
-- **tests:** Generated harness paths.
-
-- **options:** Per-test timeout in seconds and an optional Mocha reporter name.
-
-**Returns:** A loaded Mocha runner. Call its `run()` method to execute the suite.
-
-**Throws:** When no harnesses are provided or a harness cannot be loaded.
-
-### `exitCode`
-
-Maps Mocha failures and a caught Leia lifecycle signal to a process exit code.
-
-```ts
-const exitCode: (mocha: Mocha, failures: number) => number;
-```
-
-- **mocha:** The runner returned by `run()` or `runAsync()`.
-
-- **failures:** The failure count reported by Mocha.
-
-**Returns:** `0` for success, `1` for failures, or `129`, `130`, or `143` for a caught signal.
 
 ### `RunOptions`
 
-Options shared by the synchronous and asynchronous Mocha loaders.
+options shared by the synchronous and asynchronous mocha loaders.
 
 ```ts
 interface RunOptions {
@@ -380,26 +317,72 @@ interface RunOptions {
 }
 ```
 
+### `run`
+
+creates a mocha runner for commonjs harnesses.
+
+```ts
+const run: (tests: string[], options?: RunOptions) => Mocha;
+```
+
+- **tests:** generated commonjs harness paths.
+
+- **options:** per-test timeout in seconds and an optional mocha reporter name.
+
+**Returns:** a configured mocha runner. call its `run()` method to execute the suite.
+
+**Throws:** when no harnesses are provided or an esm harness is passed.
+
+### `runAsync`
+
+creates a mocha runner and loads commonjs or esm harnesses asynchronously.
+
+```ts
+const runAsync: (tests: string[], options?: RunOptions) => Promise<Mocha>;
+```
+
+- **tests:** generated harness paths.
+
+- **options:** per-test timeout in seconds and an optional mocha reporter name.
+
+**Returns:** a loaded mocha runner. call its `run()` method to execute the suite.
+
+**Throws:** when no harnesses are provided or a harness cannot be loaded.
+
+### `exitCode`
+
+maps mocha failures and a caught leia lifecycle signal to a process exit code.
+
+```ts
+const exitCode: (mocha: Mocha, failures: number) => number;
+```
+
+- **mocha:** the runner returned by `run()` or `runAsync()`.
+
+- **failures:** the failure count reported by mocha.
+
+**Returns:** `0` for success, `1` for failures, or `129`, `130`, or `143` for a caught signal.
+
 ## `@lando/leia/shell`
 
 ### `getShell`
 
-Resolves a shell binary into Leia's deterministic invocation shape.
+resolves a shell binary into leia's deterministic invocation shape.
 
-Known Bash, cmd, PowerShell, sh, and zsh names receive platform-specific arguments. Unknown
+known bash, cmd, powershell, sh, and zsh names receive platform-specific arguments. unknown
 names fall back to `sh`.
 
 ```ts
 const getShell: (shell?: string) => Shell;
 ```
 
-- **shell:** Shell binary or path. Defaults to Leia's platform and account-shell selection.
+- **shell:** shell binary or path. defaults to leia's platform and account-shell selection.
 
-**Returns:** The binary, normalized name, script extension, and invocation arguments.
+**Returns:** the binary, normalized name, script extension, and invocation arguments.
 
 ### `Shell`
 
-Shell executable and argument template used for a scenario script.
+shell executable and argument template used for a scenario script.
 
 ```ts
 interface Shell {
@@ -412,36 +395,36 @@ interface Shell {
 
 ## `@lando/leia/module-format`
 
-### `resolveModuleFormat`
-
-Resolves Leia's generated harness module format.
-
-Auto detection walks from the invocation directory to the nearest package.json. A package is ESM only when its
-type is explicitly "module"; all other readable package scopes and a missing package default to CommonJS.
-
-```ts
-const resolveModuleFormat: (moduleFormat?: string, cwd?: string) => ModuleFormat;
-```
-
-- **moduleFormat:** Requested `auto`, `commonjs`, or `esm` format.
-
-- **cwd:** Initial invocation working directory used for auto detection.
-
-**Returns:** The resolved `commonjs` or `esm` format.
-
-**Throws:** When the format is unsupported or the nearest package.json cannot be read or parsed.
-
 ### `formats`
 
-Module-format values accepted by the CLI and `resolveModuleFormat()`.
+module-format values accepted by the cli and `resolveModuleFormat()`.
 
 ```ts
 const formats: string[];
 ```
 
+### `resolveModuleFormat`
+
+resolves leia's generated harness module format.
+
+auto detection walks from the invocation directory to the nearest package.json. a package is esm only when its
+type is explicitly "module"; all other readable package scopes and a missing package default to commonjs.
+
+```ts
+const resolveModuleFormat: (moduleFormat?: string, cwd?: string) => ModuleFormat;
+```
+
+- **moduleFormat:** requested `auto`, `commonjs`, or `esm` format.
+
+- **cwd:** initial invocation working directory used for auto detection.
+
+**Returns:** the resolved `commonjs` or `esm` format.
+
+**Throws:** when the format is unsupported or the nearest package.json cannot be read or parsed.
+
 ### `ModuleFormat`
 
-Concrete generated-harness module formats.
+concrete generated-harness module formats.
 
 ```ts
 type ModuleFormat = 'commonjs' | 'esm';
@@ -451,7 +434,7 @@ type ModuleFormat = 'commonjs' | 'esm';
 
 ### `SectionRole`
 
-Scenario roles assigned from matching level-two headings.
+scenario roles assigned from matching level-two headings.
 
 ```ts
 type SectionRole = 'setup' | 'test' | 'cleanup' | 'invalid';

@@ -1,4 +1,4 @@
-/** Select only a child's tree from a POSIX pid/ppid snapshot, descendants before the child. */
+/** select only a child's tree from a posix pid/ppid snapshot, descendants before the child. */
 export const processTree = (snapshot: string, root: number): number[] => {
   const children = new Map<number, number[]>();
   for (const line of snapshot.split('\n')) {

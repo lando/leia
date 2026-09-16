@@ -20,7 +20,7 @@ export interface ScenarioContext extends Mocha.Context {
   leiaLifecycle?: Lifecycle;
 }
 
-/** The process deadline owns termination; Mocha must not start a retry while the child survives. */
+/** the process deadline owns termination; mocha must not start a retry while the child survives. */
 export const runScenario = async (
   context: ScenarioContext,
   request: Omit<ProcessRequest, 'signal' | 'timeout'>,

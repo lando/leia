@@ -1,19 +1,19 @@
-/** Markdown tokens retained by the compiler before scenario normalization. */
+/** markdown tokens retained by the compiler before scenario normalization. */
 export type MarkdownElement =
   { type: 'heading'; depth: 1 | 2; text: string } | { type: 'code'; text: string };
 
-/** One Markdown file and the ordered top-level tokens retained by Leia. */
+/** one markdown file and the ordered top-level tokens retained by leia. */
 export interface MarkdownDocument {
   file: string;
   elements: MarkdownElement[];
 }
 
-/** Concrete generated-harness module formats. */
+/** concrete generated-harness module formats. */
 export type ModuleFormat = 'commonjs' | 'esm';
-/** Scenario roles assigned from matching level-two headings. */
+/** scenario roles assigned from matching level-two headings. */
 export type SectionRole = 'setup' | 'test' | 'cleanup' | 'invalid';
 
-/** Shell executable and argument template used for a scenario script. */
+/** shell executable and argument template used for a scenario script. */
 export interface Shell {
   binary: string;
   name: string;
@@ -21,7 +21,7 @@ export interface Shell {
   args: string[];
 }
 
-/** Normalized command bytes are opaque to rendering and script emission. */
+/** normalized command bytes are opaque to rendering and script emission. */
 export interface Scenario {
   args: string[];
   shell: string;
@@ -34,7 +34,7 @@ export interface Scenario {
   section: string;
 }
 
-/** The compatibility-shaped IR exchanged by parsing and generation. */
+/** the compatibility-shaped ir exchanged by parsing and generation. */
 export interface Harness {
   file: string;
   id: string;
@@ -52,7 +52,7 @@ export interface Harness {
   tests: Partial<Record<SectionRole, Scenario[]>>;
 }
 
-/** Options for Markdown normalization and the `parse()` convenience function. */
+/** options for markdown normalization and the `parse()` convenience function. */
 export interface ParseOptions {
   cleanupHeader?: string[];
   moduleFormat?: ModuleFormat | 'auto';
@@ -63,7 +63,7 @@ export interface ParseOptions {
   testHeader?: string[];
 }
 
-/** Options for rendering generated harnesses. */
+/** options for rendering generated harnesses. */
 export interface GenerateOptions {
   moduleFormat?: ModuleFormat;
   strip?: boolean;

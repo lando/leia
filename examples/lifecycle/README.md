@@ -3,7 +3,7 @@
 ## Test
 
 ```sh
-# Should preserve lifecycle behavior through all selected execution targets
+# should preserve lifecycle behavior through all selected execution targets
 node verify.cjs
 ```
 

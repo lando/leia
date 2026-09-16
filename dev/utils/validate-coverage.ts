@@ -7,7 +7,7 @@ interface FileCoverage {
   f: Record<string, number>;
 }
 
-/** Reject empty, partial, generated-path, or out-of-bounds source coverage reports. */
+/** reject empty, partial, generated-path, or out-of-bounds source coverage reports. */
 export const validateCoverage = (report: unknown, sources: Record<string, string>): void => {
   assert.ok(
     report && typeof report === 'object' && !Array.isArray(report),

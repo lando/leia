@@ -10,7 +10,7 @@ node -e "require('node:fs').writeFileSync('leia-state.txt', 'ready')"
 ## Testing
 
 ```sh
-# should execute the generated harness from the nearest CommonJS package
+# should execute the generated harness from the nearest commonjs package
 node -e "if (require('node:fs').readFileSync('leia-state.txt', 'utf8') !== 'ready') process.exit(1)"
 ```
 
