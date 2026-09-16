@@ -111,10 +111,9 @@ Use pull-request-only triggers and block-list matrix values. List scenarios expl
 OS-by-scenario matrix; match each recipe's shell and prerequisite requirements. Omit obvious workflow comments.
 
 Derive operating systems, Node versions, shells, install/build steps, and services from the project's
-supported behavior. Run Leia with Node 24 or newer, or use the explicit Bun script in [CLI.md](../../CLI.md#bun).
-For Bun projects, invoke `bun run leia` after defining that script; retain Node when scenario
-commands or the product under test require it. Keep the
-matrix small and separate special shell or harness-format contracts when appropriate. Preserve
+supported behavior. Use Node 24 or the [explicit Bun script](../../CLI.md#bun), retaining Node
+when scenario commands need it. Keep the matrix small; separate special shell or harness-format
+contracts when appropriate. Preserve
 read-only permissions for tests and never execute untrusted PR code with privileged credentials.
 
 Parse the finished YAML, check every matrix entry's prerequisites and scenario path, and run a

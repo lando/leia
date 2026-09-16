@@ -15,7 +15,7 @@ bun install --frozen-lockfile --ignore-scripts
 
 `.bun-version` is authoritative; keep `package.json#packageManager` aligned. Use `bun add` or
 `bun remove` and commit `bun.lock`. Dependency install scripts are unnecessary; do not add npm or
-Yarn lockfiles. Installed Leia packages use Node 24 by default and also support [explicit Bun invocation](./CLI.md#bun).
+Yarn lockfiles.
 
 Alternatively, `lando start` provisions Node and bootstraps the pinned Bun version. Use
 `lando bun run <script>` inside that environment.
@@ -80,28 +80,23 @@ limited to reusable scenarios and their fixtures; internal probes remain checkou
 
 ## Pull requests and releases
 
-- Target `main` for current development. Leia 1.x is unsupported; direct users to upgrade to 2.x.
+- Target `main` for current development.
 - Keep changes focused, link their issue when one exists, and report validation in the PR.
 - Update the owning user guide or API docblock when behavior changes, and record user-visible
   changes in the unreleased changelog. Let CI pass before requesting review.
 
-Release automation runs repository and npm publication as independent jobs from the event's original
-SHA. Both use [the local preparation action](./.github/actions/prepare-release/action.yml), also
-exercised by the release tests. Callers install Node, Bun, and dependencies before preparation.
-Only the repository job enables sync, targeting `main`; other callers default to `sync: false`.
-Either publisher can succeed while the other fails. Inspect existing publication and stamped
-changelog state before retrying a failed job; repository sync is not guaranteed to be idempotent.
+Release jobs publish the repository and npm package independently from the release event's SHA.
+Both use [the preparation action](./.github/actions/prepare-release/action.yml); only repository
+publication syncs changes to `main`. Inspect publication and changelog state before retrying a
+failed job: repository sync may repeat version headers.
 
-The npm job builds after version stamping, validates a retained tarball with
-`check:package --scenarios --pack-destination=.temp/package`, then dry-runs and publishes those same
-bytes. Prereleases use `edge`; stable releases use `latest` and also update `edge`. Before a stable
-release, confirm that `NPM_DEPLOY_TOKEN` is available to the workflow and permits dist-tag updates
-for `@lando/leia`. Trusted publishing handles package publication, but does not authorize this
-separate tag operation. After publication, verify both tags and fresh registry installs.
+Preparation stamps the package and plugin versions. The npm job builds, validates the exact
+tarball, and publishes it to `edge` for prereleases or `latest` for stable releases. Stable releases
+also move `edge`, which requires `NPM_DEPLOY_TOKEN` with dist-tag access to `@lando/leia`;
+trusted publishing does not authorize that operation. Verify both tags and fresh installs afterward.
 
-The npm tarball also carries the shared Codex/OpenClaw skill and its referenced guides. Keep
-`.codex-plugin/plugin.json` at the package version; release preparation stamps both before packing.
-`check:package` validates the installed bundle's metadata, assets, and documentation links. Use the procedure below for host testing.
+`check:package` validates the bundled skill, assets, and documentation links. Use the procedure
+below to test installation in a plugin host.
 
 ## Install a local release candidate
 

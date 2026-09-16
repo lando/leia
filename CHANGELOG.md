@@ -1,17 +1,37 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
-Leia 2.0 brings the CLI, public ESM/CommonJS APIs, TypeScript declarations, and shared agent skill
-tested in beta.1 to the stable release. See the [beta release notes](#v200-beta1---september-16-2026)
-for the full feature list and [migration guide](./ADVANCED.md#upgrade-from-1x) before upgrading.
+Leia 2.0 is a new major release with a rewritten compiler and runner, a refreshed CLI, and agent
+integration. The CLI remains largely familiar: the same `leia` command runs markdown scenarios
+through setup, tests, and cleanup. There are breaking changes, so review the
+[upgrade guide](https://github.com/lando/leia/blob/main/ADVANCED.md#upgrade-from-1x) before updating.
 
-### Compatibility
+### Breaking Changes
 
-- Clarified explicit Bun invocation while retaining Node 24 as the default runtime. [#69](https://github.com/lando/leia/issues/69)
-- Ended 1.x maintenance; upgrade to 2.x for supported releases. [#69](https://github.com/lando/leia/issues/69)
+- Changed `--debug` to a value-free toggle; ambient `DEBUG` still selects namespaces. [#96](https://github.com/lando/leia/pull/96)
+- Ended 1.x maintenance; upgrade to 2.x for supported releases. [#97](https://github.com/lando/leia/pull/97)
+- Restricted package imports to documented public exports; replace private `@lando/leia/lib/*` imports. [#92](https://github.com/lando/leia/pull/92)
 
-### Bug Fixes
+### CLI and API
 
-- Fixed `--version` to identify Bun and its version when running under Bun. [#69](https://github.com/lando/leia/issues/69)
+- Added `LEIA_*` environment defaults with flag precedence and negative boolean overrides. [#96](https://github.com/lando/leia/pull/96)
+- Added native ESM/CommonJS package entrypoints, TypeScript declarations, and relocatable source maps. [#91](https://github.com/lando/leia/pull/91) [#92](https://github.com/lando/leia/pull/92)
+- Documented explicit Bun invocation alongside the default Node 24 launcher. [#97](https://github.com/lando/leia/pull/97)
+- Preserved `--spawn` and `--split-file` as accepted no-ops with compatibility warnings. [#91](https://github.com/lando/leia/pull/91)
+- Refreshed help, options, and diagnostics with Lando styling and plain-output support. [#93](https://github.com/lando/leia/pull/93) [#96](https://github.com/lando/leia/pull/96)
+
+### Agent Integration
+
+- Added a shared Codex/OpenClaw skill to author scenarios, diagnose failures, and configure GitHub Actions matrices. [#96](https://github.com/lando/leia/pull/96)
+- Bundled the skill, interface guides, and reusable examples in the npm package. [#96](https://github.com/lando/leia/pull/96)
+
+### Reliability and Development
+
+- Added early validation for malformed scenarios and generated harnesses. [#90](https://github.com/lando/leia/pull/90)
+- Fixed `--version` to report the executing Node or Bun runtime. [#97](https://github.com/lando/leia/pull/97)
+- Fixed programmatic runners ignoring the `reporter` option. [#94](https://github.com/lando/leia/pull/94)
+- Hardened timeouts, process-tree cancellation, cleanup, and stdin handling. [#91](https://github.com/lando/leia/pull/91)
+- Moved development to pinned Bun and TypeScript ESM while preserving Node-compatible distribution. [#89](https://github.com/lando/leia/pull/89) [#91](https://github.com/lando/leia/pull/91)
+- Verified release tarballs in isolated consumers before publication. [#92](https://github.com/lando/leia/pull/92)
 
 ## v2.0.0-beta.1 - [September 16, 2026](https://github.com/lando/leia/releases/tag/v2.0.0-beta.1)
 

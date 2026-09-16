@@ -64,11 +64,8 @@ leia quickstart.md
 leia "docs/**/*.md" --retry 2
 ```
 
-For Bun projects, define `"leia": "bun ./node_modules/.bin/leia"` in `package.json` scripts, then
-run `bun run leia quickstart.md`. See [Bun invocation](./CLI.md#bun) for installation and CI.
-
-See the [CLI guide](./CLI.md) for npm scripts, all options,
-and environment defaults.
+For Bun, [define the project script](./CLI.md#bun), then run `bun run leia quickstart.md`.
+See the [CLI guide](./CLI.md) for all options and environment defaults.
 
 ### Run programmatically
 
