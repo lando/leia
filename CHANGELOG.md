@@ -1,5 +1,7 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+## v2.0.0 - [September 16, 2026](https://github.com/lando/leia/releases/tag/v2.0.0)
+
 Leia 2.0 is a new major release with a rewritten compiler and runner, a refreshed CLI, and agent
 integration. The CLI remains largely familiar: the same `leia` command runs markdown scenarios
 through setup, tests, and cleanup. There are breaking changes, so review the
