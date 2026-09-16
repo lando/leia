@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import type { ModuleFormat } from './compiler-types.ts';
 
+/** Module-format values accepted by the CLI and `resolveModuleFormat()`. */
 export const formats = ['auto', 'commonjs', 'esm'];
 
 /**
@@ -11,10 +12,10 @@ export const formats = ['auto', 'commonjs', 'esm'];
  * Auto detection walks from the invocation directory to the nearest package.json. A package is ESM only when its
  * type is explicitly "module"; all other readable package scopes and a missing package default to CommonJS.
  *
- * @param {String} [moduleFormat=auto] Requested auto, commonjs, or esm format.
- * @param {String} [cwd=process.cwd()] Initial invocation working directory used for auto detection.
- * @return {String} The resolved commonjs or esm format.
- * @throws {Error} When the format is unsupported or the nearest package.json cannot be read or parsed.
+ * @param moduleFormat Requested `auto`, `commonjs`, or `esm` format.
+ * @param cwd Initial invocation working directory used for auto detection.
+ * @returns The resolved `commonjs` or `esm` format.
+ * @throws When the format is unsupported or the nearest package.json cannot be read or parsed.
  */
 export const resolveModuleFormat = (
   moduleFormat: string = 'auto',

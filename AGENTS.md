@@ -25,7 +25,8 @@ rules in `examples/AGENTS.md`.
 
 - The repository root owns Leia: `bin/` for the public CLI, `lib/` for compiler and lifecycle orchestration, `utils/` for independently testable functions, and flat `test/` for their specs and fixtures. No extra `app/` or `src/` wrapper.
 - `dev/`: build/check libraries, thin internal `scripts/`, focused `utils/`, and flat TypeScript `test/`.
-- `lib/render.ts`: typed harness templates; `docs/compiler.md` documents the compiler IR.
+- `lib/render.ts`: typed harness templates; public compiler contracts are generated in `API.md`,
+  while internal representation details belong to types and tests.
 - `examples/`: executable Leia specifications and their scenario-owned package boundaries or
   fixtures.
 - `.github/workflows/`: lint, unit, cross-platform scenario, shell, module-format, and release

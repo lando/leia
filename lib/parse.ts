@@ -44,7 +44,16 @@ const findClosestModule = (dependency: string): string => {
   }
 };
 
-/** Retain the 1.x top-level Markdown token selection, including ignored deeper headings. */
+/**
+ * Reads the Markdown tokens used by Leia's scenario compiler.
+ *
+ * Only level-one and level-two headings plus top-level fenced code blocks are retained. Repeated
+ * file paths are combined into one document.
+ *
+ * @param files Markdown files to read synchronously.
+ * @returns Ordered compiler documents.
+ * @throws A `TypeError` when `files` is not an array of strings.
+ */
 export const readMarkdown = (files: string[]): MarkdownDocument[] => {
   strings(files, 'files');
   const documents = new Map<string, MarkdownDocument>();
@@ -86,6 +95,17 @@ const normalizeCode = (
   });
 };
 
+/**
+ * Converts compiler documents into generated-harness metadata.
+ *
+ * Header prefixes are case-sensitive. Documents without a matching test section are omitted;
+ * documents with tests require a level-one title.
+ *
+ * @param documents Documents returned by `readMarkdown()`.
+ * @param options Scenario headers, shell, retry, stdin, and module-format settings.
+ * @returns Normalized harness metadata ready for generation.
+ * @throws When options are invalid or a test document has no level-one title.
+ */
 export const normalizeMarkdown = (
   documents: MarkdownDocument[],
   options: ParseOptions = {},
@@ -188,6 +208,16 @@ export const normalizeMarkdown = (
   return harnesses;
 };
 
+/**
+ * Reads and normalizes Markdown scenario files.
+ *
+ * Module format and retry options are validated before file I/O, including when `files` is empty.
+ *
+ * @param files Markdown scenario paths.
+ * @param options Scenario headers, shell, retry, stdin, and module-format settings.
+ * @returns Normalized harness metadata ready for `generate()`.
+ * @throws When options, Markdown, or files are invalid.
+ */
 export const parse = (files: string[], options: ParseOptions = {}): Harness[] => {
   // Resolve invocation options before I/O, including when no files match.
   const resolvedOptions = {

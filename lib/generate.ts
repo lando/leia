@@ -41,13 +41,21 @@ const prepareRenderScenario = (scenario: Scenario): RenderScenario => ({
   skip: scenario.skip,
 });
 
+/** An in-memory generated harness before files are emitted. */
 export interface GeneratedHarness {
   destination: string;
   source: string;
   scenarios: Scenario[];
 }
 
-/** Validate and render in memory before any output is written. Accept unknown at the JS boundary. */
+/**
+ * Validates and renders one harness without writing files.
+ *
+ * @param value Harness-shaped data from TypeScript or untyped JavaScript.
+ * @param options Concrete output format and optional static-template whitespace stripping.
+ * @returns The destination, rendered source, and validated scenarios.
+ * @throws A `TypeError` for malformed metadata or an `Error` for an unsupported module format.
+ */
 export const compileHarness = (
   value: unknown,
   options: GenerateOptions = { strip: false },
@@ -88,6 +96,17 @@ export const compileHarness = (
   return { destination, scenarios, source: renderHarness(data, format, strip) };
 };
 
+/**
+ * Validates a batch, then writes its command scripts and generated harnesses.
+ *
+ * Every harness is rendered before any output is written. Script files are executable; filesystem
+ * errors during emission propagate to the caller.
+ *
+ * @param tests Harness-shaped values, normally returned by `parse()`.
+ * @param options Concrete output format and optional static-template whitespace stripping.
+ * @returns Paths to the generated harnesses.
+ * @throws When input metadata, output format, or filesystem operations are invalid.
+ */
 export const generate = (
   tests: unknown[],
   options: GenerateOptions = { strip: false },
