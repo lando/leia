@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 import { describe, it } from 'mocha';
 
+import { generateApiDocumentation } from '../lib/api-documentation.ts';
+import { repositoryRoot } from '../lib/toolchain.ts';
 import { extractDocumentationExample } from '../utils/documentation.ts';
 
 describe('dev/utils/documentation', () => {
@@ -41,6 +45,13 @@ describe('dev/utils/documentation', () => {
     assert.throws(
       () => extractDocumentationExample('<!-- leia-example:broken -->\n```sh\ntrue', 'broken'),
       /closing fence/,
+    );
+  });
+
+  it('should keep the generated API reference current', async () => {
+    assert.equal(
+      await readFile(join(repositoryRoot, 'API.md'), 'utf8'),
+      await generateApiDocumentation(repositoryRoot),
     );
   });
 });

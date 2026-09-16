@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
 import { checkDistribution, distributionFiles } from './distribution.ts';
+import { generateApiDocumentation } from './api-documentation.ts';
 import { checkDocumentationLinks, extractDocumentationExample } from '../utils/documentation.ts';
 import { runCommand } from '../utils/run-command.ts';
 
@@ -32,23 +33,20 @@ export async function checkPackage(
   scenarios = false,
 ): Promise<void> {
   await checkDistribution(root);
-  const documentation = [
-    'README.md',
-    'CONTRIBUTING.md',
-    'docs/api.md',
-    'docs/compiler.md',
-    'docs/lifecycle.md',
-    'docs/migrating-to-2.md',
-    'docs/using-leia.md',
-  ];
+  const documentation = ['README.md', 'ADVANCED.md', 'API.md', 'CONTRIBUTING.md'];
+  assert.equal(
+    await readFile(join(root, 'API.md'), 'utf8'),
+    await generateApiDocumentation(root),
+    'API.md is stale. Run `bun run docs:api` and commit the result.',
+  );
   await checkDocumentationLinks(root, documentation);
   const readExample = async (file: string, id: string): Promise<string> =>
     extractDocumentationExample(await readFile(join(root, file), 'utf8'), id).source;
   const quickstart = await readExample('README.md', 'quickstart-scenario');
   const quickstartCommand = await readExample('README.md', 'quickstart-command');
-  const lifecycle = await readExample('docs/using-leia.md', 'lifecycle-scenario');
-  const apiESM = await readExample('docs/api.md', 'api-esm');
-  const apiCommonJS = await readExample('docs/api.md', 'api-commonjs');
+  const lifecycle = await readExample('ADVANCED.md', 'lifecycle-scenario');
+  const apiESM = await readExample('API.md', 'api-esm');
+  const apiCommonJS = await readExample('API.md', 'api-commonjs');
   const scratch = await mkdtemp(join(tmpdir(), 'leia-package-'));
   try {
     const packDirectory = destination ? resolve(root, destination) : join(scratch, 'pack');

@@ -1,7 +1,8 @@
-# Using Leia
+# Advanced usage
 
-This guide is the user reference for authoring scenarios, selecting CLI behavior, and diagnosing
-failed runs. Start with the [README](../README.md) for installation and a first passing scenario.
+This guide is the complete user reference for authoring Leia scenarios, selecting CLI behavior,
+and diagnosing failed runs. Start with the [README](./README.md) for installation and a first
+passing scenario. Programmatic consumers should also use the generated [API reference](./API.md).
 
 ## Author a scenario
 
@@ -50,9 +51,9 @@ Within a fenced block:
 - A blank line begins another test.
 - The normalized command `skip` marks that test pending.
 
-Setup and cleanup remain ordered tests with the same retry budget as ordinary tests. A failed setup
-does not suppress later tests, and an ordinary failure does not suppress cleanup. Headings below
-level two do not change the active section. Code outside a recognized section is ignored.
+Setup, test, and cleanup commands are ordered tests with independent retry budgets. An ordinary
+failure does not suppress later tests or cleanup. Headings below level two do not change the active
+section, and code outside a recognized section is ignored.
 
 Leia writes temporary command scripts and generated `.leia.cjs` or `.leia.mjs` harnesses beneath
 the operating system's temporary directory. Edit the Markdown source, never those generated files.
@@ -60,7 +61,7 @@ the operating system's temporary directory. Edit the Markdown source, never thos
 ## CLI reference
 
 `leia <files...> [options]` accepts files and glob patterns. Unknown positional values remain file
-patterns for 1.x compatibility.
+patterns for compatibility.
 
 | Option                                           | Purpose                                           | Default                           |
 | ------------------------------------------------ | ------------------------------------------------- | --------------------------------- |
@@ -82,12 +83,9 @@ value may also be comma-separated. `--retry` accepts a non-negative safe integer
 accepts whole seconds from `0` through `2147483`; Leia rejects invalid values before generating a
 harness.
 
-The hidden `--spawn` and `--split-file` flags remain accepted as no-ops for migration. Leia 2.0
-warns when either appears. Remove them after every environment in an automation path uses 2.0.
-
-Run `npm exec -- leia --help` against the installed version when scripting around defaults. The
-checked-in reference follows that output, but the binary remains the authority for the version being
-executed.
+The hidden `--spawn` and `--split-file` compatibility flags remain accepted no-ops and emit a
+warning. Remove them from automation. Run `npm exec -- leia --help` when scripting against an
+installed version; the binary is the authority for that version's defaults.
 
 ## Choose a module format
 
@@ -103,10 +101,6 @@ Leia reports an unreadable or malformed nearest package file instead of silently
 resolved format applies to every Markdown source in an invocation. Explicit extensions keep the
 generated file independent from the temporary directory's package scope.
 
-This setting is separate from the package consumer format: Leia itself exposes both ESM and
-CommonJS entrypoints. See the [Programmatic API](./api.md) when loading generated harnesses from
-code.
-
 ## Select a shell
 
 Without `--shell`, Leia uses deterministic platform precedence:
@@ -115,9 +109,9 @@ Without `--shell`, Leia uses deterministic platform precedence:
 - macOS and other Unix systems: the account shell from `os.userInfo()`, then `SHELL`, then
   `/bin/zsh` on macOS or `/bin/sh` elsewhere.
 
-An unrecognized selected shell uses Leia's `sh` command shape. An explicit `--shell` must be one
-of the supported values in the CLI table. PowerShell scenarios receive stop-on-error behavior so a
-failed statement cannot quietly make a later statement look successful.
+An unrecognized programmatic shell uses Leia's `sh` command shape. The CLI accepts only the shells
+listed in the reference table. PowerShell scenarios receive stop-on-error behavior so a failed
+statement cannot quietly make a later statement look successful.
 
 Commands run from the directory containing their Markdown file and inherit the invocation
 environment plus Leia metadata.
@@ -134,20 +128,29 @@ environment plus Leia metadata.
 | `LEIA_TEST_STAGE`   | `setup`, `test`, or `cleanup`                          |
 
 `LEIA_PARSER_RUNNING`, `LEIA_PARSER_VERSION`, `LEIA_PARSER_ID`, and `LEIA_PARSER_RETRY` remain
-available as 1.x aliases.
+available as compatibility aliases.
 
-## Read output and exit status
+## Understand execution
+
+Without `--stdin`, commands receive EOF. With it, they inherit the invoking input stream while
+stdout and stderr remain captured. A nonzero exit, spawn error, signal-only exit, or timeout fails
+the attempt. Timeouts terminate the active process tree before a retry or later command begins.
 
 Leia writes normal run and completion status to stdout. Warnings, validation errors, execution
 errors, and suggested next actions go to stderr; Mocha retains its reporter output. Color is
-automatic for interactive terminals, disabled for non-TTY and CI output, suppressed by
-`NO_COLOR`, and explicitly controlled by `FORCE_COLOR`.
+automatic for interactive terminals, disabled for non-TTY and CI output, suppressed by `NO_COLOR`,
+and explicitly controlled by `FORCE_COLOR`.
 
-Exit status is `0` for success, help, and version; `1` for validation, loading, spawn, command, or
-test failure. On POSIX, caught `SIGHUP`, `SIGINT`, and `SIGTERM` produce `129`, `130`, and
+Exit status is `0` for success, help, and version, and `1` for validation, loading, spawn, command,
+or test failure. On POSIX, caught `SIGHUP`, `SIGINT`, and `SIGTERM` produce `129`, `130`, and
 `143`. The first signal stops active setup or test work and permits cleanup. A second signal, or a
 signal during cleanup, stops cleanup too. Windows and uncatchable termination cannot guarantee
-cleanup. The [execution lifecycle](./lifecycle.md) owns the complete process-tree contract.
+cleanup.
+
+Noninteractive POSIX commands run in a separate process group. Interactive cancellation targets
+only descendants of the active command. Leia sends `SIGTERM`, then `SIGKILL` after 250 milliseconds
+when necessary. Windows uses `taskkill /T /F`. Descendants that deliberately escape their process
+group are outside the process-tree guarantee.
 
 ## Troubleshoot a run
 
@@ -163,7 +166,7 @@ Run with explicit `--module-format commonjs` or `--module-format esm`. For `auto
 nearest `package.json` above the directory where Leia was invoked, not the directory containing the
 Markdown file.
 
-### A command waits forever for input
+### A command waits for input
 
 The default input stream is closed. Add `--stdin` only when the command genuinely reads from the
 invoking stream. stdout and stderr remain captured even when stdin is attached.
@@ -171,10 +174,10 @@ invoking stream. stdout and stderr remain captured even when stdin is attached.
 ### A command works in a terminal but fails in Leia
 
 Check the selected shell, the Markdown file's directory, and the reported stdout, stderr, and exit
-status. Select a supported shell explicitly when CI and developer machines resolve different account
-shells.
+status. Select a supported shell explicitly when CI and developer machines resolve different
+account shells.
 
 ### An old invocation prints warnings
 
-Remove `--spawn` and `--split-file`; they no longer change execution. For other 1.x differences,
-follow [Migrating to Leia 2.0](./migrating-to-2.md).
+Remove `--spawn` and `--split-file`; they no longer change execution. Supported scenario syntax,
+CLI flags, and the root constructor remain compatible with Leia 1.x.

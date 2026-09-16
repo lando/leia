@@ -2,14 +2,18 @@
 export type MarkdownElement =
   { type: 'heading'; depth: 1 | 2; text: string } | { type: 'code'; text: string };
 
+/** One Markdown file and the ordered top-level tokens retained by Leia. */
 export interface MarkdownDocument {
   file: string;
   elements: MarkdownElement[];
 }
 
+/** Concrete generated-harness module formats. */
 export type ModuleFormat = 'commonjs' | 'esm';
+/** Scenario roles assigned from matching level-two headings. */
 export type SectionRole = 'setup' | 'test' | 'cleanup' | 'invalid';
 
+/** Shell executable and argument template used for a scenario script. */
 export interface Shell {
   binary: string;
   name: string;
@@ -48,6 +52,7 @@ export interface Harness {
   tests: Partial<Record<SectionRole, Scenario[]>>;
 }
 
+/** Options for Markdown normalization and the `parse()` convenience function. */
 export interface ParseOptions {
   cleanupHeader?: string[];
   moduleFormat?: ModuleFormat | 'auto';
@@ -58,6 +63,7 @@ export interface ParseOptions {
   testHeader?: string[];
 }
 
+/** Options for rendering generated harnesses. */
 export interface GenerateOptions {
   moduleFormat?: ModuleFormat;
   strip?: boolean;

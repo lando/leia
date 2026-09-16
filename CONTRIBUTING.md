@@ -44,6 +44,8 @@ for this Bun bootstrap and npm distribution operations, not repository dependenc
 | `bun run test`            | Run application and development helper TypeScript unit tests without building                                |
 | `bun run test:coverage`   | Measure selected Node ESM unit tests against original TypeScript; requires an existing build                 |
 | `bun run test:unit`       | Run selected application tests and Bun development helper tests                                              |
+| `bun run docs:api`        | Generate `API.md` from public TypeScript docblocks and package exports                                       |
+| `bun run docs:api:check`  | Verify that the committed API reference matches its sources                                                  |
 | `bun run build`           | Clean and build Node ESM/CommonJS JavaScript, declarations, and source maps into `dist/esm/` and `dist/cjs/` |
 | `bun run watch`           | Build once, then rebuild when files under `bin/`, `lib/`, or `utils/` change                                 |
 | `bun run check:build`     | Verify repeatability, declaration emission, freshness gates, and watch rebuild in a temporary copy           |
@@ -70,6 +72,7 @@ Before opening a pull request, run:
 bun run lint
 bun run typecheck
 bun run test
+bun run docs:api:check
 bun run check:build
 bun run build
 bun run check:package
@@ -90,13 +93,13 @@ are excluded with Prettier range markers. Preserve those behavior-bearing inputs
 ## Source and build boundaries
 
 Leia is one package, so its source lives directly under the repository root: `bin/` for the
-public CLI, `lib/` for the [compiler](./docs/compiler.md) and [execution lifecycle](./docs/lifecycle.md),
-`utils/` for independently testable functions, and flat `test/` for specs and fixtures.
+public CLI, `lib/` for the compiler and execution lifecycle, `utils/` for independently testable
+functions, and flat `test/` for specs and fixtures.
 `dev/` separately owns build and validation; `dist/` contains generated artifacts only.
 
 The root package is ESM; each built target declares its own module format. Root-level `auto` harness detection therefore selects
 ESM; explicit format overrides and scenario-owned CommonJS or untyped packages retain their behavior.
-CommonJS helpers use `.cjs`. There are no migration adapters or parallel application implementations.
+CommonJS helpers use `.cjs`. There are no compatibility adapters or parallel application implementations.
 Run `bun run build` before using the Node CLI or package API in a source checkout.
 
 | Target        | Invocation                   | Build required? |
@@ -111,7 +114,7 @@ ESM files use `.js`, and CommonJS files use `.cjs`. Dependencies stay external. 
 embed the original TypeScript and support Node diagnostics with `--enable-source-maps`, including
 when the artifacts are relocated without application source.
 `package.json` routes imports to ESM and requires to CommonJS, preserves the constructor API,
-and exposes only the [documented subpaths](./docs/api.md#public-entrypoints). Bun remains the sole JavaScript
+and exposes only the [documented subpaths](./API.md#entry-points). Bun remains the sole JavaScript
 emitter. The pinned CJS bundler needs independent entrypoint builds to avoid shared-export
 mislinking and an emitted-file URL banner for relocatable paths; installed Node consumers exercise
 that output. TypeScript emits declarations only, with `.js`/`.d.ts` references for ESM and
@@ -123,6 +126,11 @@ and source-directory `npm publish` run `check:dist` through `prepack`; changed i
 missing output, and extra stale files require a fresh `bun run build`. The receipt is not published.
 The tarball includes only `dist/esm`, `dist/cjs`, and npm's package metadata, README, and license.
 Source maps embed TypeScript for diagnostics; standalone source, tests, and development helpers are excluded.
+
+`API.md` is generated from the public TypeScript signatures, docblocks, and `package.json` export
+map. Update the owning source comment when a public contract changes, then run `bun run docs:api`.
+The generator rejects undocumented or mismatched exports, and the package check executes the
+generated ESM and CommonJS examples from the installed tarball.
 
 Release checks build after version stamping, validate an installed tarball, and dry-run/publish that
 same `.tgz`. `check:package --pack-destination=.temp/package --scenarios` retains the verified tarball
@@ -145,8 +153,7 @@ rather than repeating the general examples.
 
 - Target 2.0 development at `2.x` and bounded 1.x maintenance at `main`.
 - Forward-port applicable 1.x fixes from `main` to `2.x` through focused pull requests.
-- Use the [2.0 migration guide](./docs/migrating-to-2.md) when a change affects a retained or
-  replaced 1.x contract.
+- Document an intentional compatibility change in the owning README, ADVANCED, or API passage.
 - Keep the change focused and connect it to its issue when one exists.
 - Update the README and unreleased changelog when behavior changes for users or developers.
 - Describe what changed and include the validation you ran.

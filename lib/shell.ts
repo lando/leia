@@ -25,6 +25,15 @@ const userShell = (): string => {
   return env.SHELL || '/bin/sh';
 };
 
+/**
+ * Resolves a shell binary into Leia's deterministic invocation shape.
+ *
+ * Known Bash, cmd, PowerShell, sh, and zsh names receive platform-specific arguments. Unknown
+ * names fall back to `sh`.
+ *
+ * @param shell Shell binary or path. Defaults to Leia's platform and account-shell selection.
+ * @returns The binary, normalized name, script extension, and invocation arguments.
+ */
 export const getShell = (shell: string = userShell()): Shell => {
   // Get some basic information about our thing
   const data = { binary: shell, name: path.parse(shell).name, extension: '.sh' };

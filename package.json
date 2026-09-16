@@ -35,6 +35,8 @@
     "typecheck": "tsc --noEmit",
     "test": "bun run test:unit",
     "test:unit": "bun run test:app && bun run test:dev",
+    "docs:api": "bun run dev/scripts/generate-api-task.ts",
+    "docs:api:check": "bun run dev/scripts/generate-api-task.ts --check",
     "build": "bun run dev/scripts/build-cli.ts",
     "watch": "bun run dev/scripts/build-cli.ts --watch",
     "check:build": "bun run dev/scripts/check-build-task.ts",
