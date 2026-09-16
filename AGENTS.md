@@ -3,6 +3,23 @@
 Keep this root guidance broadly applicable to repository work. Put narrower executable-example
 rules in `examples/AGENTS.md`.
 
+## Scope
+
+- Leia discovers fenced Markdown scenarios, compiles explicit CommonJS or ESM Mocha harnesses,
+  and manages their execution and cleanup through a CLI and programmatic API.
+- On `2.x`, Bun owns TypeScript development and builds; published ESM/CommonJS JavaScript runs
+  on Node 24. `dev/` owns repository build, validation, and documentation helpers.
+- This guidance covers repository-owned source, tests, documentation, packaging, and CI.
+  Executable scenarios have additional rules in `examples/AGENTS.md`.
+
+## Out of Scope
+
+- Leia is not a general task orchestrator, package manager, or replacement for Mocha or the shell.
+  Keep scenario execution tied to Markdown tests and their lifecycle.
+- Repository development helpers are not public CLI commands or installed runtime dependencies.
+- Do not expand support to new runtimes, native binaries, or additional module formats as a side
+  effect of maintenance; those require an explicit product decision.
+
 ## Branch Routing
 
 - Target 2.0 pull requests at `2.x` and bounded 1.x maintenance pull requests at `main`.
@@ -45,6 +62,23 @@ rules in `examples/AGENTS.md`.
 - Preserve the supported macOS, Ubuntu, and Windows matrices. Exercise explicit CommonJS and ESM
   overrides in the dedicated Linux module-format workflow instead of multiplying every OS job.
 - See `examples/AGENTS.md` before editing executable scenarios or their fixtures.
+
+## CLI Presentation
+
+- Start help with an uncolored `usage:` line, then description, options, examples, and environment
+  variables. Keep labels lowercase and descriptions active (`sets`, `selects`, `shows`).
+- Show only `-c`, `-s`, and `-t` for header options in help; keep their long aliases accepted.
+  Keep descriptions and defaults on one row without a fixed wrap limit. Preserve literal values.
+- Keep Lando pink for brand accents, semantic colors for status, and optional placeholders and
+  defaults dimmed; use bold for commands and option names. Preserve readable no-color output
+  and the existing stdout/stderr split.
+- List version, debug, and help last. `--debug` takes no value and enables `*`; otherwise honor
+  ambient `DEBUG` independently. `LEIA_DEBUG` is the boolean equivalent of `--debug`.
+- Resolve CLI flags before `LEIA_*` defaults, then built-in defaults. Validate effective values,
+  replace environment lists when flags are supplied, and accept `1`/`true` or `0`/`false` for booleans.
+  `--no-stdin` and `--no-debug` override enabled defaults. Keep this configuration at the CLI boundary.
+- Keep stdin explicit and independent of CI: EOF by default, inherited only when enabled.
+  Keep ambient debug controls out of help; list Leia environment variables with their option equivalents.
 
 ## Documentation And Release Notes
 

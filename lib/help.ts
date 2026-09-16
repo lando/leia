@@ -7,72 +7,64 @@ const option = (
   description: string,
   fallback?: string,
 ): string => {
-  const line = `  ${signature.padEnd(42)} ${description}`;
-  if (fallback === undefined) return line;
-  return line.length + fallback.length + 1 <= 100
-    ? `${line} ${styles.dim(fallback)}`
-    : `${line}\n${' '.repeat(45)}${styles.dim(fallback)}`;
+  const [flags = '', value] = signature.split(/ (?=<)/);
+  const label = styles.bold(flags) + (value ? ` ${styles.dim(value)}` : '');
+  const padding = ' '.repeat(Math.max(0, 26 - signature.length));
+  const line = `  ${label}${padding}  ${description}`;
+  return fallback === undefined ? line : `${line} ${styles.dim(fallback)}`;
 };
 
 export const helpText = (styles: Styles = createStyles(process.stdout, process.env)): string => {
   const section = styles.accent;
   const optional = styles.dim('[options]');
   return [
-    styles.bold('Leia'),
-    'Run fenced Markdown examples as Mocha tests.',
+    `usage: ${styles.dim('[LEIA_*...]')} ${styles.bold('leia')} <files...> ${optional}`,
     '',
-    section('Usage'),
-    `  leia <files...> ${optional}`,
+    'runs fenced markdown examples as mocha tests',
     '',
-    section('Options'),
+    section('options'),
+    option(styles, '-c <names...>', 'sets cleanup heading prefixes', '[default: Clean,Tear,Burn]'),
+    option(styles, '-i, --ignore <patterns...>', 'excludes matching files'),
+    option(styles, '-r, --retry <count>', 'sets retries per failed command', '[default: 1]'),
     option(
       styles,
-      '-c, --cleanup-header <names...>',
-      'match cleanup section headings',
-      '[default: Clean,Tear,Burn]',
-    ),
-    option(styles, '-i, --ignore <patterns...>', 'ignore matching files'),
-    option(styles, '-r, --retry <count>', 'retry each failed test', '[default: 1]'),
-    option(
-      styles,
-      '-s, --setup-header <names...>',
-      'match setup section headings',
+      '-s <names...>',
+      'sets setup heading prefixes',
       '[default: Start,Setup,This is the dawning]',
     ),
-    option(
-      styles,
-      '-t, --test-header <names...>',
-      'match test section headings',
-      '[default: Test,Validat,Verif]',
-    ),
-    option(styles, '-v, --version', 'report the current Leia version'),
-    option(styles, '--debug[=<namespace>]', 'enable debug output'),
-    option(styles, '--help', 'show help'),
-    option(
-      styles,
-      '--module-format <auto|commonjs|esm>',
-      'select generated module format',
-      '[default: auto]',
-    ),
-    option(
-      styles,
-      '--shell <bash|cmd|powershell|pwsh|sh|zsh>',
-      'run tests with a shell',
-      `[default: ${getShell().binary}]`,
-    ),
-    option(styles, '--stdin', 'attach the invoking input stream'),
-    option(
-      styles,
-      '--timeout <seconds>',
-      'set the per-test deadline; 0 disables it',
-      '[default: 1800]',
-    ),
+    option(styles, '-t <names...>', 'sets test heading prefixes', '[default: Test,Validat,Verif]'),
+    option(styles, '--module-format <format>', 'selects auto, commonjs, or esm', '[default: auto]'),
+    option(styles, '--shell <name>', 'selects the test shell', `[default: ${getShell().binary}]`),
+    option(styles, '--stdin', 'attaches the invoking input stream'),
+    option(styles, '--timeout <seconds>', 'sets the deadline; 0 disables it', '[default: 1800]'),
+    option(styles, '-v, --version', 'shows the current version'),
+    option(styles, '--debug', 'enables all debug output'),
+    option(styles, '--help', 'shows this help'),
     '',
-    section('Examples'),
-    '  leia README.md',
-    '  leia "docs/**/*.md" --ignore "docs/archive/**"',
-    '  leia README.md --retry 2 --timeout 60',
-    '  leia README.md --module-format esm',
+    section('examples'),
+    `  ${styles.bold('leia')} README.md`,
+    `  ${styles.bold('leia')} "docs/**/*.md" --ignore "docs/archive/**"`,
+    `  ${styles.bold('leia')} README.md --retry 2 --timeout 60`,
+    `  ${styles.bold('leia')} README.md --module-format esm`,
+    '',
+    section('environment variables'),
+    ...[
+      ['LEIA_CLEANUP_HEADER', '-c'],
+      ['LEIA_SETUP_HEADER', '-s'],
+      ['LEIA_TEST_HEADER', '-t'],
+      ['LEIA_IGNORE', '--ignore'],
+      ['LEIA_RETRY', '--retry'],
+      ['LEIA_TIMEOUT', '--timeout'],
+      ['LEIA_SHELL', '--shell'],
+      ['LEIA_MODULE_FORMAT', '--module-format'],
+      ['LEIA_STDIN', '--stdin'],
+      ['LEIA_DEBUG', '--debug'],
+    ].map(([name, flag]) => option(styles, name!, `same as ${flag}`)),
+    '',
+    styles.dim(
+      '  flags override environment defaults; lists use commas; booleans use 1/true or 0/false',
+    ),
+    styles.dim('  --no-stdin and --no-debug override enabled environment defaults'),
     '',
   ].join('\n');
 };

@@ -2,7 +2,7 @@ import fs from 'node:fs';
 
 import createDebug from 'debug';
 
-import { debugNamespace, parseCLI } from './cli.ts';
+import { parseCLI } from './cli.ts';
 import { helpText } from './help.ts';
 import { createPresentation } from './presentation.ts';
 import { runtimeLayout } from '../utils/runtime-layout.ts';
@@ -14,11 +14,10 @@ export const runCLI = async (argv = process.argv.slice(2)): Promise<void> => {
     next: 'Run leia --help to review supported options and values.',
   };
   try {
-    const namespace = debugNamespace(argv, process.env);
-    if (namespace !== undefined) createDebug.enable(namespace);
+    const options = parseCLI(argv, process.env);
+    createDebug.enable(options.debug ? '*' : (process.env.DEBUG ?? ''));
     const debug = createDebug('leia:cli');
     debug('starting default command execution');
-    const options = parseCLI(argv);
     if (options.version) {
       failure = {
         operation: 'read package metadata',

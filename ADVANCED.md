@@ -70,18 +70,48 @@ patterns for compatibility.
 | `-r, --retry <count>`                            | Retry each failed setup, test, or cleanup command | `1`                               |
 | `-s, --setup-header <names...>`                  | Match setup section prefixes                      | `Start,Setup,This is the dawning` |
 | `-t, --test-header <names...>`                   | Match test section prefixes                       | `Test,Validat,Verif`              |
-| `-v, --version`                                  | Print the installed Leia version                  |                                   |
-| `--debug[=<namespace>]`                          | Enable all debug output or one namespace          | disabled                          |
-| `--help`                                         | Print current usage, options, and defaults        |                                   |
 | `--module-format <auto\|commonjs\|esm>`          | Select the generated harness format               | `auto`                            |
 | `--shell <bash\|cmd\|powershell\|pwsh\|sh\|zsh>` | Run commands with a supported shell               | platform selection                |
 | `--stdin`                                        | Attach the invoking input stream to commands      | closed input                      |
 | `--timeout <seconds>`                            | Set each command deadline; `0` disables deadlines | `1800`                            |
+| `-v, --version`                                  | Print the installed Leia version                  |                                   |
+| `--debug`                                        | Enable all debug output                           | disabled                          |
+| `--help`                                         | Print current usage, options, and defaults        |                                   |
 
 Repeated header and ignore options greedily collect values until the next option. A single header
 value may also be comma-separated. `--retry` accepts a non-negative safe integer. `--timeout`
 accepts whole seconds from `0` through `2147483`; Leia rejects invalid values before generating a
 harness.
+
+### Environment defaults
+
+CLI options override `LEIA_*` environment values, which override the defaults above. Library calls
+keep their explicit options and do not read these CLI defaults. Empty environment values are unset.
+
+| Variable              | Equivalent option         |
+| --------------------- | ------------------------- |
+| `LEIA_CLEANUP_HEADER` | `-c` / `--cleanup-header` |
+| `LEIA_SETUP_HEADER`   | `-s` / `--setup-header`   |
+| `LEIA_TEST_HEADER`    | `-t` / `--test-header`    |
+| `LEIA_IGNORE`         | `--ignore`                |
+| `LEIA_RETRY`          | `--retry`                 |
+| `LEIA_TIMEOUT`        | `--timeout`               |
+| `LEIA_SHELL`          | `--shell`                 |
+| `LEIA_MODULE_FORMAT`  | `--module-format`         |
+| `LEIA_STDIN`          | `--stdin`                 |
+| `LEIA_DEBUG`          | `--debug`                 |
+
+Environment lists use commas; surrounding whitespace and empty entries are removed. Supplying a
+header or ignore flag replaces its environment list. Numeric and enumerated values follow the same
+constraints as CLI options. Overridden environment values are not validated.
+
+Boolean values accept `1`/`true` and `0`/`false`. Use `--no-stdin` or `--no-debug` to override an enabled
+environment default; the last explicit positive or negative flag wins. These flags take no value.
+
+`LEIA_DEBUG=1` and `--debug` enable every debug namespace (`*`). Otherwise ambient `DEBUG` remains
+in control, including when Leia's toggle is explicitly disabled. With neither enabled, debug output
+is off. CI affects presentation, not stdin: EOF remains the default, and explicit stdin inheritance
+works in CI as it does locally.
 
 The hidden `--spawn` and `--split-file` compatibility flags remain accepted no-ops and emit a
 warning. Remove them from automation. Run `npm exec -- leia --help` when scripting against an

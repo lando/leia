@@ -22,11 +22,20 @@ const aliases: Record<string, string> = {
   v: 'version',
 };
 const multiple = new Set(['cleanup-header', 'setup-header', 'test-header', 'ignore']);
-const booleans = new Set(['debug', 'help', 'version', 'stdin', 'spawn', 'split-file']);
+const booleans = new Set([
+  'debug',
+  'no-debug',
+  'help',
+  'version',
+  'stdin',
+  'no-stdin',
+  'spawn',
+  'split-file',
+]);
 const singles = new Set(['retry', 'timeout', 'shell', 'module-format']);
 
 /** Preserve oclif's non-strict positional and greedy repeated-string flag behavior. */
-export const parseCLI = (argv: string[]): CLIOptions => {
+export const parseCLI = (argv: string[], environment: NodeJS.ProcessEnv = {}): CLIOptions => {
   const options: CLIOptions = {
     tests: [],
     ignore: [],
@@ -45,6 +54,9 @@ export const parseCLI = (argv: string[]): CLIOptions => {
     splitFile: false,
   };
   const values = new Map<string, string[]>();
+  const explicitBooleans = new Set<string>();
+  const environmentValue = (name: string): string | undefined =>
+    environment[`LEIA_${name.replaceAll('-', '_').toUpperCase()}`] || undefined;
   const args = [...argv];
   while (args.length) {
     const argument = args.shift()!;
@@ -67,10 +79,15 @@ export const parseCLI = (argv: string[]): CLIOptions => {
       continue;
     }
     if (booleans.has(name)) {
+      const negative = name === 'no-debug' || name === 'no-stdin';
+      if ((name === 'debug' || negative) && inline !== undefined)
+        throw new Error(`Flag --${name} does not accept a value.`);
+      if (negative) name = name.slice(3);
+      explicitBooleans.add(name);
       if (name === 'split-file') options.splitFile = true;
-      else options[name as 'stdin' | 'debug' | 'help' | 'version' | 'spawn'] = true;
-      if (name === 'help' || name === 'version') return options;
-      if (inline !== undefined && name !== 'debug') args.unshift(inline);
+      else options[name as 'stdin' | 'debug' | 'help' | 'version' | 'spawn'] = !negative;
+      if (name === 'help' || name === 'version') break;
+      if (inline !== undefined) args.unshift(inline);
       continue;
     }
     const value = inline ?? args.shift();
@@ -80,7 +97,12 @@ export const parseCLI = (argv: string[]): CLIOptions => {
       collected.push(value);
       while (args[0] !== undefined && !args[0].startsWith('-')) collected.push(args.shift()!);
       values.set(name, collected);
-    } else if (name === 'retry') options.retry = retry(value);
+    } else values.set(name, [value]);
+  }
+  for (const name of singles) {
+    const value = values.get(name)?.[0] ?? environmentValue(name);
+    if (value === undefined) continue;
+    if (name === 'retry') options.retry = retry(value);
     else if (name === 'timeout') options.timeout = timeout(value);
     else {
       const allowed =
@@ -95,23 +117,34 @@ export const parseCLI = (argv: string[]): CLIOptions => {
       else options.moduleFormat = value as ParseOptions['moduleFormat'] & string;
     }
   }
+  for (const name of ['stdin', 'debug'] as const) {
+    if (explicitBooleans.has(name)) continue;
+    const value = environmentValue(name);
+    if (value === undefined) continue;
+    if (!['1', 'true', '0', 'false'].includes(value))
+      throw new Error(`LEIA_${name.toUpperCase()} must be 1, true, 0, or false.`);
+    options[name] = value === '1' || value === 'true';
+  }
+
   for (const [flag, key] of [
     ['setup-header', 'setupHeader'],
     ['test-header', 'testHeader'],
     ['cleanup-header', 'cleanupHeader'],
   ] as const) {
-    const headers = values.get(flag);
+    const headers =
+      values.get(flag) ??
+      environmentValue(flag)
+        ?.split(',')
+        .map((value) => value.trim())
+        .filter(Boolean);
     if (headers) options[key] = headers.length === 1 ? headers[0]!.split(',') : headers;
   }
-  options.ignore = values.get('ignore') ?? [];
+  options.ignore =
+    values.get('ignore') ??
+    environmentValue('ignore')
+      ?.split(',')
+      .map((value) => value.trim())
+      .filter(Boolean) ??
+    [];
   return options;
-};
-
-export const debugNamespace = (
-  argv: string[],
-  environment: NodeJS.ProcessEnv,
-): string | undefined => {
-  if (environment.DEBUG) return undefined;
-  const option = argv.find((value) => value === '--debug' || value.startsWith('--debug='));
-  return option === '--debug' ? '*' : option?.slice('--debug='.length);
 };
