@@ -44,6 +44,28 @@ npm run test:docs
 npm run test:docs -- --timeout 60
 ```
 
+### Bun
+
+Install the project dependency with `bun add --dev @lando/leia`, then add this script to your
+existing `package.json`:
+
+```json
+{
+  "scripts": {
+    "leia": "bun ./node_modules/.bin/leia"
+  }
+}
+```
+
+```sh
+# run the installed cli explicitly with bun.
+bun run leia quickstart.md
+```
+
+This runs Leia without Node. Installing with Bun or invoking a script containing only `leia`
+does not override the published launcher’s Node shebang. Commands inside scenarios still need
+their own runtimes; keep Node when the product under test requires it.
+
 ## Options
 
 CLI options override `LEIA_*` environment values, which override built-in defaults. Library calls

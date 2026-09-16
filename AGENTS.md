@@ -17,11 +17,9 @@
 
 ## Branch and compatibility boundaries
 
-- Target 2.0 PRs at `2.x` and bounded 1.x maintenance at `main`. Forward-port applicable fixes.
-  Keep `main` as default until the approved 2.0 cutover.
-- On `main`, preserve Node CommonJS implementation. Generated-harness format support does not
-  authorize migrating Leia itself to ESM or dual-package output.
-- On `2.x`, preserve root TypeScript ESM, Bun development/builds, and Node 24 ESM/CommonJS artifacts.
+- Target `main` for current development. Leia 1.x is unsupported; direct users to upgrade to 2.x.
+- Preserve root TypeScript ESM, Bun development/builds, and Node 24 ESM/CommonJS artifacts.
+  The installed CLI also runs with explicit Bun invocation; preserve Node as the default launcher.
   Keep explicit `.cjs` helpers and scenario-owned module scopes.
 - Resolve one harness format per invocation. `auto` uses the nearest `package.json` from the initial
   working directory. Emit `.leia.cjs` or `.leia.mjs` independently of temporary-directory scope.

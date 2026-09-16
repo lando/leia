@@ -26,8 +26,11 @@ export const runCLI = async (argv = process.argv.slice(2)): Promise<void> => {
       const metadata = JSON.parse(
         fs.readFileSync(runtimeLayout(import.meta.url).packageFile, 'utf8'),
       ) as { name: string; version: string };
+      const runtime = process.versions.bun
+        ? `bun-v${process.versions.bun}`
+        : `node-${process.version}`;
       process.stdout.write(
-        `${metadata.name}/${metadata.version} ${process.platform}-${process.arch} node-${process.version}\n`,
+        `${metadata.name}/${metadata.version} ${process.platform}-${process.arch} ${runtime}\n`,
       );
       return;
     }

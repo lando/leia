@@ -91,7 +91,7 @@ describe('dev/utils/documentation', () => {
       await assert.rejects(checkDocumentationLinks(root, ['README.md']), /missing path/);
       await writeFile(
         join(root, 'README.md'),
-        '[Guide](https://github.com/lando/leia/blob/2.x/ADVANCED.md)',
+        '[Guide](https://github.com/lando/leia/blob/main/ADVANCED.md)',
       );
       await checkDocumentationLinks(root, ['README.md']);
     } finally {

@@ -3,6 +3,20 @@
 This guide covers scenario authoring, execution behavior, and diagnosing failed runs. Start with the [README](./README.md) for installation and a first
 passing scenario. Programmatic consumers should also use the generated [API reference](./API.md).
 
+## Upgrade from 1.x
+
+Leia 1.x is unsupported. Install `@lando/leia@^2.0.0` and commit the updated lockfile.
+Use Node 24 or newer, or the [explicit Bun project script](./CLI.md#bun).
+
+- Replace private `@lando/leia/lib/*` imports with the documented [public exports](./API.md).
+- Use `--debug` without a namespace value. Use ambient `DEBUG` for namespace selection.
+- Remove `--spawn` and `--split-file`; they remain accepted but do nothing.
+- Give every blank-line-separated executable block a `# should ...` description, including cleanup.
+- Generated harnesses use `.leia.cjs` or `.leia.mjs`. Remove CommonJS package boundaries added only
+  for old generated `.js` files; retain boundaries needed by your own helpers.
+- Automatic module selection uses the nearest `package.json` from the invocation directory.
+  Use `--module-format` for an explicit override.
+
 ## Execution safety
 
 Leia is not a sandbox. Scenario commands inherit your environment and permissions and can mutate

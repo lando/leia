@@ -7,7 +7,7 @@
 Leia turns fenced commands in markdown into mocha tests. Keep runnable examples beside the prose
 they explain, then prove the documentation still tells the truth.
 
-Requires Node.js 24 or newer.
+Runs on Node.js 24 or newer, or Bun with [explicit invocation](./CLI.md#bun).
 
 > [!WARNING]
 > Leia executes real commands that can change files, install software, or alter your machine.
@@ -63,6 +63,9 @@ leia quickstart.md
 # quote globs so leia expands them; retry failed commands twice.
 leia "docs/**/*.md" --retry 2
 ```
+
+For Bun projects, define `"leia": "bun ./node_modules/.bin/leia"` in `package.json` scripts, then
+run `bun run leia quickstart.md`. See [Bun invocation](./CLI.md#bun) for installation and CI.
 
 See the [CLI guide](./CLI.md) for npm scripts, all options,
 and environment defaults.
@@ -132,17 +135,19 @@ prerequisites, and example requests.
 
 ## Development
 
-Leia uses pinned Bun tooling and TypeScript source. [CONTRIBUTING](https://github.com/lando/leia/blob/2.x/CONTRIBUTING.md)
+Leia uses pinned Bun tooling and TypeScript source. [CONTRIBUTING](https://github.com/lando/leia/blob/main/CONTRIBUTING.md)
 covers setup, validation, builds, and releases.
 
 ## Issues, questions, and support
+
+Leia 1.x is unsupported. Upgrade to 2.x; see the [migration notes](./ADVANCED.md#upgrade-from-1x).
 
 Join the [Lando Slack community](https://launchpass.com/devwithlando) for community help.
 Report bugs and request features through the [issue queue](https://github.com/lando/leia/issues/new/choose).
 
 ## Changelog
 
-See the [changelog](https://github.com/lando/leia/blob/2.x/CHANGELOG.md) and
+See the [changelog](https://github.com/lando/leia/blob/main/CHANGELOG.md) and
 [published releases](https://github.com/lando/leia/releases).
 
 ## Maintainers

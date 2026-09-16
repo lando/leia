@@ -55,9 +55,15 @@ describe('lib/compiler', () => {
       'test/parse-sections.md',
       'test/parse-code-blocks.md',
     ];
+    const { version } = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')) as {
+      version: string;
+    };
     assert.deepEqual(
       normalizePaths(parse(files, { shell: 'bash', moduleFormat: 'commonjs' })),
-      JSON.parse(fixture('parse-baseline.json')),
+      (JSON.parse(fixture('parse-baseline.json')) as Harness[]).map((harness) => ({
+        ...harness,
+        version,
+      })),
     );
   });
 

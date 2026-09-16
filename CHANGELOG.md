@@ -1,5 +1,18 @@
 ## {{ UNRELEASED_VERSION }} - [{{ UNRELEASED_DATE }}]({{ UNRELEASED_LINK }})
 
+Leia 2.0 brings the CLI, public ESM/CommonJS APIs, TypeScript declarations, and shared agent skill
+tested in beta.1 to the stable release. See the [beta release notes](#v200-beta1---september-16-2026)
+for the full feature list and [migration guide](./ADVANCED.md#upgrade-from-1x) before upgrading.
+
+### Compatibility
+
+- Clarified explicit Bun invocation while retaining Node 24 as the default runtime. [#69](https://github.com/lando/leia/issues/69)
+- Ended 1.x maintenance; upgrade to 2.x for supported releases. [#69](https://github.com/lando/leia/issues/69)
+
+### Bug Fixes
+
+- Fixed `--version` to identify Bun and its version when running under Bun. [#69](https://github.com/lando/leia/issues/69)
+
 ## v2.0.0-beta.1 - [September 16, 2026](https://github.com/lando/leia/releases/tag/v2.0.0-beta.1)
 
 ### Compatibility

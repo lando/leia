@@ -55,8 +55,10 @@ Add a Node version axis only when it proves a separate compatibility promise.
 
 - Commit the npm lockfile and install development dependencies. If the project uses Bun, pnpm,
   or Yarn, retain its pinned toolchain and frozen install command instead of adding a second lockfile.
+- For Bun projects, use the [explicit Bun script](./CLI.md#bun), install the pinned Bun toolchain,
+  and run `bun run leia`. Remove Node setup only when no scenario or other tooling requires it.
 - Build the product under test and install any commands or services the scenarios need before
-  invoking Leia. An installed Leia package does not need Bun or a source build.
+  invoking Leia. An installed Leia package does not need a source build.
 - Set `working-directory` to the package whose scope should determine automatic harness format.
   Commands inside scenarios run beside their markdown file; these are distinct directories.
 - Match command syntax to the selected shell. Use `--shell` only when that shell is installed on

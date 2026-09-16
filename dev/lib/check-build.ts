@@ -113,6 +113,7 @@ async function checkCLI(root: string, name: TargetName): Promise<void> {
   assert.ok(!help.includes('--spawn') && !help.includes('--split-file'));
   const version = await run(root, [...entry, '--version']);
   assert.ok(version.includes('@lando/leia/'));
+  assert.match(version, name === 'source' ? / bun-v\d+\.\d+\.\d+/ : / node-v\d+\.\d+\.\d+/);
   assert.equal(await run(root, [...entry, '-v']), version);
   for (const args of [
     ['missing-scenario.md'],
@@ -216,7 +217,7 @@ export async function checkBuild(repositoryRoot: string, scenarios = false): Pro
         }),
       );
       const stable = outputs.map((output) =>
-        flag === '--version' ? output.replace(/ node-v\d+\.\d+\.\d+\s*$/, '') : output,
+        flag === '--version' ? output.replace(/ (?:node|bun)-v\d+\.\d+\.\d+\s*$/, '') : output,
       );
       assert.ok(stable[0]);
       assert.ok(
