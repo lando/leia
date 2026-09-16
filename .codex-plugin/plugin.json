@@ -17,12 +17,12 @@
     "defaultPrompt": [
       "Run the Leia scenarios in this project and explain any failures.",
       "Find a useful missing Leia scenario and implement it.",
-      "Set up GitHub Actions coverage for this project\u2019s Leia scenarios."
+      "Set up GitHub Actions coverage for this project’s Leia scenarios."
     ],
     "longDescription": "Author useful markdown scenarios, run and diagnose Leia tests, and configure GitHub Actions coverage with one shared skill.",
     "developerName": "Lando",
     "category": "Testing",
     "capabilities": ["Read", "Write"]
   },
-  "version": "1.0.0-beta.9"
+  "version": "2.0.0-beta.1"
 }
