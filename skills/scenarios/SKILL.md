@@ -66,7 +66,10 @@ Reuse scenario-owned fixtures and existing CI jobs before adding new files or ma
 2. When allowed by that guidance, check the installed version and help using the [CLI guide](../../CLI.md). Prefer a lockfile-backed
    local command such as `npm exec --offline -- leia --help`; adapt to the project's existing tooling.
 3. Choose the requested path: run and diagnose, author or extract, or configure CI. Read only the
-   relevant [scenario reference](../../ADVANCED.md) or [CI guide](../../GITHUB_ACTIONS.md).
+   relevant [scenario reference](../../ADVANCED.md) or [CI guide](../../GITHUB_ACTIONS.md). Use the
+   bundled examples below for concrete patterns. Read and adapt them into the invoking project,
+   including companion fixtures; do not execute them inside the installed plugin or dependency.
+   These recipes require Bash and standard Unix tools. Follow the invoking project's execution policy.
 4. Make the bounded change, perform the relevant validation below, and report changed files, exact
    commands, outcomes, and any missing environment proof. Do not call an unexecuted scenario passing.
 
@@ -122,6 +125,13 @@ changes only within the user's authorization.
 - [Advanced usage](../../ADVANCED.md): authoring, lifecycle, shell and format behavior.
 - [GitHub Actions](../../GITHUB_ACTIONS.md): complete baseline and matrix guidance.
 - [Plugin installation](../../PLUGINS.md): host setup and verification.
+
+The package includes these Bash recipes:
+
+- [Basic commands](../../examples/basic-example.md): naming, grouping, assertions, and skipped tests.
+- [Setup and cleanup](../../examples/setup-cleanup-example.md): scenario-owned state and cleanup.
+- [Custom headers](../../examples/custom-headers.md): selecting section prefixes through flags.
+- [Relative files](../../examples/subdirectory-example/subdir-example.md): companion fixtures and working directories.
 
 ## Validation
 

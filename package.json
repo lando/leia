@@ -32,7 +32,13 @@
     "/ADVANCED.md",
     "/API.md",
     "/GITHUB_ACTIONS.md",
-    "/PLUGINS.md"
+    "/PLUGINS.md",
+    "/examples/basic-example.md",
+    "/examples/setup-cleanup-example.md",
+    "/examples/custom-headers.md",
+    "/examples/subdirectory-example/subdir-example.md",
+    "/examples/subdirectory-example/text1.txt",
+    "/examples/subdirectory-example/text2.txt"
   ],
   "scripts": {
     "check:toolchain": "bun run dev/scripts/check-toolchain-task.ts",

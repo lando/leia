@@ -1,12 +1,13 @@
 Basic Example
 =============
 
-Here is a basic example that does not require any setup or cleanup commands. Note that all these commands are going to run relative to the location of the source markdown file, in this case the "examples" directory.
+Run with `leia examples/basic-example.md --shell bash`. Requires Bash and standard Unix tools
+(including Git Bash on Windows). Commands run beside this file.
 
 Testing
 -------
 
-You can put multiple commands into a single code block. The **FIRST** commented line above the command you are testing will be used for the test's description. Subsequent comments will be ignored.
+Blank lines separate tests; the first comment names each test. Commands within one test share a shell.
 
 ```bash
 # should return true
@@ -39,7 +40,7 @@ unset TEST3
 skip
 ```
 
-You can also add aditional code blocks under a section. This allows you to better organize and structure your markdown file.
+A section can contain more than one fenced block.
 
 ```bash
 # should also run this
@@ -49,7 +50,7 @@ true
 Verifying
 ---------
 
-You can also add additional testing sections by using the `--test-header` flag. You can run `leia --help` to see the default test headers leia will look for. This gives you further flexibility on how you write your markdown files.
+`Verifying` matches a default test-heading prefix. Use `--test-header` to select custom prefixes.
 
 ```bash
 # should also also run this

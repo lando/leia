@@ -1,12 +1,13 @@
 Setup and Cleanup Example
 =========================
 
-Here is an example that does some setup and cleanup before running tests. Note that these commands are going to run relative to the source markdown file, in this case the the "examples" directory.
+Run with `leia examples/setup-cleanup-example.md --shell bash`. Requires Bash and standard Unix tools.
+Setup creates a file beside this scenario; cleanup removes it.
 
 Setup
 -----
 
-These commands should run **before** your main testing ones and can be used to do some setup that you need beforehand. You do not need for this section to come first in the markdown file, Leia should parse it first regardless.
+Setup runs before testing, regardless of section order in the file.
 
 ```bash
 # create a file we can grep for a word
@@ -16,8 +17,6 @@ echo "the word is bubba" > test.txt
 Testing
 -------
 
-Run some tests using stuff setup above.
-
 ```bash
 # should return the correct word
 cat test.txt | grep "bubba"
@@ -26,7 +25,7 @@ cat test.txt | grep "bubba"
 Cleanup
 -------
 
-These commands should run **after** your main testing ones and can be used to undo the commands you ran during setup before. You do not need for this section to come last in the markdown file, Leia should parse it last regardless.
+Cleanup runs after testing, including after an ordinary test failure.
 
 ```bash
 # destroy our test file

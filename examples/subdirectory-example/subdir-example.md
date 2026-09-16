@@ -1,12 +1,12 @@
 Subdirectory Example
 ====================
 
-Because Leia runs each test from the directory of the source markdown file you can package in other required testing assets.
+Run with `leia examples/subdirectory-example/subdir-example.md --shell bash`. Requires Bash and
+standard Unix tools. Copy `text1.txt` and `text2.txt` alongside this file; paths resolve from the
+scenario directory, not the invoking directory.
 
 Testing
 -------
-
-Run some tests using other stuff in this directory
 
 ```bash
 # analyze the contents of our first file

@@ -46,6 +46,10 @@ export async function checkPackage(
     'CONTRIBUTING.md',
     'PLUGINS.md',
     'skills/scenarios/SKILL.md',
+    'examples/basic-example.md',
+    'examples/setup-cleanup-example.md',
+    'examples/custom-headers.md',
+    'examples/subdirectory-example/subdir-example.md',
   ];
   assert.equal(
     normalizeDocumentationLineEndings(await readFile(join(root, 'API.md'), 'utf8')),
@@ -83,6 +87,12 @@ export async function checkPackage(
       'skills/scenarios/SKILL.md',
       'skills/scenarios/agents/openai.yaml',
       'skills/scenarios/assets/lando-logo.png',
+      'examples/basic-example.md',
+      'examples/setup-cleanup-example.md',
+      'examples/custom-headers.md',
+      'examples/subdirectory-example/subdir-example.md',
+      'examples/subdirectory-example/text1.txt',
+      'examples/subdirectory-example/text2.txt',
     ].sort();
     assert.deepEqual(
       packed.files.map((file) => file.path).sort(),
@@ -151,6 +161,12 @@ export async function checkPackage(
       '/API.md',
       '/GITHUB_ACTIONS.md',
       '/PLUGINS.md',
+      '/examples/basic-example.md',
+      '/examples/setup-cleanup-example.md',
+      '/examples/custom-headers.md',
+      '/examples/subdirectory-example/subdir-example.md',
+      '/examples/subdirectory-example/text1.txt',
+      '/examples/subdirectory-example/text2.txt',
     ]);
     const plugin = JSON.parse(await readFile(join(installed, '.codex-plugin/plugin.json'), 'utf8'));
     assert.equal(plugin.name, 'leia');

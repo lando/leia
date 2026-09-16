@@ -75,7 +75,8 @@ ESM or CommonJS and expose only the [documented subpaths](./API.md#entry-points)
 Run `node dist/esm/bin/leia.js` or `node dist/cjs/bin/leia.cjs` after building. `check:dist` rejects
 missing, altered, or stale artifacts through the build receipt; `npm pack` runs it automatically.
 The package ships both artifact trees, npm metadata, the README and license, and the shared skill
-bundle with its referenced user guides.
+bundle with its referenced user guides and selected Bash examples. Keep the example allowlist
+limited to reusable scenarios and their fixtures; internal probes remain checkout-only.
 
 ## Pull requests and releases
 
