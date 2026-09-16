@@ -1,5 +1,9 @@
 # Leia
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/lando/leia/2.x/skills/scenarios/assets/lando-logo.png" alt="Lando" width="240" />
+</p>
+
 Leia turns fenced commands in markdown into mocha tests. Keep runnable examples beside the prose
 they explain, then prove the documentation still tells the truth.
 
@@ -111,6 +115,16 @@ jobs:
 
 See [GitHub Actions](https://github.com/lando/leia/blob/2.x/GITHUB_ACTIONS.md) for a platform
 matrix and scenario prerequisites.
+
+### Use with an agent
+
+Install the Leia plugin for Codex or OpenClaw, then ask:
+
+> Use Leia to find a useful missing scenario in this project, implement it, and run it.
+
+The skill can also run and diagnose existing tests or configure their GitHub Actions matrix.
+See [plugin installation](https://github.com/lando/leia/blob/2.x/PLUGINS.md) for both hosts,
+prerequisites, and example requests.
 
 ## Development
 

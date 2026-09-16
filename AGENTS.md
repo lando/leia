@@ -52,6 +52,14 @@
 - Stdin is independent of CI: EOF by default, inherited only when enabled. Keep environment defaults
   at the CLI boundary so library calls retain explicit options.
 
+## Agent bundle
+
+- Skills use the `leia` namespace in a `codex-plugin` container; pass both explicitly to skill tooling.
+- `skills/scenarios/` owns the shared Leia workflow. Keep it independent of host-specific tools and
+  external Tanaab skill installations. The Codex bundle is also consumed by OpenClaw.
+- Package the skill, manifest, logo, and referenced user guides together. Plugin installation does
+  not install Leia into the user's project. Keep npm and plugin identities distinct.
+
 ## Documentation
 
 - Keep README onboarding, CLI reference, ADVANCED behavior, generated API contracts, CI guidance, and CONTRIBUTING instructions
