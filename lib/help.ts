@@ -61,10 +61,5 @@ export const helpText = (styles: Styles = createStyles(process.stdout, process.e
       ['LEIA_DEBUG', '--debug'],
     ].map(([name, flag]) => option(styles, name!, `same as ${flag}`)),
     '',
-    styles.dim(
-      '  flags override environment defaults; lists use commas; booleans use 1/true or 0/false',
-    ),
-    styles.dim('  --no-stdin and --no-debug override enabled environment defaults'),
-    '',
   ].join('\n');
 };
