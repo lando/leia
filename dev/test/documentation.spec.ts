@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { describe, it } from 'mocha';
@@ -7,6 +8,7 @@ import { describe, it } from 'mocha';
 import { generateApiDocumentation } from '../lib/api-documentation.ts';
 import { repositoryRoot } from '../lib/toolchain.ts';
 import {
+  checkDocumentationLinks,
   extractDocumentationExample,
   normalizeDocumentationLineEndings,
 } from '../utils/documentation.ts';
@@ -53,6 +55,48 @@ describe('dev/utils/documentation', () => {
       () => extractDocumentationExample('<!-- leia-example:broken -->\n```sh\ntrue', 'broken'),
       /closing fence/,
     );
+  });
+
+  it('should discover documented exports from the manifest and reject missing docblocks', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'leia-api-docs-'));
+    try {
+      await mkdir(join(root, 'lib'));
+      await writeFile(join(root, 'tsconfig.json'), JSON.stringify({ include: ['lib/*.ts'] }));
+      await writeFile(
+        join(root, 'package.json'),
+        JSON.stringify({
+          name: '@lando/leia',
+          exports: { '.': { import: { default: './dist/esm/lib/entry.js' } } },
+        }),
+      );
+      const source = '/** Coordinates scenarios. */\nexport class Leia {}\n';
+      await writeFile(
+        join(root, 'lib/entry.ts'),
+        source + '/** Newly exported helper. */\nexport const added = () => true;\n',
+      );
+      const markdown = await generateApiDocumentation(root);
+      assert.match(markdown, /### `added`/);
+      assert.match(markdown, /Newly exported helper/);
+      await writeFile(join(root, 'lib/entry.ts'), source + 'export const added = () => true;\n');
+      await assert.rejects(generateApiDocumentation(root), /added needs a documentation comment/);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it('should reject README links to guides absent from an installed package', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'leia-package-docs-'));
+    try {
+      await writeFile(join(root, 'README.md'), '[Guide](./ADVANCED.md)');
+      await assert.rejects(checkDocumentationLinks(root, ['README.md']), /missing path/);
+      await writeFile(
+        join(root, 'README.md'),
+        '[Guide](https://github.com/lando/leia/blob/2.x/ADVANCED.md)',
+      );
+      await checkDocumentationLinks(root, ['README.md']);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 
   it('should keep the generated API reference current', async () => {

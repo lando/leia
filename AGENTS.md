@@ -1,107 +1,72 @@
 # Leia Repository Guidance
 
-Keep this root guidance broadly applicable to repository work. Put narrower executable-example
-rules in `examples/AGENTS.md`.
+## Scope and ownership
 
-## Scope
+- Leia compiles fenced Markdown scenarios into CommonJS or ESM Mocha harnesses and manages their
+  execution and cleanup through a CLI and programmatic API.
+- Root `bin/` owns the thin public launcher, `lib/` compiler and lifecycle orchestration, `utils/`
+  independently testable functions, and flat `test/` their specs and fixtures. No `app/` or `src/` wrapper.
+- `dev/` owns build, validation, and documentation helpers. They are not public CLI commands or
+  installed runtime dependencies. `.github/workflows/` owns CI and release automation.
+- Read `examples/AGENTS.md` before editing executable scenarios or their fixtures.
 
-- Leia discovers fenced Markdown scenarios, compiles explicit CommonJS or ESM Mocha harnesses,
-  and manages their execution and cleanup through a CLI and programmatic API.
-- On `2.x`, Bun owns TypeScript development and builds; published ESM/CommonJS JavaScript runs
-  on Node 24. `dev/` owns repository build, validation, and documentation helpers.
-- This guidance covers repository-owned source, tests, documentation, packaging, and CI.
-  Executable scenarios have additional rules in `examples/AGENTS.md`.
-
-## Out of Scope
+## Out of scope
 
 - Leia is not a general task orchestrator, package manager, or replacement for Mocha or the shell.
-  Keep scenario execution tied to Markdown tests and their lifecycle.
-- Repository development helpers are not public CLI commands or installed runtime dependencies.
-- Do not expand support to new runtimes, native binaries, or additional module formats as a side
-  effect of maintenance; those require an explicit product decision.
+- New runtimes, native binaries, and additional module formats require an explicit product decision.
 
-## Branch Routing
+## Branch and compatibility boundaries
 
-- Target 2.0 pull requests at `2.x` and bounded 1.x maintenance pull requests at `main`.
-- Forward-port applicable 1.x fixes from `main` to `2.x` through focused pull requests.
-- Keep `main` as the default branch until the approved 2.0 release cutover.
+- Target 2.0 PRs at `2.x` and bounded 1.x maintenance at `main`. Forward-port applicable fixes.
+  Keep `main` as default until the approved 2.0 cutover.
+- On `main`, preserve Node CommonJS implementation. Generated-harness format support does not
+  authorize migrating Leia itself to ESM or dual-package output.
+- On `2.x`, preserve root TypeScript ESM, Bun development/builds, and Node 24 ESM/CommonJS artifacts.
+  Keep explicit `.cjs` helpers and scenario-owned module scopes.
+- Resolve one harness format per invocation. `auto` uses the nearest `package.json` from the initial
+  working directory. Emit `.leia.cjs` or `.leia.mjs` independently of temporary-directory scope.
+- Preserve synchronous `run()` for CommonJS harnesses and `runAsync()` for native ESM loading.
 
-## Product Boundaries
+## Test ownership
 
-- On `main`, Leia is a Node.js CommonJS package that generates and runs Mocha harnesses from Markdown.
-- For 1.x maintenance, keep the package, CLI, and implementation CommonJS. Module-format support
-  applies to generated harnesses; it is not permission to migrate Leia itself to ESM or dual-package
-  output.
-- Resolve one concrete module format per invocation. `auto` starts from the invocation's initial
-  working directory and uses only the nearest `package.json`.
-- Generate explicit `.leia.cjs` or `.leia.mjs` files so runtime classification never depends on the
-  temporary directory's package scope.
-- Preserve synchronous `run()` for CommonJS harnesses and use `runAsync()` for native ESM loading.
-
-## Source Map
-
-- The repository root owns Leia: `bin/` for the public CLI, `lib/` for compiler and lifecycle orchestration, `utils/` for independently testable functions, and flat `test/` for their specs and fixtures. No extra `app/` or `src/` wrapper.
-- `dev/`: build/check libraries, thin internal `scripts/`, focused `utils/`, and flat TypeScript `test/`.
-- `lib/render.ts`: typed harness templates; public compiler contracts are generated in `API.md`,
-  while internal representation details belong to types and tests.
-- `examples/`: executable Leia specifications and their scenario-owned package boundaries or
-  fixtures.
-- `.github/workflows/`: lint, unit, cross-platform scenario, shell, module-format, and release
-  automation.
-
-## Test Ownership
-
-- Keep pure resolution, parsing, generation, and runner decisions in focused unit tests under
-  `test/`.
+- Keep pure resolution, parsing, generation, and runner decisions in focused flat unit tests.
 - Put observable CLI, shell, package-scope, file-layout, setup, cleanup, retry, and stdin behavior
-  in Leia examples rather than JavaScript subprocess integration fixtures.
-- Keep scenario-owned static inputs beside the Markdown file that consumes them. Hoist a fixture
-  only after multiple examples genuinely share one contract.
-- Run automatic module-format examples from their own directories; passing their Markdown paths
-  from the repository root does not test invocation-directory detection.
-- Preserve the supported macOS, Ubuntu, and Windows matrices. Exercise explicit CommonJS and ESM
-  overrides in the dedicated Linux module-format workflow instead of multiplying every OS job.
-- See `examples/AGENTS.md` before editing executable scenarios or their fixtures.
+  in Leia examples. Keep fixtures beside their scenario; share only when multiple consumers need them.
+- Run automatic-format examples from their own directories to test invocation-directory detection.
+- Preserve macOS, Ubuntu, and Windows matrices. Keep explicit format overrides in the dedicated
+  Linux workflow; execution targets and generated-harness formats are independent axes.
+- Source CI jobs run without `dist/`; built jobs remove application source and the sibling artifact.
 
-## CLI Presentation
+## CLI presentation and configuration
 
-- Start help with an uncolored `usage:` line, then description, options, examples, and environment
-  variables. Keep labels lowercase and descriptions active (`sets`, `selects`, `shows`).
-- Show only `-c`, `-s`, and `-t` for header options in help; keep their long aliases accepted.
-  Keep descriptions and defaults on one row without a fixed wrap limit. Preserve literal values.
-- Keep Lando pink for brand accents, semantic colors for status, and optional placeholders and
-  defaults dimmed; use bold for commands and option names. Preserve readable no-color output
-  and the existing stdout/stderr split.
-- List version, debug, and help last. `--debug` takes no value and enables `*`; otherwise honor
-  ambient `DEBUG` independently. `LEIA_DEBUG` is the boolean equivalent of `--debug`.
-- Resolve CLI flags before `LEIA_*` defaults, then built-in defaults. Validate effective values,
-  replace environment lists when flags are supplied, and accept `1`/`true` or `0`/`false` for booleans.
-  `--no-stdin` and `--no-debug` override enabled defaults. Keep this configuration at the CLI boundary.
-- Keep stdin explicit and independent of CI: EOF by default, inherited only when enabled.
-  Keep ambient debug controls out of help; list Leia environment variables with their option equivalents.
+- Start with uncolored `usage:`, then description, options, examples, and environment variables.
+  Use lowercase labels and active descriptions; preserve literal option values.
+- Show only `-c`, `-s`, and `-t` for header options while accepting long aliases. Keep descriptions
+  and defaults together without forced wrapping; list version, debug, and help last.
+- Use Lando pink accents, semantic status colors, bold commands/options, and dim placeholders/defaults.
+  Preserve no-color readability, normal stdout output, and stderr diagnostics.
+- Resolve flags before `LEIA_*` defaults, then built-in defaults. Validate effective values; flags
+  replace environment lists. Booleans accept `1`/`true` and `0`/`false`; negative flags override them.
+- `LEIA_DEBUG` and value-free `--debug` enable `*`; otherwise ambient `DEBUG` remains independent.
+  Keep ambient controls out of help and list Leia environment variables by their option equivalents.
+- Stdin is independent of CI: EOF by default, inherited only when enabled. Keep environment defaults
+  at the CLI boundary so library calls retain explicit options.
 
-## Documentation And Release Notes
+## Documentation
 
-- Keep `README.md` aligned with public CLI help, programmatic APIs, module-format semantics, and
-  compatibility guidance.
-- Record user-visible changes in `CHANGELOG.md`; do not use release notes as a test log.
-- Preserve literal commands, flags, paths, environment variables, and package metadata exactly.
+- Keep README onboarding, ADVANCED behavior, generated API contracts, and CONTRIBUTING instructions
+  aligned with their owning code. Edit public docblocks and regenerate `API.md`; do not edit it directly.
+- Record user-visible changes in the unreleased changelog, not validation logs or implementation history.
+- Preserve literal commands, flags, paths, environment variables, and package metadata.
 
 ## Validation
 
-- On `2.x`, use `.bun-version` as the Bun authority and keep `package.json#packageManager` in sync.
-- Run `bun run check:toolchain` and `bun install --frozen-lockfile --ignore-scripts`.
-- Keep flat ESLint and standalone Prettier separate; `lint` composes lint and format checks.
-- Keep the package root ESM; use explicit `.cjs` for CommonJS helpers and preserve scenario-owned module scopes.
-- Retain Node from `.node-version` for generated-harness syntax, Node-specific assertions, and built-output checks.
-- Run `bun run lint`, `bun run typecheck`, and `bun run test` for source changes.
-- Run `bun run check:build` for build or entrypoint changes; it validates clean output and watch rebuild in a temporary copy.
-- Keep TypeScript specs beside their owning scope. `test:app` runs the same application specs against `LEIA_RUNTIME=source|esm|cjs` using Bun or Node 24; `test:dev` always uses Bun. Neither command builds implicitly.
-- Source CI jobs must run without `dist/`. Built jobs remove application source and the sibling artifact. Keep execution target independent from generated harness format.
-- Keep application source in the explicit ESM scope; preserve intentional CommonJS scenario fixtures and compatibility assertions.
-- Treat the full Leia, shell, module-format, and operating-system scenarios as CI-owned by default;
-  do not run them locally unless operational validation is explicitly requested.
-- Run `git diff --check` for text or workflow changes and validate changed JSON and workflow YAML
-  with the narrowest available checks.
-- Never commit generated harnesses, coverage output, dependency directories, or scenario scratch
-  state.
+- Keep `.bun-version` and `package.json#packageManager` aligned. Run `bun run check:toolchain` and
+  `bun install --frozen-lockfile --ignore-scripts`; use Node from `.node-version` for artifact checks.
+- Keep flat ESLint and standalone Prettier separate. Run lint, typecheck, and test scripts for source changes.
+- Run `bun run check:build` for build/entrypoint changes and `bun run docs:api:check` for public API docs.
+  Build before `bun run check:package` when packaging or shipped documentation changes.
+- `test:app` uses `LEIA_RUNTIME=source|esm|cjs`; `test:dev` uses Bun. Neither builds implicitly.
+- Full Leia, shell, module-format, and OS scenarios are CI-owned unless operational validation is requested.
+- Run `git diff --check` and narrowly validate changed JSON/YAML. Never commit generated harnesses,
+  coverage, dependencies, or scenario scratch state. See CONTRIBUTING for commands and check boundaries.

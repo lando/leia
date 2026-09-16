@@ -113,23 +113,22 @@ const find: (patterns: string[], ignore?: string[]) => string[];
 
 ## `@lando/leia/parse`
 
-### `parse`
+### `normalizeCommand`
 
-Reads and normalizes Markdown scenario files.
+Normalizes one fenced scenario command before generation.
 
-Module format and retry options are validated before file I/O, including when `files` is empty.
+Description comments are removed, backslash continuations are folded, and PowerShell receives
+stop-on-error behavior. Generation treats the returned bytes as opaque shell input.
 
 ```ts
-const parse: (files: string[], options?: ParseOptions) => Harness[];
+const normalizeCommand: (command: string, shell: string) => string;
 ```
 
-- **files:** Markdown scenario paths.
+- **command:** Fenced code-block contents.
 
-- **options:** Scenario headers, shell, retry, stdin, and module-format settings.
+- **shell:** Selected shell name.
 
-**Returns:** Normalized harness metadata ready for `generate()`.
-
-**Throws:** When options, Markdown, or files are invalid.
+**Returns:** Normalized command bytes using the host newline.
 
 ### `readMarkdown`
 
@@ -167,22 +166,23 @@ const normalizeMarkdown: (documents: MarkdownDocument[], options?: ParseOptions)
 
 **Throws:** When options are invalid or a test document has no level-one title.
 
-### `normalizeCommand`
+### `parse`
 
-Normalizes one fenced scenario command before generation.
+Reads and normalizes Markdown scenario files.
 
-Description comments are removed, backslash continuations are folded, and PowerShell receives
-stop-on-error behavior. Generation treats the returned bytes as opaque shell input.
+Module format and retry options are validated before file I/O, including when `files` is empty.
 
 ```ts
-const normalizeCommand: (command: string, shell: string) => string;
+const parse: (files: string[], options?: ParseOptions) => Harness[];
 ```
 
-- **command:** Fenced code-block contents.
+- **files:** Markdown scenario paths.
 
-- **shell:** Selected shell name.
+- **options:** Scenario headers, shell, retry, stdin, and module-format settings.
 
-**Returns:** Normalized command bytes using the host newline.
+**Returns:** Normalized harness metadata ready for `generate()`.
+
+**Throws:** When options, Markdown, or files are invalid.
 
 ### `ParseOptions`
 
@@ -263,6 +263,34 @@ type MarkdownElement =
 
 ## `@lando/leia/generate`
 
+### `GeneratedHarness`
+
+An in-memory generated harness before files are emitted.
+
+```ts
+interface GeneratedHarness {
+  destination: string;
+  source: string;
+  scenarios: Scenario[];
+}
+```
+
+### `compileHarness`
+
+Validates and renders one harness without writing files.
+
+```ts
+const compileHarness: (value: unknown, options?: GenerateOptions) => GeneratedHarness;
+```
+
+- **value:** Harness-shaped data from TypeScript or untyped JavaScript.
+
+- **options:** Concrete output format and optional static-template whitespace stripping.
+
+**Returns:** The destination, rendered source, and validated scenarios.
+
+**Throws:** A `TypeError` for malformed metadata or an `Error` for an unsupported module format.
+
 ### `generate`
 
 Validates a batch, then writes its command scripts and generated harnesses.
@@ -282,22 +310,6 @@ const generate: (tests: unknown[], options?: GenerateOptions) => string[];
 
 **Throws:** When input metadata, output format, or filesystem operations are invalid.
 
-### `compileHarness`
-
-Validates and renders one harness without writing files.
-
-```ts
-const compileHarness: (value: unknown, options?: GenerateOptions) => GeneratedHarness;
-```
-
-- **value:** Harness-shaped data from TypeScript or untyped JavaScript.
-
-- **options:** Concrete output format and optional static-template whitespace stripping.
-
-**Returns:** The destination, rendered source, and validated scenarios.
-
-**Throws:** A `TypeError` for malformed metadata or an `Error` for an unsupported module format.
-
 ### `GenerateOptions`
 
 Options for rendering generated harnesses.
@@ -309,19 +321,18 @@ interface GenerateOptions {
 }
 ```
 
-### `GeneratedHarness`
+## `@lando/leia/run`
 
-An in-memory generated harness before files are emitted.
+### `RunOptions`
+
+Options shared by the synchronous and asynchronous Mocha loaders.
 
 ```ts
-interface GeneratedHarness {
-  destination: string;
-  source: string;
-  scenarios: Scenario[];
+interface RunOptions {
+  timeout?: number | string;
+  reporter?: string;
 }
 ```
-
-## `@lando/leia/run`
 
 ### `run`
 
@@ -369,17 +380,6 @@ const exitCode: (mocha: Mocha, failures: number) => number;
 
 **Returns:** `0` for success, `1` for failures, or `129`, `130`, or `143` for a caught signal.
 
-### `RunOptions`
-
-Options shared by the synchronous and asynchronous Mocha loaders.
-
-```ts
-interface RunOptions {
-  timeout?: number | string;
-  reporter?: string;
-}
-```
-
 ## `@lando/leia/shell`
 
 ### `getShell`
@@ -412,6 +412,14 @@ interface Shell {
 
 ## `@lando/leia/module-format`
 
+### `formats`
+
+Module-format values accepted by the CLI and `resolveModuleFormat()`.
+
+```ts
+const formats: string[];
+```
+
 ### `resolveModuleFormat`
 
 Resolves Leia's generated harness module format.
@@ -430,14 +438,6 @@ const resolveModuleFormat: (moduleFormat?: string, cwd?: string) => ModuleFormat
 **Returns:** The resolved `commonjs` or `esm` format.
 
 **Throws:** When the format is unsupported or the nearest package.json cannot be read or parsed.
-
-### `formats`
-
-Module-format values accepted by the CLI and `resolveModuleFormat()`.
-
-```ts
-const formats: string[];
-```
 
 ### `ModuleFormat`
 

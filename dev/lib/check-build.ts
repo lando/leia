@@ -190,7 +190,7 @@ export async function checkBuild(repositoryRoot: string, scenarios = false): Pro
     assert.ok(throwLine > 0);
     for (const format of ['esm', 'cjs']) {
       const extension = format === 'esm' ? 'js' : 'cjs';
-      for (const module of ['bin/leia', 'lib/api', 'lib/compiler', 'lib/runtime', 'lib/leia'])
+      for (const module of ['bin/leia', 'lib/compiler', 'lib/runtime', 'lib/leia'])
         assert.ok(first[`${format}/${module}.${extension}`]);
     }
     assert.ok(

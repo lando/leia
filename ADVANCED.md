@@ -39,10 +39,8 @@ node -e "require('node:fs').rmSync('greeting.txt')"
 ```
 ````
 
-The first level-one heading names the suite. By default, level-two headings beginning with
-`Start`, `Setup`, or `This is the dawning` are setup; headings beginning with `Test`,
-`Validat`, or `Verif` are tests; and headings beginning with `Clean`, `Tear`, or `Burn` are
-cleanup. Matching is case-sensitive.
+The first level-one heading names the suite. Level-two prefixes select setup, tests, or cleanup
+using the defaults in the CLI table below. Matching is case-sensitive.
 
 Within a fenced block:
 
@@ -110,8 +108,7 @@ environment default; the last explicit positive or negative flag wins. These fla
 
 `LEIA_DEBUG=1` and `--debug` enable every debug namespace (`*`). Otherwise ambient `DEBUG` remains
 in control, including when Leia's toggle is explicitly disabled. With neither enabled, debug output
-is off. CI affects presentation, not stdin: EOF remains the default, and explicit stdin inheritance
-works in CI as it does locally.
+is off.
 
 The hidden `--spawn` and `--split-file` compatibility flags remain accepted no-ops and emit a
 warning. Remove them from automation. Run `npm exec -- leia --help` when scripting against an
@@ -133,7 +130,7 @@ generated file independent from the temporary directory's package scope.
 
 ## Select a shell
 
-Without `--shell`, Leia uses deterministic platform precedence:
+When neither `--shell` nor `LEIA_SHELL` is set, Leia selects the shell as follows:
 
 - Windows: `SHELL`, then `MSYSTEM=MINGW64` with `bash.exe`, then `COMSPEC`, then `cmd.exe`.
 - macOS and other Unix systems: the account shell from `os.userInfo()`, then `SHELL`, then
@@ -162,8 +159,8 @@ available as compatibility aliases.
 
 ## Understand execution
 
-Without `--stdin`, commands receive EOF. With it, they inherit the invoking input stream while
-stdout and stderr remain captured. A nonzero exit, spawn error, signal-only exit, or timeout fails
+Commands receive EOF unless `--stdin` or `LEIA_STDIN` enables inheritance; `--no-stdin` disables it.
+CI does not change that choice. stdout and stderr remain captured. A nonzero exit, spawn error, signal-only exit, or timeout fails
 the attempt. Timeouts terminate the active process tree before a retry or later command begins.
 
 Leia writes normal run and completion status to stdout. Warnings, validation errors, execution
@@ -177,37 +174,15 @@ or test failure. On POSIX, caught `SIGHUP`, `SIGINT`, and `SIGTERM` produce `129
 signal during cleanup, stops cleanup too. Windows and uncatchable termination cannot guarantee
 cleanup.
 
-Noninteractive POSIX commands run in a separate process group. Interactive cancellation targets
-only descendants of the active command. Leia sends `SIGTERM`, then `SIGKILL` after 250 milliseconds
-when necessary. Windows uses `taskkill /T /F`. Descendants that deliberately escape their process
-group are outside the process-tree guarantee.
+On POSIX, cancellation targets the command's process group or interactive descendants; Windows
+uses `taskkill /T /F`. Descendants that escape their process group are outside this guarantee.
 
 ## Troubleshoot a run
 
-### Leia finds no tests
-
-Confirm that the file has a level-one title, a level-two heading matching the configured test
-prefixes, and a top-level fenced block beneath that heading. Quote glob patterns and inspect
-`--ignore` values if no files are discovered.
-
-### The wrong module format is selected
-
-Run with explicit `--module-format commonjs` or `--module-format esm`. For `auto`, inspect the
-nearest `package.json` above the directory where Leia was invoked, not the directory containing the
-Markdown file.
-
-### A command waits for input
-
-The default input stream is closed. Add `--stdin` only when the command genuinely reads from the
-invoking stream. stdout and stderr remain captured even when stdin is attached.
-
-### A command works in a terminal but fails in Leia
-
-Check the selected shell, the Markdown file's directory, and the reported stdout, stderr, and exit
-status. Select a supported shell explicitly when CI and developer machines resolve different
-account shells.
-
-### An old invocation prints warnings
-
-Remove `--spawn` and `--split-file`; they no longer change execution. Supported scenario syntax,
-CLI flags, and the root constructor remain compatible with Leia 1.x.
+| Symptom                  | Check                                                                                                             |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| No tests found           | Level-one title, matching level-two prefix, and top-level fence; quoted globs and effective ignore settings.      |
+| Wrong module format      | Effective `--module-format`/`LEIA_MODULE_FORMAT`; for `auto`, the nearest package above the invocation directory. |
+| Waiting for input        | Effective stdin setting; use `--no-stdin` to force EOF.                                                           |
+| Works in a terminal only | Selected shell, Markdown directory, captured output, and exit status.                                             |
+| Compatibility warnings   | Remove `--spawn` and `--split-file`; both are retained no-ops.                                                    |

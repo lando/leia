@@ -99,6 +99,7 @@ export async function checkPackage(
       join(consumer, 'node_modules/.bin', process.platform === 'win32' ? 'leia.cmd' : 'leia'),
     );
     const installed = join(consumer, 'node_modules/@lando/leia');
+    await checkDocumentationLinks(installed, ['README.md']);
     assert.equal((await lstat(installed)).isSymbolicLink(), false);
     assert.equal(
       await realpath(installed),

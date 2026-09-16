@@ -60,14 +60,14 @@ shell, expands them.
 | Generate ESM harnesses   | `npm exec -- leia README.md --module-format esm`             |
 
 A scenario needs a level-one title, a matching level-two test section, and a fenced block. Each
-comment names the test below it; blank lines separate multiple tests. [ADVANCED](./ADVANCED.md)
+comment names the test below it; blank lines separate multiple tests. [ADVANCED](https://github.com/lando/leia/blob/2.x/ADVANCED.md)
 covers setup and cleanup, every CLI option, custom headers, shells, generated module formats,
 environment variables, execution behavior, and troubleshooting.
 
 ## Use the API
 
 The package supports ESM imports and CommonJS `require()` with TypeScript declarations for the
-constructor and every public subpath. The generated [API reference](./API.md) contains runnable
+constructor and every public subpath. The generated [API reference](https://github.com/lando/leia/blob/2.x/API.md) contains runnable
 examples, signatures, option types, and the supported export map.
 
 Use `run()` for explicitly CommonJS harnesses. Use `await runAsync()` for ESM or automatic format
@@ -76,7 +76,7 @@ selection.
 ## Contribute
 
 Leia 2.x uses the Bun version pinned in `.bun-version`, strict TypeScript ESM source, and Node 24
-for built-artifact compatibility. [CONTRIBUTING](./CONTRIBUTING.md) covers setup, canonical scripts,
+for built-artifact compatibility. [CONTRIBUTING](https://github.com/lando/leia/blob/2.x/CONTRIBUTING.md) covers setup, canonical scripts,
 source and build boundaries, validation, packaging, and releases.
 
 ## Issues, questions, and support
@@ -84,7 +84,7 @@ source and build boundaries, validation, packaging, and releases.
 For community help, join the [Lando Slack community](https://launchpass.com/devwithlando). Report
 bugs and request features through the [issue queue](https://github.com/lando/leia/issues/new/choose).
 
-User- and developer-visible changes are recorded in the [changelog](./CHANGELOG.md) and published
+User- and developer-visible changes are recorded in the [changelog](https://github.com/lando/leia/blob/2.x/CHANGELOG.md) and published
 [release notes](https://github.com/lando/leia/releases).
 
 ## Maintainers
