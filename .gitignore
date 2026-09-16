@@ -18,12 +18,13 @@
 logs
 
 # coverage reporting
-.nyc_output
 coverage/
+.nyc_output/
 
-# NPM files
+# Dependencies and build output
 node_modules
-yarn.lock
+dist/
+.temp/
 
 # Tests
 *.leia.js

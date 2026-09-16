@@ -1,35 +1,33 @@
 Custom Headers Example
 ======================
 
-Here is an example that does some setup and cleanup before running tests. Note that these commands are going to run relative to the source markdown file, in this case the the "examples" directory.
+Run with `leia examples/custom-headers.md --shell bash -s Hello -t Sup -c Goodbye`.
+Requires Bash and standard Unix tools. The flags assign these custom headings to setup, tests, and cleanup.
 
 Hello
 -----
 
-These commands should run __before__ your main testing ones and can be used to do some setup that you need beforehand. You do not need for this section to come first in the markdown file, Leia should parse it first regardless.
+Setup runs before testing, regardless of section order in the file.
 
 ```bash
-# Create a file we can grep for a word
+# create a file we can grep for a word
 echo "the word is bubba" > test.txt
 ```
 
 Sup
 ---
 
-Run some tests using stuff setup above.
-
 ```bash
-# Should return the correct word
+# should return the correct word
 cat test.txt | grep "bubba"
 ```
 
 Goodbye
 -------
 
-These commands should run __after__ your main testing ones and can be used to undo the commands you ran during setup before. You do not need for this section to come last in the markdown file, Leia should parse it last regardless.
+Cleanup runs after testing, including after an ordinary test failure.
 
 ```bash
-# Destroy our test file
+# destroy our test file
 rm -f test.txt
 ```
-

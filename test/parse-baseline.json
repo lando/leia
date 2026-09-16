@@ -1,0 +1,416 @@
+[
+  {
+    "file": "examples/basic-example.md",
+    "id": "basic-example",
+    "chaiPath": "<root>/node_modules/@lando/chai",
+    "runtimePath": "<root>/lib/runtime.ts",
+    "debugPath": "<root>/node_modules/debug",
+    "destination": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/basic-example.leia.cjs",
+    "moduleFormat": "commonjs",
+    "retry": 3,
+    "cwd": "<root>/examples",
+    "stdin": "pipe",
+    "text": "Basic Example",
+    "type": "title",
+    "version": "1.0.0-beta.9",
+    "tests": {
+      "test": [
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/81f98e0927c89fb199ef3f91ed104fca810339f6.sh"
+          ],
+          "shell": "bash",
+          "command": "true",
+          "skip": false,
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/81f98e0927c89fb199ef3f91ed104fca810339f6.sh",
+          "describe": ["should return true"],
+          "id": "basic-example",
+          "number": 1,
+          "section": "test"
+        },
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/d6324071ce7e270fd31c41d69c5b78253bd8f7d3.sh"
+          ],
+          "shell": "bash",
+          "command": "echo \"some stuff\"",
+          "skip": false,
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/d6324071ce7e270fd31c41d69c5b78253bd8f7d3.sh",
+          "describe": [
+            "should echo some stuff",
+            "note important note for the markdown file that doesnt need to be in the test description"
+          ],
+          "id": "basic-example",
+          "number": 2,
+          "section": "test"
+        },
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/4fe20af049bbe06caa35cbd67d36d70895b250db.sh"
+          ],
+          "shell": "bash",
+          "command": "cat filedoesnotexist || echo $? | grep 1",
+          "skip": false,
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/4fe20af049bbe06caa35cbd67d36d70895b250db.sh",
+          "describe": ["should return status code 1"],
+          "id": "basic-example",
+          "number": 3,
+          "section": "test"
+        },
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/2a48a296749c661713e26cf55cab860184b6c099.sh"
+          ],
+          "shell": "bash",
+          "command": "export TEST=thing\nenv | grep TEST\nunset TEST",
+          "skip": false,
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/2a48a296749c661713e26cf55cab860184b6c099.sh",
+          "describe": ["should concatenate three commands together"],
+          "id": "basic-example",
+          "number": 4,
+          "section": "test"
+        },
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/6a4738704577b14ddc9beb6fe72ba169c9468488.sh"
+          ],
+          "shell": "bash",
+          "command": "export TEST=thing  TEST2=stuff  TEST3=morestuff\nenv | grep TEST\nenv | grep TEST2\nenv | grep TEST3\nunset TEST\nunset TEST2\nunset TEST3",
+          "skip": false,
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/6a4738704577b14ddc9beb6fe72ba169c9468488.sh",
+          "describe": ["should not concatenate if escape is used"],
+          "id": "basic-example",
+          "number": 5,
+          "section": "test"
+        },
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/60d75d2cc50aab9379bf0de8b2446348b07bd832.sh"
+          ],
+          "shell": "bash",
+          "command": "skip",
+          "skip": true,
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/60d75d2cc50aab9379bf0de8b2446348b07bd832.sh",
+          "describe": [
+            "should be a test we have right now but we dont so this is just a stub to remind us"
+          ],
+          "id": "basic-example",
+          "number": 6,
+          "section": "test"
+        },
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/7c8e55ef16adaf0921c5e32de56e5162cbb52277.sh"
+          ],
+          "shell": "bash",
+          "command": "true",
+          "skip": false,
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/7c8e55ef16adaf0921c5e32de56e5162cbb52277.sh",
+          "describe": ["should also run this"],
+          "id": "basic-example",
+          "number": 7,
+          "section": "test"
+        }
+      ],
+      "invalid": [
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/675a765cacfb875481a4d80f26df84f0eab4af8f.sh"
+          ],
+          "shell": "bash",
+          "command": "true",
+          "skip": false,
+          "script": "<tmp>/leia/ecfd8ef62c85e72726344a5cf91e98be53a9227c/675a765cacfb875481a4d80f26df84f0eab4af8f.sh",
+          "describe": ["should also also run this"],
+          "id": "basic-example",
+          "number": 1,
+          "section": "invalid"
+        }
+      ]
+    }
+  },
+  {
+    "file": "examples/setup-cleanup-example.md",
+    "id": "setup-and-cleanup-example",
+    "chaiPath": "<root>/node_modules/@lando/chai",
+    "runtimePath": "<root>/lib/runtime.ts",
+    "debugPath": "<root>/node_modules/debug",
+    "destination": "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/setup-and-cleanup-example.leia.cjs",
+    "moduleFormat": "commonjs",
+    "retry": 3,
+    "cwd": "<root>/examples",
+    "stdin": "pipe",
+    "text": "Setup and Cleanup Example",
+    "type": "title",
+    "version": "1.0.0-beta.9",
+    "tests": {
+      "setup": [
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/011e94f854e22ab4fdf8b2983375cbbd5c8df11e.sh"
+          ],
+          "shell": "bash",
+          "command": "echo \"the word is bubba\" > test.txt",
+          "skip": false,
+          "script": "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/011e94f854e22ab4fdf8b2983375cbbd5c8df11e.sh",
+          "describe": ["create a file we can grep for a word"],
+          "id": "setup-cleanup-example",
+          "number": 1,
+          "section": "setup"
+        }
+      ],
+      "test": [
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/5e0cd92901dba599ab607ebf48cc23746ee34bec.sh"
+          ],
+          "shell": "bash",
+          "command": "cat test.txt | grep \"bubba\"",
+          "skip": false,
+          "script": "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/5e0cd92901dba599ab607ebf48cc23746ee34bec.sh",
+          "describe": ["should return the correct word"],
+          "id": "setup-cleanup-example",
+          "number": 1,
+          "section": "test"
+        }
+      ],
+      "cleanup": [
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/44133fc1f9904af9577b4f1f674a41ba6fff382e.sh"
+          ],
+          "shell": "bash",
+          "command": "rm -f test.txt",
+          "skip": false,
+          "script": "<tmp>/leia/576846fa096f29987e75d97d99a96118aaabf109/44133fc1f9904af9577b4f1f674a41ba6fff382e.sh",
+          "describe": ["destroy our test file"],
+          "id": "setup-cleanup-example",
+          "number": 1,
+          "section": "cleanup"
+        }
+      ]
+    }
+  },
+  {
+    "file": "test/parse-sections.md",
+    "id": "parser-sections",
+    "chaiPath": "<root>/node_modules/@lando/chai",
+    "runtimePath": "<root>/lib/runtime.ts",
+    "debugPath": "<root>/node_modules/debug",
+    "destination": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/parser-sections.leia.cjs",
+    "moduleFormat": "commonjs",
+    "retry": 3,
+    "cwd": "<root>/test",
+    "stdin": "pipe",
+    "text": "Parser Sections",
+    "type": "title",
+    "version": "1.0.0-beta.9",
+    "tests": {
+      "setup": [
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/f1ddd44a21893337a7d5752cca4744b52d568476.sh"
+          ],
+          "shell": "bash",
+          "command": "true",
+          "skip": false,
+          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/f1ddd44a21893337a7d5752cca4744b52d568476.sh",
+          "describe": ["should run first setup"],
+          "id": "parse-sections",
+          "number": 1,
+          "section": "setup"
+        },
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/ffcfd00149ccb1fd2be4d42c4da2560451424827.sh"
+          ],
+          "shell": "bash",
+          "command": "true",
+          "skip": false,
+          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/ffcfd00149ccb1fd2be4d42c4da2560451424827.sh",
+          "describe": ["should run second setup"],
+          "id": "parse-sections",
+          "number": 2,
+          "section": "setup"
+        }
+      ],
+      "test": [
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/a43db8d4a517121cb474eab24eb8ff12dec49734.sh"
+          ],
+          "shell": "bash",
+          "command": "true",
+          "skip": false,
+          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/a43db8d4a517121cb474eab24eb8ff12dec49734.sh",
+          "describe": ["should run first test"],
+          "id": "parse-sections",
+          "number": 1,
+          "section": "test"
+        },
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/7ce23d8835100a7a19e3c6170136a762f2bd18aa.sh"
+          ],
+          "shell": "bash",
+          "command": "true",
+          "skip": false,
+          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/7ce23d8835100a7a19e3c6170136a762f2bd18aa.sh",
+          "describe": ["should run second test"],
+          "id": "parse-sections",
+          "number": 2,
+          "section": "test"
+        }
+      ],
+      "cleanup": [
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/eb6f25c58cd6f4aff8f644e370556e600fefa3a8.sh"
+          ],
+          "shell": "bash",
+          "command": "true",
+          "skip": false,
+          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/eb6f25c58cd6f4aff8f644e370556e600fefa3a8.sh",
+          "describe": ["should run first cleanup"],
+          "id": "parse-sections",
+          "number": 1,
+          "section": "cleanup"
+        },
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/6da1defb3d06a648a4b485651fef363cb7b30d2a.sh"
+          ],
+          "shell": "bash",
+          "command": "true",
+          "skip": false,
+          "script": "<tmp>/leia/04ec668fa4e77a9ba59c4d0fa7143b023cbe8ac3/6da1defb3d06a648a4b485651fef363cb7b30d2a.sh",
+          "describe": ["should run second cleanup"],
+          "id": "parse-sections",
+          "number": 2,
+          "section": "cleanup"
+        }
+      ]
+    }
+  },
+  {
+    "file": "test/parse-code-blocks.md",
+    "id": "parser-code-blocks",
+    "chaiPath": "<root>/node_modules/@lando/chai",
+    "runtimePath": "<root>/lib/runtime.ts",
+    "debugPath": "<root>/node_modules/debug",
+    "destination": "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/parser-code-blocks.leia.cjs",
+    "moduleFormat": "commonjs",
+    "retry": 3,
+    "cwd": "<root>/test",
+    "stdin": "pipe",
+    "text": "Parser Code Blocks",
+    "type": "title",
+    "version": "1.0.0-beta.9",
+    "tests": {
+      "test": [
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/dddfa31b99a1d51991afcb42320dbd4f1a60cf14.sh"
+          ],
+          "shell": "bash",
+          "command": "echo first",
+          "skip": false,
+          "script": "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/dddfa31b99a1d51991afcb42320dbd4f1a60cf14.sh",
+          "describe": ["should parse the first code block"],
+          "id": "parse-code-blocks",
+          "number": 1,
+          "section": "test"
+        },
+        {
+          "args": [
+            "--noprofile",
+            "--norc",
+            "-eo",
+            "pipefail",
+            "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/c49a15ead9b87889dcfafe36a1074b582cab0b98.sh"
+          ],
+          "shell": "bash",
+          "command": "echo second",
+          "skip": false,
+          "script": "<tmp>/leia/a6a20774b7625c34fb09cb1efa315e5c99aa955d/c49a15ead9b87889dcfafe36a1074b582cab0b98.sh",
+          "describe": ["should parse the second code block"],
+          "id": "parse-code-blocks",
+          "number": 2,
+          "section": "test"
+        }
+      ]
+    }
+  }
+]

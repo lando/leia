@@ -1,0 +1,29 @@
+import os from 'node:os';
+
+import detectNewline from 'detect-newline';
+
+/**
+ * normalizes one fenced scenario command before generation.
+ *
+ * description comments are removed, backslash continuations are folded, and powershell receives
+ * stop-on-error behavior. generation treats the returned bytes as opaque shell input.
+ *
+ * @param command fenced code-block contents.
+ * @param shell selected shell name.
+ * @returns normalized command bytes using the host newline.
+ */
+export const normalizeCommand = (command: string, shell: string): string => {
+  // marked normalizes line endings; the fallback also handles single-line/empty code blocks.
+  const newline = detectNewline(command) ?? '\n';
+  const trimmed = command
+    .split(newline)
+    .map((line) => line.trim())
+    .join(newline);
+  const lines = trimmed
+    .replace(new RegExp(`\\\\${newline}`, 'g'), ' ')
+    .split(newline)
+    .filter((line) => !line.startsWith('#'))
+    .map((line) => line.trim());
+  if (shell === 'pwsh' || shell === 'powershell') lines.unshift('$ErrorActionPreference = "Stop"');
+  return lines.join(os.EOL);
+};

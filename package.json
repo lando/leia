@@ -1,7 +1,7 @@
 {
   "name": "@lando/leia",
   "description": "Runs tests cleverly hidden in documentation",
-  "version": "1.0.0-beta.9",
+  "version": "2.0.0-beta.1",
   "author": "Mike Pirog @pirog",
   "license": "MIT",
   "repository": {
@@ -14,74 +14,172 @@
     "lando",
     "leia",
     "mocha",
-    "oclif",
     "testing"
   ],
   "engines": {
     "node": ">=24.0.0"
   },
-  "main": "lib/leia.js",
+  "main": "./dist/cjs/lib/leia.cjs",
   "bin": {
-    "leia": "bin/leia"
+    "leia": "dist/esm/bin/leia.js"
   },
   "files": [
-    "/bin",
-    "/cli",
-    "/lib",
-    "/templates",
-    "/yarn.lock"
+    "/dist/esm",
+    "/dist/cjs",
+    "/.codex-plugin/plugin.json",
+    "/skills",
+    "/CLI.md",
+    "/ADVANCED.md",
+    "/API.md",
+    "/GITHUB_ACTIONS.md",
+    "/PLUGINS.md",
+    "/examples/basic-example.md",
+    "/examples/setup-cleanup-example.md",
+    "/examples/custom-headers.md",
+    "/examples/subdirectory-example/subdir-example.md",
+    "/examples/subdirectory-example/text1.txt",
+    "/examples/subdirectory-example/text2.txt"
   ],
-  "nyc": {
-    "include": [
-      "lib/*.js"
-    ],
-    "exclude": [
-      "test/**",
-      "bin/**"
-    ],
-    "cache": true,
-    "all": true
-  },
-  "oclif": {
-    "bin": "leia",
-    "plugins": [
-      "@oclif/plugin-help"
-    ]
-  },
   "scripts": {
-    "leia": "node ./bin/leia",
-    "lint": "eslint bin/leia . --ignore-pattern '*.leia.js' --ignore-pattern '*.leia.cjs' --ignore-pattern '*.leia.mjs' --ignore-pattern 'leia.readme.js'",
-    "test:unit": "nyc --reporter=html --reporter=text mocha --timeout 5000 test/*.spec.js",
-    "test:leia": "npx leia README.md \"examples/**/*.md\" -i \"examples/basic-cmd-example.md\" -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\"",
-    "test:leia:stdin": "npx leia examples/stdin-example.md --stdin"
+    "check:toolchain": "bun run dev/scripts/check-toolchain-task.ts",
+    "dev": "bun --watch run bin/leia.ts",
+    "leia": "bun run bin/leia.ts",
+    "lint": "bun run lint:eslint && bun run format:check",
+    "typecheck": "tsc --noEmit",
+    "test": "bun run test:unit",
+    "test:unit": "bun run test:app && bun run test:dev",
+    "docs:api": "bun run dev/scripts/generate-api-task.ts",
+    "docs:api:check": "bun run dev/scripts/generate-api-task.ts --check",
+    "build": "bun run dev/scripts/build-cli.ts",
+    "watch": "bun run dev/scripts/build-cli.ts --watch",
+    "check:build": "bun run dev/scripts/check-build-task.ts",
+    "test:leia": "bun run build && bun run leia README.md \"examples/**/*.md\" -i \"examples/basic-cmd-example.md\" -i \"examples/exclude-example/**/*.md\" -i \"examples/stdin-example.md\" -i \"examples/custom-headers.md\" -i \"examples/environment.md\" -i \"examples/basic-pwsh-example.md\"",
+    "test:leia:stdin": "bun run leia examples/stdin-example.md --stdin",
+    "lint:eslint": "eslint --config eslint.config.mjs .",
+    "format:check": "prettier . --check --ignore-unknown",
+    "format:write": "prettier . --write --ignore-unknown",
+    "test:lifecycle": "bun run build && node examples/lifecycle/verify.cjs",
+    "test:app": "bun run dev/scripts/test-app-task.ts",
+    "test:coverage": "bun run dev/scripts/test-app-task.ts --coverage",
+    "test:dev": "bun --bun node_modules/mocha/bin/mocha.js --timeout 5000 \"dev/test/*.spec.ts\"",
+    "check:dist": "bun run dev/scripts/check-dist-task.ts",
+    "prepack": "bun run check:dist",
+    "check:package": "bun run dev/scripts/check-package-task.ts"
   },
   "dependencies": {
-    "@lando/argv": "^1.0.6",
     "@lando/chai": "npm:chai@^4.4.1",
-    "@oclif/command": "^1.8.0",
-    "@oclif/config": "^1.17.0",
-    "@oclif/errors": "^1.3.5",
-    "@oclif/plugin-help": "^3.2.3",
     "chalk": "^4.1.2",
-    "command-line-test": "^1.0.10",
     "debug": "^4.3.2",
     "detect-newline": "^3.1.0",
-    "dot": "^1.1.2",
-    "fs-extra": "^7.0.1",
     "glob": "^7.1.3",
     "lodash": "^4.17.11",
     "marked": "^4.0.10",
     "mocha": "^11.1.0",
-    "object-hash": "^2.2.0"
+    "object-hash": "^2.2.0",
+    "@types/mocha": "^10.0.10"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.8",
-    "@babel/eslint-parser": "7.15.7",
-    "@oclif/dev-cli": "^1.26.0",
-    "@oclif/test": "^1.2.8",
-    "eslint": "^7.3",
-    "eslint-config-google": "^0.14.0",
-    "mock-fs": "^4.7.0",
-    "nyc": "^15.1.0"
+    "@eslint/js": "^10.0.1",
+    "@types/bun": "1.3.14",
+    "@types/debug": "^4.1.13",
+    "@types/glob": "7",
+    "@types/lodash": "^4.17.25",
+    "@types/marked": "4",
+    "@types/node": "^24.0.0",
+    "@types/object-hash": "^3.0.6",
+    "c8": "^12.0.0",
+    "eslint": "^10.10.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.6",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.57.1"
+  },
+  "packageManager": "bun@1.3.14",
+  "type": "module",
+  "module": "./dist/esm/lib/leia.js",
+  "types": "./dist/cjs/index.d.cts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/lib/leia.d.ts",
+        "default": "./dist/esm/lib/leia.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/lib/leia.cjs"
+      }
+    },
+    "./find": {
+      "import": {
+        "types": "./dist/esm/lib/find.d.ts",
+        "default": "./dist/esm/lib/find.js"
+      },
+      "require": {
+        "types": "./dist/cjs/lib/find.d.cts",
+        "default": "./dist/cjs/lib/find.cjs"
+      }
+    },
+    "./parse": {
+      "import": {
+        "types": "./dist/esm/lib/parse.d.ts",
+        "default": "./dist/esm/lib/parse.js"
+      },
+      "require": {
+        "types": "./dist/cjs/lib/parse.d.cts",
+        "default": "./dist/cjs/lib/parse.cjs"
+      }
+    },
+    "./generate": {
+      "import": {
+        "types": "./dist/esm/lib/generate.d.ts",
+        "default": "./dist/esm/lib/generate.js"
+      },
+      "require": {
+        "types": "./dist/cjs/lib/generate.d.cts",
+        "default": "./dist/cjs/lib/generate.cjs"
+      }
+    },
+    "./run": {
+      "import": {
+        "types": "./dist/esm/lib/run.d.ts",
+        "default": "./dist/esm/lib/run.js"
+      },
+      "require": {
+        "types": "./dist/cjs/lib/run.d.cts",
+        "default": "./dist/cjs/lib/run.cjs"
+      }
+    },
+    "./shell": {
+      "import": {
+        "types": "./dist/esm/lib/shell.d.ts",
+        "default": "./dist/esm/lib/shell.js"
+      },
+      "require": {
+        "types": "./dist/cjs/lib/shell.d.cts",
+        "default": "./dist/cjs/lib/shell.cjs"
+      }
+    },
+    "./module-format": {
+      "import": {
+        "types": "./dist/esm/lib/module-format.d.ts",
+        "default": "./dist/esm/lib/module-format.js"
+      },
+      "require": {
+        "types": "./dist/cjs/lib/module-format.d.cts",
+        "default": "./dist/cjs/lib/module-format.cjs"
+      }
+    },
+    "./compiler": {
+      "import": {
+        "types": "./dist/esm/lib/compiler.d.ts",
+        "default": "./dist/esm/lib/compiler.js"
+      },
+      "require": {
+        "types": "./dist/cjs/lib/compiler.d.cts",
+        "default": "./dist/cjs/lib/compiler.cjs"
+      }
+    },
+    "./package.json": "./package.json"
   }
 }

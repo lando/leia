@@ -1,0 +1,67 @@
+{
+  "file": "/fixture.md",
+  "id": "fixture",
+  "destination": "<destination>",
+  "moduleFormat": "esm",
+  "retry": 3,
+  "cwd": "/fixture",
+  "chaiPath": "/deps/chai",
+  "runtimePath": "/deps/runtime",
+  "debugPath": "/deps/debug",
+  "stdin": "pipe",
+  "text": "Fixture",
+  "type": "title",
+  "version": "fixture",
+  "tests": {
+    "setup": [
+      {
+        "args": ["/scripts/test.sh"],
+        "command": "printf '%s\\n' \"${HOME}\" `literal` \\1\nnext",
+        "describe": ["should preserve bytes"],
+        "id": "fixture",
+        "number": 1,
+        "script": "<script>",
+        "section": "setup",
+        "shell": "sh",
+        "skip": false
+      }
+    ],
+    "test": [
+      {
+        "args": ["/scripts/test.sh"],
+        "command": "printf '%s\\n' \"${HOME}\" `literal` \\1\nnext",
+        "describe": ["should preserve bytes"],
+        "id": "fixture",
+        "number": 1,
+        "script": "<script>",
+        "section": "test",
+        "shell": "sh",
+        "skip": false
+      },
+      {
+        "args": ["/scripts/test.sh"],
+        "command": "printf '%s\\n' \"${HOME}\" `literal` \\1\nnext",
+        "describe": ["should preserve bytes"],
+        "id": "fixture",
+        "number": 2,
+        "script": "<script>",
+        "section": "test",
+        "shell": "sh",
+        "skip": true
+      }
+    ],
+    "cleanup": [
+      {
+        "args": ["/scripts/test.sh"],
+        "command": "printf '%s\\n' \"${HOME}\" `literal` \\1\nnext",
+        "describe": ["should preserve bytes"],
+        "id": "fixture",
+        "number": 1,
+        "script": "<script>",
+        "section": "cleanup",
+        "shell": "sh",
+        "skip": false
+      }
+    ]
+  }
+}

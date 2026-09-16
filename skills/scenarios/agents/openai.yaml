@@ -1,0 +1,7 @@
+interface:
+  display_name: 'Leia'
+  short_description: 'Author scenarios, run tests, and configure CI'
+  icon_small: './assets/lando-logo.png'
+  icon_large: './assets/lando-logo.png'
+  brand_color: '#ed3f7a'
+  default_prompt: "Use $leia-scenarios to author, run, or diagnose this project's Leia scenarios and configure their CI coverage."

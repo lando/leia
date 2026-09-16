@@ -1,0 +1,14 @@
+# Installed npm package
+
+## Test
+
+```sh
+# should expose the installed binary without downloading a package
+npm exec --offline -- leia --version
+
+# should run a CommonJS harness using installed runtime dependencies
+npm exec --offline -- leia input.scenario --module-format=commonjs
+
+# should run an ESM harness using installed runtime dependencies
+npm exec --offline -- leia input.scenario --module-format=esm
+```
