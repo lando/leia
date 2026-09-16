@@ -37,7 +37,14 @@ export async function checkPackage(
   scenarios = false,
 ): Promise<void> {
   await checkDistribution(root);
-  const documentation = ['README.md', 'ADVANCED.md', 'API.md', 'CONTRIBUTING.md'];
+  const documentation = [
+    'README.md',
+    'CLI.md',
+    'ADVANCED.md',
+    'API.md',
+    'GITHUB_ACTIONS.md',
+    'CONTRIBUTING.md',
+  ];
   assert.equal(
     normalizeDocumentationLineEndings(await readFile(join(root, 'API.md'), 'utf8')),
     normalizeDocumentationLineEndings(await generateApiDocumentation(root)),
@@ -49,6 +56,7 @@ export async function checkPackage(
   const quickstart = await readExample('README.md', 'quickstart-scenario');
   const quickstartCommand = await readExample('README.md', 'quickstart-command');
   const lifecycle = await readExample('ADVANCED.md', 'lifecycle-scenario');
+  const readmeAPI = await readExample('README.md', 'readme-api');
   const apiESM = await readExample('API.md', 'api-esm');
   const apiCommonJS = await readExample('API.md', 'api-commonjs');
   const scratch = await mkdtemp(join(tmpdir(), 'leia-package-'));
@@ -93,6 +101,7 @@ export async function checkPackage(
       writeFile(join(consumer, 'quickstart.md'), quickstart),
       writeFile(join(consumer, 'lifecycle.md'), lifecycle),
       writeFile(join(consumer, 'documentation-api.mjs'), apiESM),
+      writeFile(join(consumer, 'readme-api.mjs'), readmeAPI),
       writeFile(join(consumer, 'documentation-api.cjs'), apiCommonJS),
     ]);
     await lstat(
@@ -169,7 +178,12 @@ export async function checkPackage(
     }
     if (scenarios) {
       const cli = join(installed, metadata.bin.leia);
-      const documentedCommand = quickstartCommand.trim().split(/\s+/);
+      const documentedCommand = quickstartCommand
+        .split('\n')
+        .filter((line) => !line.trim().startsWith('#'))
+        .join(' ')
+        .trim()
+        .split(/\s+/);
       assert.deepEqual(documentedCommand, [
         'npm',
         'exec',
@@ -194,6 +208,7 @@ export async function checkPackage(
         process.platform === 'win32' ? 'cmd' : 'sh',
       ]);
       await runCommand(consumer, ['node', 'documentation-api.mjs']);
+      await runCommand(consumer, ['node', 'readme-api.mjs']);
       await runCommand(consumer, ['node', 'documentation-api.cjs']);
     }
     assert.equal(

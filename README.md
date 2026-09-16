@@ -1,26 +1,22 @@
 # Leia
 
-Leia turns fenced commands in Markdown into Mocha tests. Projects can keep runnable examples beside
-the prose they explain, then prove the documentation still tells the truth.
+Leia turns fenced commands in markdown into mocha tests. Keep runnable examples beside the prose
+they explain, then prove the documentation still tells the truth.
 
-> Leia 2.0 is developed on the [`2.x`](https://github.com/lando/leia/tree/2.x) branch and requires
-> Node.js 24 or newer. Stable 1.x maintenance remains on
-> [`main`](https://github.com/lando/leia/tree/main) until the 2.0 release. The supported scenario,
-> CLI, and root constructor interfaces remain compatible.
+Requires Node.js 24 or newer.
 
 ## Install
 
-Install the 2.0 prerelease from npm's `edge` channel:
-
 ```sh
-npm install --save-dev @lando/leia@edge
+# Add Leia to your project's development dependencies.
+npm install --save-dev @lando/leia
 ```
 
-After the stable 2.0 release, omit `@edge`.
+## Usage
 
-## Run your first scenario
+### Write your first scenario
 
-Create `quickstart.md` in any npm project:
+Save this as `quickstart.md`:
 
 <!-- leia-example:quickstart-scenario -->
 
@@ -35,57 +31,101 @@ echo "Hello from Leia"
 ```
 ````
 
-Then run the locally installed binary:
+The title names the suite, the `Testing` heading selects the commands, and each comment names a
+test. Blank lines separate tests. See [scenario authoring](https://github.com/lando/leia/blob/2.x/ADVANCED.md#author-a-scenario)
+for assertions, setup, and cleanup.
+
+### Run with the CLI
 
 <!-- leia-example:quickstart-command -->
 
 ```sh
+# Run the locally installed Leia without downloading another version.
 npm exec --offline -- leia quickstart.md
 ```
 
-Leia reports one passing test and exits with status `0`. A command that exits nonzero, cannot start,
-or exceeds its deadline fails the scenario.
+Leia reports one passing test. A command that exits nonzero, cannot start, or exceeds its deadline
+fails the scenario.
 
-## Use Leia
+```sh
+# Equivalent when Leia is already on PATH, including inside an npm script.
+leia quickstart.md
 
-Pass one or more files or glob patterns to the CLI. Quote globs so Leia, rather than the invoking
-shell, expands them.
+# Quote globs so Leia expands them; retry failed commands twice.
+leia "docs/**/*.md" --retry 2
+```
 
-| Task                     | Command                                                      |
-| ------------------------ | ------------------------------------------------------------ |
-| Test one document        | `npm exec -- leia README.md`                                 |
-| Test a documentation set | `npm exec -- leia "docs/**/*.md" --ignore "docs/archive/**"` |
-| Retry failed commands    | `npm exec -- leia README.md --retry 2`                       |
-| Set a 60-second deadline | `npm exec -- leia README.md --timeout 60`                    |
-| Generate ESM harnesses   | `npm exec -- leia README.md --module-format esm`             |
+See the [CLI guide](https://github.com/lando/leia/blob/2.x/CLI.md) for npm scripts, all options,
+and environment defaults.
 
-A scenario needs a level-one title, a matching level-two test section, and a fenced block. Each
-comment names the test below it; blank lines separate multiple tests. [ADVANCED](https://github.com/lando/leia/blob/2.x/ADVANCED.md)
-covers setup and cleanup, every CLI option, custom headers, shells, generated module formats,
-environment variables, execution behavior, and troubleshooting.
+### Run programmatically
 
-## Use the API
+Save as `test-docs.mjs` and run with `node test-docs.mjs`:
 
-The package supports ESM imports and CommonJS `require()` with TypeScript declarations for the
-constructor and every public subpath. The generated [API reference](https://github.com/lando/leia/blob/2.x/API.md) contains runnable
-examples, signatures, option types, and the supported export map.
+<!-- leia-example:readme-api -->
 
-Use `run()` for explicitly CommonJS harnesses. Use `await runAsync()` for ESM or automatic format
-selection.
+```js
+import Leia from '@lando/leia';
 
-## Contribute
+const leia = new Leia();
+// Compile the same markdown scenario.
+const files = leia.find(['quickstart.md']);
+const sources = leia.parse(files, { moduleFormat: 'esm' });
+const harnesses = leia.generate(sources);
+const runner = await leia.runAsync(harnesses);
 
-Leia 2.x uses the Bun version pinned in `.bun-version`, strict TypeScript ESM source, and Node 24
-for built-artifact compatibility. [CONTRIBUTING](https://github.com/lando/leia/blob/2.x/CONTRIBUTING.md) covers setup, canonical scripts,
-source and build boundaries, validation, packaging, and releases.
+// Return a failing exit status when any test fails.
+runner.run((failures) => {
+  process.exitCode = failures ? 1 : 0;
+});
+```
+
+The [API reference](https://github.com/lando/leia/blob/2.x/API.md) includes CommonJS usage,
+TypeScript declarations, and every supported export.
+
+### Run in GitHub Actions
+
+Commit `quickstart.md`, `package.json`, and `package-lock.json`, then save this workflow as
+`.github/workflows/leia.yml`:
+
+<!-- leia-example:github-actions -->
+
+```yaml
+name: Leia
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  scenarios:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      # Install the versions recorded in your project's lockfile.
+      - run: npm ci
+      # A failing scenario fails the job.
+      - run: npm exec --offline -- leia quickstart.md
+```
+
+See [GitHub Actions](https://github.com/lando/leia/blob/2.x/GITHUB_ACTIONS.md) for a platform
+matrix and scenario prerequisites.
+
+## Development
+
+Leia uses pinned Bun tooling and TypeScript source. [CONTRIBUTING](https://github.com/lando/leia/blob/2.x/CONTRIBUTING.md)
+covers setup, validation, builds, and releases.
 
 ## Issues, questions, and support
 
-For community help, join the [Lando Slack community](https://launchpass.com/devwithlando). Report
-bugs and request features through the [issue queue](https://github.com/lando/leia/issues/new/choose).
+Join the [Lando Slack community](https://launchpass.com/devwithlando) for community help.
+Report bugs and request features through the [issue queue](https://github.com/lando/leia/issues/new/choose).
 
-User- and developer-visible changes are recorded in the [changelog](https://github.com/lando/leia/blob/2.x/CHANGELOG.md) and published
-[release notes](https://github.com/lando/leia/releases).
+## Changelog
+
+See the [changelog](https://github.com/lando/leia/blob/2.x/CHANGELOG.md) and
+[published releases](https://github.com/lando/leia/releases).
 
 ## Maintainers
 

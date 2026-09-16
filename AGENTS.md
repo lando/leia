@@ -54,7 +54,7 @@
 
 ## Documentation
 
-- Keep README onboarding, ADVANCED behavior, generated API contracts, and CONTRIBUTING instructions
+- Keep README onboarding, CLI reference, ADVANCED behavior, generated API contracts, CI guidance, and CONTRIBUTING instructions
   aligned with their owning code. Edit public docblocks and regenerate `API.md`; do not edit it directly.
 - Record user-visible changes in the unreleased changelog, not validation logs or implementation history.
 - Preserve literal commands, flags, paths, environment variables, and package metadata.

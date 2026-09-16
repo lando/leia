@@ -165,7 +165,7 @@ export const generateApiDocumentation = async (root: string): Promise<string> =>
       '',
       "This generated reference covers Leia's supported JavaScript and TypeScript package exports.",
       'Start with the [README](./README.md) for installation and CLI onboarding, or use',
-      '[ADVANCED](./ADVANCED.md) for complete scenario and CLI behavior.',
+      '[ADVANCED](./ADVANCED.md) for scenario behavior and [CLI](./CLI.md) for command options.',
       '',
       '## Usage',
       '',
