@@ -59,7 +59,6 @@ export async function checkPackage(
   const quickstartCommand = await readExample('README.md', 'quickstart-command');
   const lifecycle = await readExample('ADVANCED.md', 'lifecycle-scenario');
   const readmeAPI = await readExample('README.md', 'readme-api');
-  const apiESM = await readExample('API.md', 'api-esm');
   const apiCommonJS = await readExample('API.md', 'api-commonjs');
   const scratch = await mkdtemp(join(tmpdir(), 'leia-package-'));
   try {
@@ -111,7 +110,6 @@ export async function checkPackage(
     await Promise.all([
       writeFile(join(consumer, 'quickstart.md'), quickstart),
       writeFile(join(consumer, 'lifecycle.md'), lifecycle),
-      writeFile(join(consumer, 'documentation-api.mjs'), apiESM),
       writeFile(join(consumer, 'readme-api.mjs'), readmeAPI),
       writeFile(join(consumer, 'documentation-api.cjs'), apiCommonJS),
     ]);
@@ -270,7 +268,6 @@ export async function checkPackage(
         '--shell',
         process.platform === 'win32' ? 'cmd' : 'sh',
       ]);
-      await runCommand(consumer, ['node', 'documentation-api.mjs']);
       await runCommand(consumer, ['node', 'readme-api.mjs']);
       await runCommand(consumer, ['node', 'documentation-api.cjs']);
     }

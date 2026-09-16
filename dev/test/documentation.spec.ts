@@ -69,14 +69,14 @@ describe('dev/utils/documentation', () => {
           exports: { '.': { import: { default: './dist/esm/lib/entry.js' } } },
         }),
       );
-      const source = '/** Coordinates scenarios. */\nexport class Leia {}\n';
+      const source = '/** coordinates scenarios. */\nexport class Leia {}\n';
       await writeFile(
         join(root, 'lib/entry.ts'),
-        source + '/** Newly exported helper. */\nexport const added = () => true;\n',
+        source + '/** newly exported helper. */\nexport const added = () => true;\n',
       );
       const markdown = await generateApiDocumentation(root);
       assert.match(markdown, /### `added`/);
-      assert.match(markdown, /Newly exported helper/);
+      assert.match(markdown, /newly exported helper/);
       await writeFile(join(root, 'lib/entry.ts'), source + 'export const added = () => true;\n');
       await assert.rejects(generateApiDocumentation(root), /added needs a documentation comment/);
     } finally {

@@ -10,22 +10,6 @@ import { run, runAsync } from './run.ts';
  * the default and named esm exports refer to this constructor. commonjs `require('@lando/leia')`
  * returns the same constructor directly.
  *
- * @example esm
- * <!-- leia-example:api-esm -->
- * ```js
- * import Leia from '@lando/leia';
- *
- * const leia = new Leia();
- * const files = leia.find(['quickstart.md']);
- * const sources = leia.parse(files, { moduleFormat: 'esm' });
- * const harnesses = leia.generate(sources);
- * const runner = await leia.runAsync(harnesses);
- *
- * runner.run((failures) => {
- *   process.exitCode = failures ? 1 : 0;
- * });
- * ```
- *
  * @example CommonJS
  * <!-- leia-example:api-commonjs -->
  * ```js

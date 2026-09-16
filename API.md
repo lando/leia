@@ -8,23 +8,7 @@ Start with the [README](./README.md) for installation and CLI onboarding, or use
 
 ## Usage
 
-### esm
-
-<!-- leia-example:api-esm -->
-
-```js
-import Leia from '@lando/leia';
-
-const leia = new Leia();
-const files = leia.find(['quickstart.md']);
-const sources = leia.parse(files, { moduleFormat: 'esm' });
-const harnesses = leia.generate(sources);
-const runner = await leia.runAsync(harnesses);
-
-runner.run((failures) => {
-  process.exitCode = failures ? 1 : 0;
-});
-```
+See the [README](./README.md#run-programmatically) for ESM usage.
 
 ### CommonJS
 
@@ -44,8 +28,7 @@ runner.run((failures) => {
 });
 ```
 
-The default and named `Leia` exports are the same constructor. CommonJS `require()` returns
-that constructor directly. Use `run()` only with CommonJS harnesses; `runAsync()` loads either
+Use `run()` only with CommonJS harnesses; `runAsync()` loads either
 generated format.
 
 ## Entry points

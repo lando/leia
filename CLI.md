@@ -13,8 +13,8 @@ for installation and a first scenario; see [advanced usage](./ADVANCED.md) for s
 # run the installed project dependency without fetching a package.
 npm exec --offline -- leia quickstart.md
 
-# use npx when you want its normal local-package resolution.
-npx leia quickstart.md
+# select the scoped package when using npx.
+npx --package=@lando/leia -- leia quickstart.md
 
 # invoke the installed javascript launcher directly with node.
 node node_modules/@lando/leia/dist/esm/bin/leia.js quickstart.md
@@ -23,8 +23,8 @@ node node_modules/@lando/leia/dist/esm/bin/leia.js quickstart.md
 npm exec --offline -- leia "docs/**/*.md" --ignore "docs/archive/**"
 ```
 
-`npx` can offer to download Leia when it is missing locally. Install it as a project dependency
-when you need the version recorded in your lockfile.
+`npx` can download `@lando/leia` when it is missing locally. Install the project dependency first
+for a lockfile-backed version; `--offline` prevents network access, not use of npm's cache.
 
 For repeatable project commands, add a script to your existing `package.json`:
 
@@ -153,8 +153,6 @@ The shell must be installed. See [shell selection](./ADVANCED.md#select-a-shell)
 | Field       | Value                             |
 | ----------- | --------------------------------- |
 | Alias       | `-v`                              |
-| Environment | none                              |
-| Default     | not applicable                    |
 | Values      | value-free flag                   |
 | Description | Shows the installed Leia version. |
 
@@ -173,8 +171,6 @@ The shell must be installed. See [shell selection](./ADVANCED.md#select-a-shell)
 
 | Field       | Value                                                      |
 | ----------- | ---------------------------------------------------------- |
-| Environment | none                                                       |
-| Default     | not applicable                                             |
 | Values      | value-free flag                                            |
 | Description | Shows usage, options, examples, and environment variables. |
 

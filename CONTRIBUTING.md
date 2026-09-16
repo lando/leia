@@ -90,5 +90,43 @@ bytes. Prereleases use `edge`; stable releases use `latest` and also update `edg
 
 The npm tarball also carries the shared Codex/OpenClaw skill and its referenced guides. Keep
 `.codex-plugin/plugin.json` at the package version; release preparation stamps both before packing.
-`check:package` validates the installed bundle's metadata, assets, and documentation links. See
-[local plugin installation](./PLUGINS.md#install-a-local-release-candidate) for host testing.
+`check:package` validates the installed bundle's metadata, assets, and documentation links. Use the procedure below for host testing.
+
+## Install a local release candidate
+
+Build and pack from a checkout using the contributor toolchain:
+
+```sh
+# verify package contents and write the tarball under .temp/package/.
+bun run build
+bun run check:package --pack-destination=.temp/package
+```
+
+For OpenClaw, pass the resulting `.tgz` path to `openclaw plugins install`.
+For Codex, extract the tarball into an empty directory, then create this marketplace file beside
+the extracted `package/` directory as `.agents/plugins/marketplace.json`:
+
+```json
+{
+  "name": "leia-local",
+  "plugins": [
+    {
+      "name": "leia",
+      "source": { "source": "local", "path": "./package" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Testing"
+    }
+  ]
+}
+```
+
+Run these commands from that directory:
+
+```sh
+# register and install the extracted artifact.
+codex plugin marketplace add .
+codex plugin add leia@leia-local
+```
+
+The local catalog is for testing an artifact. It does not follow npm updates. Repack and reinstall
+when reviewing another candidate. Keep local and published installs separate to avoid duplicate skills.

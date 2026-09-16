@@ -64,8 +64,7 @@ Setup, test, and cleanup commands are ordered tests with independent retry budge
 failure does not suppress later tests or cleanup. Headings below level two do not change the active
 section, and code outside a recognized section is ignored.
 
-Leia writes temporary command scripts and generated `.leia.cjs` or `.leia.mjs` harnesses beneath
-the operating system's temporary directory. Edit the Markdown source, never those generated files.
+Edit the Markdown source; Leia generates command scripts and harnesses in the operating system's temporary directory.
 
 ## Choose a module format
 
@@ -78,8 +77,7 @@ the operating system's temporary directory. Edit the Markdown source, never thos
 - `esm` always writes a `.leia.mjs` harness.
 
 Leia reports an unreadable or malformed nearest package file instead of silently guessing. One
-resolved format applies to every Markdown source in an invocation. Explicit extensions keep the
-generated file independent from the temporary directory's package scope.
+resolved format applies to every Markdown source in an invocation.
 
 ## Select a shell
 
@@ -127,15 +125,4 @@ or test failure. On POSIX, caught `SIGHUP`, `SIGINT`, and `SIGTERM` produce `129
 signal during cleanup, stops cleanup too. Windows and uncatchable termination cannot guarantee
 cleanup.
 
-On POSIX, cancellation targets the command's process group or interactive descendants; Windows
-uses `taskkill /T /F`. Descendants that escape their process group are outside this guarantee.
-
-## Troubleshoot a run
-
-| Symptom                  | Check                                                                                                             |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| No tests found           | Level-one title, matching level-two prefix, and top-level fence; quoted globs and effective ignore settings.      |
-| Wrong module format      | Effective `--module-format`/`LEIA_MODULE_FORMAT`; for `auto`, the nearest package above the invocation directory. |
-| Waiting for input        | Effective stdin setting; use `--no-stdin` to force EOF.                                                           |
-| Works in a terminal only | Selected shell, Markdown directory, captured output, and exit status.                                             |
-| Compatibility warnings   | Remove `--spawn` and `--split-file`; both are retained no-ops.                                                    |
+Cancellation cannot guarantee termination of descendants that escape their process group.
