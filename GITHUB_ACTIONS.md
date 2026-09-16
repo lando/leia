@@ -3,10 +3,12 @@
 Use this guide to run your project's Leia scenarios in CI. Start with the complete
 [single-runner workflow](./README.md#run-in-github-actions); Leia needs no custom GitHub Action.
 
-## Test supported platforms
+## Test scenarios across platforms
 
-Use a matrix when your project promises behavior on more than one operating system. This example
-runs the README's `quickstart.md` on Linux, macOS, and Windows:
+Copy [basic-example.md](./examples/basic-example.md) and
+[setup-cleanup-example.md](./examples/setup-cleanup-example.md) into your project's `examples/`
+directory, or list your own scenarios below. Install Leia and commit your npm lockfile as shown in
+the [README](./README.md#run-in-github-actions). Each OS/scenario pair gets its own job.
 
 <!-- leia-example:github-actions-matrix -->
 
@@ -18,6 +20,12 @@ permissions:
   contents: read
 jobs:
   scenarios:
+    name: ${{ matrix.os }} / ${{ matrix.scenario }}
+    env:
+      SCENARIO: ${{ matrix.scenario }}
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
@@ -25,6 +33,9 @@ jobs:
           - ubuntu-24.04
           - macos-15
           - windows-2025
+        scenario:
+          - examples/basic-example.md
+          - examples/setup-cleanup-example.md
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
@@ -32,13 +43,13 @@ jobs:
         with:
           node-version: '24'
       - run: npm ci
-      - run: npm exec --offline -- leia quickstart.md
+      - run: npm exec --offline -- leia "$SCENARIO" --shell bash
 ```
 
-Keep only platforms your project supports. Add a Node version axis only when testing multiple
-supported Node versions proves a separate compatibility promise; Leia requires Node 24 or newer.
-Test specialized shells or explicit harness formats in focused jobs instead of multiplying the
-whole matrix.
+This runs six jobs. These recipes require Bash and standard Unix tools; the Windows runner uses
+Git Bash. Keep only supported platforms and list scenarios explicitly so fixtures are not swept in.
+Custom-header, interactive, and specialized-shell cases need their own invocation options.
+Add a Node version axis only when it proves a separate compatibility promise.
 
 ## Prepare the scenario environment
 

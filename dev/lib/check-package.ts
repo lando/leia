@@ -199,11 +199,35 @@ export async function checkPackage(
       const workflow = Bun.YAML.parse(
         extractDocumentationExample(await readFile(join(installed, document), 'utf8'), id).source,
       ) as {
-        jobs: { scenarios: { steps: { run?: string }[] } };
+        on: Record<string, unknown>;
+        jobs: {
+          scenarios: {
+            env?: { SCENARIO: string };
+            defaults?: { run: { shell: string } };
+            strategy?: { matrix: { os: string[]; scenario: string[] } };
+            steps: { run?: string }[];
+          };
+        };
       };
+      assert.deepEqual(Object.keys(workflow.on), ['pull_request']);
+      const job = workflow.jobs.scenarios;
+      if (document === 'GITHUB_ACTIONS.md') {
+        assert.equal(job.env?.SCENARIO, '${{ matrix.scenario }}');
+        assert.equal(job.defaults?.run.shell, 'bash');
+        assert.ok(job.strategy?.matrix.os.length);
+        assert.ok(job.strategy?.matrix.scenario.length);
+        for (const scenario of job.strategy.matrix.scenario) {
+          assert.ok(documentation.includes(scenario), `Undocumented scenario: ${scenario}`);
+          await lstat(join(installed, scenario));
+        }
+      }
       assert.ok(
-        workflow.jobs.scenarios.steps.some(
-          (step) => step.run === 'npm exec --offline -- leia quickstart.md',
+        job.steps.some(
+          (step) =>
+            step.run ===
+            (document === 'README.md'
+              ? 'npm exec --offline -- leia quickstart.md'
+              : 'npm exec --offline -- leia "$SCENARIO" --shell bash'),
         ),
       );
     }

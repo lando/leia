@@ -106,8 +106,9 @@ identified cause. Report interruption or unavailable environments separately fro
 
 Project scenario automation belongs in `.github/workflows/leia.yml`, or the existing workflow that
 already owns these tests. Adapt the complete [single-runner example](../../README.md#run-in-github-actions)
-or [matrix example](../../GITHUB_ACTIONS.md#test-supported-platforms); do not add a duplicate job.
-Use pull-request-only triggers and block-list matrix values. Omit obvious workflow comments.
+or [matrix example](../../GITHUB_ACTIONS.md#test-scenarios-across-platforms); do not add a duplicate job.
+Use pull-request-only triggers and block-list matrix values. List scenarios explicitly for an
+OS-by-scenario matrix; match each recipe's shell and prerequisite requirements. Omit obvious workflow comments.
 
 Derive operating systems, Node versions, shells, install/build steps, and services from the project's
 supported behavior. Leia needs Node 24 or newer; its published CLI does not require Bun. Keep the
