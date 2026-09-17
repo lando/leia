@@ -18,8 +18,9 @@
 ## Branch and compatibility boundaries
 
 - Target `main` for current development. Leia 1.x is unsupported; direct users to upgrade to 2.x.
-- Preserve root TypeScript ESM, Bun development/builds, and Node 24 ESM/CommonJS artifacts.
-  The installed CLI also runs with explicit Bun invocation; preserve Node as the default launcher.
+- Preserve root TypeScript ESM, Bun development/builds, and Node >=24 ESM/CommonJS artifacts.
+  Use the Node version in `.node-version` for artifact validation. The installed CLI also runs
+  with explicit Bun invocation; preserve Node as the default launcher.
   Keep explicit `.cjs` helpers and scenario-owned module scopes.
 - Resolve one harness format per invocation. `auto` uses the nearest `package.json` from the initial
   working directory. Emit `.leia.cjs` or `.leia.mjs` independently of temporary-directory scope.
@@ -33,7 +34,8 @@
 - Run automatic-format examples from their own directories to test invocation-directory detection.
 - Preserve macOS, Ubuntu, and Windows matrices. Keep explicit format overrides in the dedicated
   Linux workflow; execution targets and generated-harness formats are independent axes.
-- Source CI jobs run without `dist/`; built jobs remove application source and the sibling artifact.
+- Bun runs source checks; Node validates built artifacts. Built jobs remove application source and
+  the sibling artifact.
 
 ## CLI presentation and configuration
 

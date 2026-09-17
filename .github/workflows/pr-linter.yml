@@ -18,10 +18,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-      - name: Install Node from .node-version
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: '.node-version'
       - name: Install Bun from .bun-version
         uses: oven-sh/setup-bun@v2
         with:

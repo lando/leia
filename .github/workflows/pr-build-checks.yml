@@ -37,6 +37,39 @@ jobs:
       - name: Verify repeatable builds, CLI parity, and isolated watch mode
         run: bun run check:build --scenarios
 
+      - name: Run ESM application unit tests with TypeScript coverage
+        if: matrix.os == 'ubuntu-24.04'
+        shell: bash
+        env:
+          LEIA_RUNTIME: esm
+        run: |
+          bun run build
+          node -e "const fs = require('node:fs'); for (const directory of ['bin', 'lib', 'utils', 'dist/cjs']) fs.rmSync(directory, {recursive: true, force: true})"
+          bun run test:coverage
+      - name: Upload TypeScript coverage reports
+        if: matrix.os == 'ubuntu-24.04'
+        uses: actions/upload-artifact@v7
+        with:
+          name: typescript-unit-coverage
+          path: |
+            coverage/coverage-final.json
+            coverage/coverage-summary.json
+            coverage/lcov.info
+            coverage/lcov-report/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Run CommonJS application unit tests
+        if: matrix.os == 'ubuntu-24.04'
+        shell: bash
+        env:
+          LEIA_RUNTIME: cjs
+        run: |
+          git restore bin lib utils
+          bun run build
+          node -e "const fs = require('node:fs'); for (const directory of ['bin', 'lib', 'utils', 'dist/esm']) fs.rmSync(directory, {recursive: true, force: true})"
+          bun run test:app
+          git restore bin lib utils
+
       - name: Build and verify the installed npm tarball
         run: |
           bun run build

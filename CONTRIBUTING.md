@@ -51,7 +51,7 @@ Use the additional checks that match the change:
 - Packaging or shipped docs: `bun run build && bun run check:package` installs the exact tarball
   into an isolated consumer and checks exports, types, contents, and documentation links.
 - Coverage: `bun run build && bun run test:coverage` reports original TypeScript under ignored
-  `coverage/`. CI collects it once in the Ubuntu ESM unit job; no percentage threshold is imposed.
+  `coverage/`. CI collects it once in the Ubuntu build job; no percentage threshold is imposed.
 
 `LEIA_RUNTIME=source|esm|cjs` selects the application-test target. `test:app` uses Bun for source and
 Node for built targets; `test:dev` always uses Bun. Neither builds implicitly. Source CI jobs run
