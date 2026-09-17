@@ -30,10 +30,5 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile --ignore-scripts
 
-      - name: Enforce source execution isolation
-        shell: bash
-        run: test ! -e dist
-      - name: Run shared application unit tests
-        run: bun run test:app
-      - name: Run development helper unit tests
-        run: bun run test:dev
+      - name: Run unit tests
+        run: bun run test

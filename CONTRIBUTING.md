@@ -57,10 +57,6 @@ Use the additional checks that match the change:
 Node for built targets; `test:dev` always uses Bun. Neither builds implicitly. Source CI jobs run
 without `dist/`; built jobs remove source and the sibling artifact to catch fallback imports.
 
-Bun owns lint, source unit, and source shell validation. Node from `.node-version` owns build,
-package, intentional fixture, release-test, and publication checks; Node >=24 remains the supported
-consumer contract.
-
 The full Leia, shell, lifecycle, and module-format scenarios are CI-owned by default. CI adds
 `--scenarios` to build/package checks to exercise relocated CLI and installed documentation examples.
 The macOS, Ubuntu, and Windows matrices test execution targets separately from harness formats.
